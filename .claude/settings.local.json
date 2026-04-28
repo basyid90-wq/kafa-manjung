@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -rf c:/laragon/www/kafa-manjung/storage/app/mpdf_tmp/*)",
+      "Bash(php -r ' *)",
+      "Bash(php artisan *)",
+      "Bash(git add *)"
+    ]
+  }
+}
