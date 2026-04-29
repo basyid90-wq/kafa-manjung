@@ -65,24 +65,34 @@ class RphPdfController extends Controller
 
     private function downloadGabungan(RphRecord $rph)
     {
+        $isNewFormat = $rph->periods()->whereNotNull('tajuk_by_year')->exists();
+
         $mpdf = new \Mpdf\Mpdf([
             'mode'          => 'utf-8',
-            'format'        => 'A4-L', // Landscape
+            'format'        => 'A4',
             'default_font'  => 'lateef',
             'autoArabic'    => true,
-            'margin_top'    => 10,
-            'margin_bottom' => 10,
-            'margin_left'   => 10,
-            'margin_right'  => 10,
+            'margin_top'    => 8,
+            'margin_bottom' => 8,
+            'margin_left'   => 12,
+            'margin_right'  => 12,
             'tempDir'       => storage_path('app/mpdf_tmp'),
         ]);
 
         $hariJawi = self::HARI_JAWI;
-        $html     = view('rph.pdf_gabungan', compact('rph', 'hariJawi'))->render();
+
+        if ($isNewFormat) {
+            $rph->load('periods');
+            $html = view('rph.pdf_gabungan', compact('rph', 'hariJawi'))->render();
+        } else {
+            // Legacy format — rekod lama sebelum struktur baharu
+            $html = view('rph.pdf_gabungan_legacy', compact('rph', 'hariJawi'))->render();
+        }
+
         $mpdf->WriteHTML($html);
 
         $pdfContent = $mpdf->Output('', 'S');
-        $filename   = 'RPH-Gabungan-' . $rph->date . '-' . str_replace(' ', '_', $rph->user->name ?? 'guru') . '.pdf';
+        $filename   = 'RPH-Cantum-' . $rph->date . '-' . str_replace(' ', '_', $rph->user->name ?? 'guru') . '.pdf';
 
         return response()->json([
             'data'     => base64_encode($pdfContent),
