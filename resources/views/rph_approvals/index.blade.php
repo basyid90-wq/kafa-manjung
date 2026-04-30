@@ -34,7 +34,12 @@
                         <div class="text-center py-5">
                             <i class="feather-check-circle" style="font-size:3rem; color:#2e7d32;"></i>
                             <h5 class="mt--15">Tiada RPH Menunggu Semakan</h5>
+                            @role('Guru Besar')
+                            <p class="color-body">Tiada RPH dari Guru KAFA yang perlu disemak.</p>
+                            <p class="color-body mt-2"><small><i class="feather-info"></i> RPH yang anda hantar sendiri akan disemak oleh Penyelia KAFA.</small></p>
+                            @else
                             <p class="color-body">Semua RPH guru telah disemak.</p>
+                            @endrole
                         </div>
                         @else
                         <div class="row g-4 mt--10">

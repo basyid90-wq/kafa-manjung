@@ -40,12 +40,12 @@ git push -u origin main
 3. Edit rekod **A** yang ada (atau tambah baru):
    - Type: `A`
    - Name: `@`
-   - Value: `[IP VPS kau]`
+   - Value: `103.175.50.99`
    - TTL: `3600`
 4. Tambah satu lagi untuk `www`:
    - Type: `A`
    - Name: `www`
-   - Value: `[IP VPS kau]`
+   - Value: `103.175.50.99`
    - TTL: `3600`
 
 > DNS propagation ambil masa 5–30 minit. Boleh check di https://dnschecker.org
@@ -57,8 +57,7 @@ git push -u origin main
 ### 4A. SSH ke VPS
 ```bash
 # Dari Windows terminal / Git Bash
-ssh root@[IP-VPS-KAU]
-# contoh: ssh root@103.56.12.34
+ssh root@103.175.50.99
 ```
 
 ### 4B. Upload & jalankan setup script
@@ -84,7 +83,7 @@ Script ini akan auto-install:
 ### 5A. Upload fail .env.production ke VPS
 ```bash
 # Dari Windows terminal (bukan dalam VPS):
-scp C:\laragon\www\kafa-manjung\.env.production root@[IP-VPS]:/var/www/kafa-manjung/.env
+scp C:\laragon\www\kafa-manjung\.env.production root@103.175.50.99:/var/www/kafa-manjung/.env
 ```
 
 ### 5B. Generate APP_KEY & migrate

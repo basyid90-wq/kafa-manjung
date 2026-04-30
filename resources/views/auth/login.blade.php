@@ -151,8 +151,11 @@
                                          data-author="{{ $announcement->user->name }}"
                                          data-is-admin="{{ $announcement->user->hasRole('Super Admin') ? '1' : '0' }}"
                                          data-date="{{ $announcement->created_at->format('d/m/Y') }}"
-                                         data-label="{{ $announcement->homepage_label }}">
-                                        {!! nl2br(e($announcement->content)) !!}
+                                         data-label="{{ $announcement->homepage_label }}"
+                                         data-view-count="{{ $announcement->view_count }}"
+                                         data-readers-count="{{ $announcement->authenticated_readers_count }}"
+                                         data-announcement-id="{{ $announcement->id }}">
+                                        {!! $announcement->content !!}
                                     </div>
                                 </div>
                             </div>
@@ -212,6 +215,27 @@
             </div>
             <div class="modal-body" style="padding: 35px 30px; background: #fafbfc;">
                 <div id="announcementModalBody" style="white-space: pre-line; line-height: 1.9; font-size: 15px; color: #2d3748; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);"></div>
+
+                <!-- View Count Stats -->
+                <div id="viewCountStats" class="mt-3 p-3" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: none;">
+                    <div class="d-flex align-items-center justify-content-center gap-4">
+                        <div class="text-center">
+                            <i class="feather-eye" style="font-size: 20px; color: #667eea;"></i>
+                            <div class="mt-1">
+                                <strong id="viewCountNumber" style="font-size: 18px; color: #2d3748;">0</strong>
+                                <div style="font-size: 12px; color: #718096;">Total Views</div>
+                            </div>
+                        </div>
+                        <div style="width: 1px; height: 40px; background: #e2e8f0;"></div>
+                        <div class="text-center">
+                            <i class="feather-users" style="font-size: 20px; color: #48bb78;"></i>
+                            <div class="mt-1">
+                                <strong id="readersCountNumber" style="font-size: 18px; color: #2d3748;">0</strong>
+                                <div style="font-size: 12px; color: #718096;">Staff Membaca</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer" style="border-top: 1px solid #e8e8e8; padding: 20px 30px; background: #fafbfc; border-radius: 0 0 16px 16px;">
                 <button type="button" class="rbt-btn btn-gradient btn-sm" data-bs-dismiss="modal" style="padding: 10px 24px; border-radius: 8px;">
@@ -285,6 +309,9 @@
         const isAdmin = dataDiv.getAttribute('data-is-admin') === '1';
         const date = dataDiv.getAttribute('data-date');
         const label = dataDiv.getAttribute('data-label');
+        const viewCount = dataDiv.getAttribute('data-view-count');
+        const readersCount = dataDiv.getAttribute('data-readers-count');
+        const announcementIdForTracking = dataDiv.getAttribute('data-announcement-id');
         const content = dataDiv.innerHTML;
 
         // Set modal content
@@ -292,6 +319,11 @@
         document.getElementById('announcementModalBody').innerHTML = content;
         document.getElementById('authorName').textContent = author;
         document.getElementById('announcementDate').textContent = date;
+
+        // Set view count stats
+        document.getElementById('viewCountNumber').textContent = viewCount;
+        document.getElementById('readersCountNumber').textContent = readersCount;
+        document.getElementById('viewCountStats').style.display = 'block';
 
         // Set label badge
         const labelBadge = document.getElementById('announcementModalLabel');
@@ -311,6 +343,21 @@
         } else {
             adminBadge.style.display = 'none';
         }
+
+        // Increment view count via AJAX
+        fetch('/announcements/' + announcementIdForTracking + '/increment-view', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        }).then(response => {
+            if (response.ok) {
+                // Update view count in modal
+                const currentCount = parseInt(viewCount);
+                document.getElementById('viewCountNumber').textContent = currentCount + 1;
+            }
+        });
 
         const modal = new bootstrap.Modal(document.getElementById('announcementModal'));
         modal.show();

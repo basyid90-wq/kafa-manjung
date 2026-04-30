@@ -21,7 +21,8 @@ class Announcement extends Model
         'target_scope',
         'is_homepage',
         'homepage_label',
-        'expires_at'
+        'expires_at',
+        'view_count'
     ];
 
     protected $casts = [
@@ -106,5 +107,17 @@ class Announcement extends Model
     public function getTargetCountAttribute()
     {
         return $this->targetedUsers()->count();
+    }
+
+    // Increment view count (for anonymous page views)
+    public function incrementViewCount()
+    {
+        $this->increment('view_count');
+    }
+
+    // Get authenticated readers count
+    public function getAuthenticatedReadersCountAttribute()
+    {
+        return $this->readByUsers()->count();
     }
 }

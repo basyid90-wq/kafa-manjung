@@ -152,19 +152,47 @@ class StudentAchievementController extends Controller
         return view('achievements.create', compact('classes', 'exams', 'selectedClass'));
     }
 
+    public function edit(StudentAchievementRecord $achievement, Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole(['Guru Besar', 'Guru KAFA', 'Super Admin'])) {
+            abort(403);
+        }
+
+        $classes = KafaClass::where('school_id', $user->school_id ?? $achievement->school_id)->orderBy('name')->get();
+        $exams   = Exam::where('school_id', $user->school_id ?? $achievement->school_id)
+            ->whereIn('term', ['pertengahan_tahun', 'akhir_tahun'])
+            ->orderBy('year', 'desc')
+            ->get();
+
+        $selectedClass = $achievement->kafaClass()->with('students')->first();
+
+        // Load existing values per student for pre-fill
+        $existingRecords = StudentAchievementRecord::where('kafa_class_id', $achievement->kafa_class_id)
+            ->where('academic_year', $achievement->academic_year)
+            ->get()
+            ->keyBy('student_id');
+
+        $page = $request->page;
+
+        return view('achievements.create', compact('classes', 'exams', 'selectedClass', 'existingRecords', 'achievement', 'page'));
+    }
+
     public function store(Request $request)
     {
         $user = auth()->user();
         $request->validate([
-            'kafa_class_id'    => 'required|exists:kafa_classes,id',
-            'academic_year'    => 'required|integer|min:2000|max:2099',
-            'midyear_exam_id'  => 'nullable|exists:exams,id',
-            'endyear_exam_id'  => 'nullable|exists:exams,id',
-            'phci.*'           => 'nullable|integer|min:0|max:100',
-            'kelakuan'         => 'nullable|in:A,B,C,D',
-            'kebersihan'       => 'nullable|in:A,B,C,D',
-            'teacher_comments' => 'nullable|string',
-            'status'           => 'nullable|in:draft,final',
+            'kafa_class_id'      => 'required|exists:kafa_classes,id',
+            'academic_year'      => 'required|integer|min:2000|max:2099',
+            'midyear_exam_id'    => 'nullable|exists:exams,id',
+            'endyear_exam_id'    => 'nullable|exists:exams,id',
+            'phci_midyear.*'     => 'nullable|integer|min:0|max:100',
+            'phci_endyear.*'     => 'nullable|integer|min:0|max:100',
+            'kelakuan.*'         => 'nullable|in:A,B,C,D',
+            'kebersihan.*'       => 'nullable|in:A,B,C,D',
+            'teacher_comments.*' => 'nullable|string|max:1000',
+            'status'             => 'nullable|in:draft,final',
         ]);
 
         $class   = KafaClass::with('students')->findOrFail($request->kafa_class_id);
@@ -203,7 +231,7 @@ class StudentAchievementController extends Controller
         // Recalculate rankings after save
         $this->recalculateRankings($request->kafa_class_id, $request->academic_year);
 
-        return redirect()->route('achievements.index')
+        return redirect()->route('achievements.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Rekod pencapaian berjaya disimpan.');
     }
 
@@ -238,10 +266,11 @@ class StudentAchievementController extends Controller
             'format'       => 'A4',
             'tempDir'      => storage_path('app/mpdf_temp'),
             'margin_top'   => 8,
-            'margin_bottom'=> 8,
-            'margin_left'  => 10,
-            'margin_right' => 10,
+            'margin_bottom'=> 6,
+            'margin_left'  => 8,
+            'margin_right' => 8,
         ]);
+        $mpdf->SetDirectionality('rtl');
         $mpdf->SetTitle('Rekod Pencapaian Murid');
         $mpdf->WriteHTML($html);
 
@@ -298,14 +327,13 @@ class StudentAchievementController extends Controller
                 ->where('exam_id', $rec->endyear_exam_id)
                 ->where('is_absent', false)
                 ->sum('marks');
-            $rec->_total = $midSum + $endSum;
-            return $rec;
-        })->sortByDesc('_total')->values();
+            return ['model' => $rec, 'total' => $midSum + $endSum];
+        })->sortByDesc('total')->values();
 
-        foreach ($scored as $rank => $rec) {
-            $rec->update([
-                'class_rank'      => $rank + 1,
-                'total_in_class'  => $totalInClass,
+        foreach ($scored as $rank => $item) {
+            $item['model']->update([
+                'class_rank'     => $rank + 1,
+                'total_in_class' => $totalInClass,
             ]);
         }
 
@@ -325,12 +353,11 @@ class StudentAchievementController extends Controller
                 ->where('exam_id', $rec->endyear_exam_id)
                 ->where('is_absent', false)
                 ->sum('marks');
-            $rec->_total = $midSum + $endSum;
-            return $rec;
-        })->sortByDesc('_total')->values();
+            return ['model' => $rec, 'total' => $midSum + $endSum];
+        })->sortByDesc('total')->values();
 
-        foreach ($gradeScored as $rank => $rec) {
-            $rec->update([
+        foreach ($gradeScored as $rank => $item) {
+            $item['model']->update([
                 'grade_rank'     => $rank + 1,
                 'total_in_grade' => $totalInGrade,
             ]);

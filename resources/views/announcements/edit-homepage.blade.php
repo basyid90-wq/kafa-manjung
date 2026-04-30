@@ -12,17 +12,18 @@
                 <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
                     <div class="content">
                         <div class="section-title">
-                            <h4 class="rbt-title-style-3">Cipta Hebahan Homepage</h4>
-                            <p class="text-muted small">Hebahan ini akan dipaparkan di halaman login untuk maklumkan update sistem</p>
+                            <h4 class="rbt-title-style-3">Edit Hebahan Homepage</h4>
+                            <p class="text-muted small">Kemaskini hebahan yang dipaparkan di halaman login</p>
                         </div>
 
-                        <form action="{{ route('announcements.store-homepage') }}" method="POST" class="rbt-profile-row rbt-default-form row row--15">
+                        <form action="{{ route('announcements.update-homepage', $announcement) }}" method="POST" class="rbt-profile-row rbt-default-form row row--15">
                             @csrf
+                            @method('PUT')
 
                             <div class="col-lg-8 col-12">
                                 <div class="rbt-form-group">
                                     <label for="title">Tajuk Hebahan</label>
-                                    <input type="text" name="title" id="title" placeholder="Contoh: Modul Sijil Digital Kini Tersedia" value="{{ old('title') }}" required>
+                                    <input type="text" name="title" id="title" placeholder="Contoh: Modul Sijil Digital Kini Tersedia" value="{{ old('title', $announcement->title) }}" required>
                                 </div>
                             </div>
 
@@ -30,11 +31,11 @@
                                 <div class="rbt-form-group">
                                     <label for="homepage_label">Label</label>
                                     <select name="homepage_label" id="homepage_label" class="rbt-big-select" required>
-                                        <option value="Ciri Baharu">🆕 Ciri Baharu</option>
-                                        <option value="Pembaikan">🔧 Pembaikan</option>
-                                        <option value="Penyelenggaraan">⚠️ Penyelenggaraan</option>
-                                        <option value="Kritikal">🚨 Kritikal</option>
-                                        <option value="Pengumuman">📢 Pengumuman</option>
+                                        <option value="Ciri Baharu" {{ old('homepage_label', $announcement->homepage_label) == 'Ciri Baharu' ? 'selected' : '' }}>🆕 Ciri Baharu</option>
+                                        <option value="Pembaikan" {{ old('homepage_label', $announcement->homepage_label) == 'Pembaikan' ? 'selected' : '' }}>🔧 Pembaikan</option>
+                                        <option value="Penyelenggaraan" {{ old('homepage_label', $announcement->homepage_label) == 'Penyelenggaraan' ? 'selected' : '' }}>⚠️ Penyelenggaraan</option>
+                                        <option value="Kritikal" {{ old('homepage_label', $announcement->homepage_label) == 'Kritikal' ? 'selected' : '' }}>🚨 Kritikal</option>
+                                        <option value="Pengumuman" {{ old('homepage_label', $announcement->homepage_label) == 'Pengumuman' ? 'selected' : '' }}>📢 Pengumuman</option>
                                     </select>
                                 </div>
                             </div>
@@ -50,7 +51,7 @@
                             <div class="col-lg-6 col-12">
                                 <div class="rbt-form-group">
                                     <label for="expires_at">Tarikh Luput</label>
-                                    <input type="datetime-local" name="expires_at" id="expires_at" value="{{ old('expires_at') }}" required>
+                                    <input type="datetime-local" name="expires_at" id="expires_at" value="{{ old('expires_at', $announcement->expires_at ? $announcement->expires_at->format('Y-m-d\TH:i') : '') }}" required>
                                     <small class="text-muted">Hebahan akan auto-hide selepas tarikh ini</small>
                                 </div>
                             </div>
@@ -64,7 +65,7 @@
 
                             <div class="col-12 mt--20">
                                 <div class="rbt-button-group justify-content-start">
-                                    <button type="submit" class="rbt-btn btn-gradient">Terbitkan Hebahan Homepage</button>
+                                    <button type="submit" class="rbt-btn btn-gradient">Kemaskini Hebahan</button>
                                     <a href="{{ route('announcements.index') }}" class="rbt-btn btn-border btn-sm">Batal</a>
                                 </div>
                             </div>
@@ -101,32 +102,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Load existing content
+    const existingContent = `{!! old('content', $announcement->content) !!}`;
+    if (existingContent) {
+        quill.root.innerHTML = existingContent;
+    }
+
     // Sync Quill content to hidden input on every change
     const hiddenInput = document.getElementById('content_hidden');
+    hiddenInput.value = quill.root.innerHTML;
+
     quill.on('text-change', function() {
         hiddenInput.value = quill.root.innerHTML;
     });
-
-    // Set old value if exists
-    const oldContent = `{{ old('content') }}`;
-    if (oldContent) {
-        quill.root.innerHTML = oldContent;
-        hiddenInput.value = oldContent;
-    }
 
     // Set minimum datetime to now
     const expiresAt = document.getElementById('expires_at');
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     expiresAt.min = now.toISOString().slice(0, 16);
-
-    // Set default to 7 days from now
-    const defaultExpiry = new Date();
-    defaultExpiry.setDate(defaultExpiry.getDate() + 7);
-    defaultExpiry.setMinutes(defaultExpiry.getMinutes() - defaultExpiry.getTimezoneOffset());
-    if (!expiresAt.value) {
-        expiresAt.value = defaultExpiry.toISOString().slice(0, 16);
-    }
 });
 </script>
 @endsection

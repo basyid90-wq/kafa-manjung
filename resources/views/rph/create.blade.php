@@ -18,7 +18,7 @@
                             <h4 class="rbt-title-style-3">Cipta Rekod Pengajaran Harian (RPH)</h4>
                         </div>
 
-                        {{-- Tab Switcher: Kelas Biasa vs Gabungan --}}
+                        {{-- Tab Switcher: Kelas Biasa vs Kelas Cantum --}}
                         <ul class="nav nav-tabs mb-4" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" href="#" onclick="return false;">
@@ -27,7 +27,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('rph.create_gabungan') }}">
-                                    <i class="feather-users"></i> Kelas Gabungan
+                                    <i class="feather-users"></i> Kelas Cantum
                                 </a>
                             </li>
                         </ul>

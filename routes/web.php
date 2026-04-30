@@ -252,6 +252,7 @@ Route::middleware('auth')->group(function () {
         Route::get('achievements/school/{school}', [\App\Http\Controllers\StudentAchievementController::class, 'schoolList'])->name('achievements.school_list');
         Route::get('achievements/create', [\App\Http\Controllers\StudentAchievementController::class, 'create'])->name('achievements.create');
         Route::post('achievements', [\App\Http\Controllers\StudentAchievementController::class, 'store'])->name('achievements.store');
+        Route::get('achievements/{achievement}/edit', [\App\Http\Controllers\StudentAchievementController::class, 'edit'])->name('achievements.edit');
         Route::get('achievements/{achievement}', [\App\Http\Controllers\StudentAchievementController::class, 'show'])->name('achievements.show');
         Route::get('achievements/{achievement}/pdf', [\App\Http\Controllers\StudentAchievementController::class, 'generatePdf'])->name('achievements.pdf');
     });

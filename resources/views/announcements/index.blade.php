@@ -71,6 +71,10 @@
                                                 @if($announcement->expires_at)
                                                 <span class="badge bg-secondary-opacity"><i class="feather-calendar"></i> Luput: {{ $announcement->expires_at->format('d/m/Y H:i') }}</span>
                                                 @endif
+                                                @role('Super Admin')
+                                                <span class="badge bg-primary-opacity"><i class="feather-eye"></i> {{ $announcement->view_count }} views</span>
+                                                <span class="badge bg-success-opacity"><i class="feather-users"></i> {{ $announcement->authenticated_readers_count }} staff</span>
+                                                @endrole
                                                 @else
                                                     @if($announcement->isReadBy(auth()->user()))
                                                     <span class="badge bg-success-opacity"><i class="feather-check"></i> Dibaca</span>
@@ -81,6 +85,11 @@
                                             </div>
                                         </div>
                                         <div class="d-flex gap-2">
+                                            @if($announcement->is_homepage && Auth::user()->hasRole('Super Admin'))
+                                            <a href="{{ route('announcements.edit-homepage', $announcement) }}" class="rbt-btn btn-border btn-xs">
+                                                <i class="feather-edit"></i> Edit
+                                            </a>
+                                            @endif
                                             @if(!$announcement->is_homepage)
                                             <a href="{{ route('announcements.show', $announcement) }}" class="rbt-btn btn-border btn-xs">
                                                 <i class="feather-eye"></i> Lihat

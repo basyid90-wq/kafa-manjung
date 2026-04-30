@@ -31,6 +31,16 @@
                             </a>
                         </div>
 
+                        @if($errors->any())
+                        <div class="alert alert-danger mb--20">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+
                         {{-- Step 1: Pilih Kelas --}}
                         <form method="GET" action="{{ route('achievements.create') }}" class="row g-3 mb--30">
                             <div class="col-md-5">
@@ -55,12 +65,15 @@
                         <form action="{{ route('achievements.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="kafa_class_id" value="{{ $selectedClass->id }}">
+                            <input type="hidden" name="page" value="{{ $page ?? 1 }}">
 
                             <div class="row g-3 mb--20">
                                 <div class="col-md-3">
                                     <div class="rbt-form-group">
                                         <label>Tahun Akademik</label>
-                                        <input type="number" name="academic_year" class="form-control" value="{{ date('Y') }}" min="2020" max="2099" required>
+                                        <input type="number" name="academic_year" class="form-control"
+                                            value="{{ old('academic_year', $achievement->academic_year ?? date('Y')) }}"
+                                            min="2020" max="2099" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -69,7 +82,10 @@
                                         <select name="midyear_exam_id" class="rbt-big-select">
                                             <option value="">-- Tiada --</option>
                                             @foreach($exams->where('term', 'pertengahan_tahun') as $exam)
-                                                <option value="{{ $exam->id }}">{{ $exam->name }} ({{ $exam->year }})</option>
+                                                <option value="{{ $exam->id }}"
+                                                    {{ old('midyear_exam_id', $achievement->midyear_exam_id ?? '') == $exam->id ? 'selected' : '' }}>
+                                                    {{ $exam->name }} ({{ $exam->year }})
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -80,7 +96,10 @@
                                         <select name="endyear_exam_id" class="rbt-big-select">
                                             <option value="">-- Tiada --</option>
                                             @foreach($exams->where('term', 'akhir_tahun') as $exam)
-                                                <option value="{{ $exam->id }}">{{ $exam->name }} ({{ $exam->year }})</option>
+                                                <option value="{{ $exam->id }}"
+                                                    {{ old('endyear_exam_id', $achievement->endyear_exam_id ?? '') == $exam->id ? 'selected' : '' }}>
+                                                    {{ $exam->name }} ({{ $exam->year }})
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -89,65 +108,64 @@
 
                             <div class="student-records-list">
                                 @foreach($selectedClass->students->sortBy('name') as $i => $student)
+                                @php
+                                    $existing = isset($existingRecords) ? ($existingRecords[$student->id] ?? null) : null;
+                                    $preKelakuan   = old("kelakuan.{$student->id}",   $existing->kelakuan   ?? '');
+                                    $preKebersihan = old("kebersihan.{$student->id}", $existing->kebersihan ?? '');
+                                    $prePhciMid    = old("phci_midyear.{$student->id}", $existing->phci_midyear ?? '');
+                                    $prePhciEnd    = old("phci_endyear.{$student->id}", $existing->phci_endyear ?? '');
+                                    $preComments   = old("teacher_comments.{$student->id}", $existing->teacher_comments ?? '');
+                                @endphp
                                 <div class="rbt-shadow-box mb--20 p-4 bg-color-white" style="border:1px solid #e6e6e6;border-radius:8px;">
                                     <h5 class="mb--15" style="font-size:15px;">
                                         <span class="rbt-badge-5 bg-color-primary color-white me-2">{{ $i + 1 }}</span>
                                         {{ $student->name }}
+                                        @if($existing)
+                                            <span class="badge bg-info ms-2" style="font-size:10px;">Ada Rekod</span>
+                                        @endif
                                     </h5>
 
                                     <div class="row g-3 align-items-start">
                                         <div class="col-6 col-md-2">
                                             <label class="form-label mb-1" style="font-size:12px;font-weight:600;">PHCI (PT)</label>
                                             <input type="number" name="phci_midyear[{{ $student->id }}]"
-                                                class="form-control form-control-sm" min="0" max="100" placeholder="0–100">
+                                                class="form-control form-control-sm" min="0" max="100" placeholder="0–100"
+                                                value="{{ $prePhciMid }}">
                                         </div>
                                         <div class="col-6 col-md-2">
                                             <label class="form-label mb-1" style="font-size:12px;font-weight:600;">PHCI (AT)</label>
                                             <input type="number" name="phci_endyear[{{ $student->id }}]"
-                                                class="form-control form-control-sm" min="0" max="100" placeholder="0–100">
+                                                class="form-control form-control-sm" min="0" max="100" placeholder="0–100"
+                                                value="{{ $prePhciEnd }}">
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label class="form-label mb-1" style="font-size:12px;font-weight:600;">Kelakuan</label>
                                             <div class="btn-group grade-radio-group d-flex" role="group">
-                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_x" value="" checked autocomplete="off">
+                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_x" value="" {{ $preKelakuan === '' ? 'checked' : '' }} autocomplete="off">
                                                 <label class="btn btn-outline-secondary btn-sm flex-fill" for="kel_{{ $student->id }}_x">-</label>
 
-                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_A" value="A" autocomplete="off">
-                                                <label class="btn btn-outline-success btn-sm flex-fill" for="kel_{{ $student->id }}_A">A</label>
-
-                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_B" value="B" autocomplete="off">
-                                                <label class="btn btn-outline-primary btn-sm flex-fill" for="kel_{{ $student->id }}_B">B</label>
-
-                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_C" value="C" autocomplete="off">
-                                                <label class="btn btn-outline-warning btn-sm flex-fill" for="kel_{{ $student->id }}_C">C</label>
-
-                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_D" value="D" autocomplete="off">
-                                                <label class="btn btn-outline-danger btn-sm flex-fill" for="kel_{{ $student->id }}_D">D</label>
+                                                @foreach(['A','B','C','D'] as $grade)
+                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_{{ $grade }}" value="{{ $grade }}" {{ $preKelakuan === $grade ? 'checked' : '' }} autocomplete="off">
+                                                <label class="btn btn-outline-{{ ['A'=>'success','B'=>'primary','C'=>'warning','D'=>'danger'][$grade] }} btn-sm flex-fill" for="kel_{{ $student->id }}_{{ $grade }}">{{ $grade }}</label>
+                                                @endforeach
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label class="form-label mb-1" style="font-size:12px;font-weight:600;">Kebersihan</label>
                                             <div class="btn-group grade-radio-group d-flex" role="group">
-                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_x" value="" checked autocomplete="off">
+                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_x" value="" {{ $preKebersihan === '' ? 'checked' : '' }} autocomplete="off">
                                                 <label class="btn btn-outline-secondary btn-sm flex-fill" for="keb_{{ $student->id }}_x">-</label>
 
-                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_A" value="A" autocomplete="off">
-                                                <label class="btn btn-outline-success btn-sm flex-fill" for="keb_{{ $student->id }}_A">A</label>
-
-                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_B" value="B" autocomplete="off">
-                                                <label class="btn btn-outline-primary btn-sm flex-fill" for="keb_{{ $student->id }}_B">B</label>
-
-                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_C" value="C" autocomplete="off">
-                                                <label class="btn btn-outline-warning btn-sm flex-fill" for="keb_{{ $student->id }}_C">C</label>
-
-                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_D" value="D" autocomplete="off">
-                                                <label class="btn btn-outline-danger btn-sm flex-fill" for="keb_{{ $student->id }}_D">D</label>
+                                                @foreach(['A','B','C','D'] as $grade)
+                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_{{ $grade }}" value="{{ $grade }}" {{ $preKebersihan === $grade ? 'checked' : '' }} autocomplete="off">
+                                                <label class="btn btn-outline-{{ ['A'=>'success','B'=>'primary','C'=>'warning','D'=>'danger'][$grade] }} btn-sm flex-fill" for="keb_{{ $student->id }}_{{ $grade }}">{{ $grade }}</label>
+                                                @endforeach
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label mb-1" style="font-size:12px;font-weight:600;">Ulasan Guru</label>
                                             <textarea name="teacher_comments[{{ $student->id }}]" class="form-control form-control-sm" rows="2"
-                                                placeholder="Ulasan ringkas prestasi murid..."></textarea>
+                                                placeholder="Ulasan ringkas prestasi murid...">{{ $preComments }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -159,8 +177,9 @@
                                     <div class="rbt-form-group">
                                         <label>Status</label>
                                         <select name="status" class="rbt-big-select">
-                                            <option value="draft">Draf</option>
-                                            <option value="final">Final</option>
+                                            @php $currentStatus = old('status', $achievement->status ?? 'draft'); @endphp
+                                            <option value="draft" {{ $currentStatus === 'draft' ? 'selected' : '' }}>Draf</option>
+                                            <option value="final" {{ $currentStatus === 'final' ? 'selected' : '' }}>Final</option>
                                         </select>
                                     </div>
                                 </div>

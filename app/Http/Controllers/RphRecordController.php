@@ -121,41 +121,96 @@ class RphRecordController extends Controller
     private function storeGabungan(Request $request)
     {
         $request->validate([
-            'date'                    => 'required|date',
-            'hari'                    => 'required|string',
-            'week'                    => 'required|integer|min:1|max:52',
-            'masa'                    => 'required|string',
-            'mata_pelajaran'          => 'required|string',
-            'topic'                   => 'required|string',
-            'kafa_class_id'           => 'required|exists:kafa_classes,id',
-            'combined_years'          => 'required|array|min:2|max:3',
-            'combined_years.*'        => 'integer|between:1,6',
-            'objectives_by_year.*'    => 'required|string',
-            'standards_by_year.*'     => 'required|string',
-            'activities_by_year.*'    => 'required|string',
-            'assessment_by_year.*'    => 'nullable|string',
+            'date'             => 'required|date',
+            'hari'             => 'required|string',
+            'week'             => 'required|integer|min:1|max:52',
+            'kafa_class_id'    => 'required|exists:kafa_classes,id',
+            'combined_years'   => 'required|array|min:2|max:3',
+            'combined_years.*' => 'integer|between:1,6',
+            'periods'          => 'required|array',
         ]);
 
-        RphRecord::create([
-            'school_id'          => auth()->user()->school_id,
-            'user_id'            => auth()->id(),
-            'kafa_class_id'      => $request->kafa_class_id,
-            'date'               => $request->date,
-            'hari'               => $request->hari,
-            'week'               => $request->week,
-            'masa'               => $request->masa,
-            'mata_pelajaran'     => $request->mata_pelajaran,
-            'topic'              => $request->topic,
-            'class_type'         => 'gabungan',
-            'combined_years'     => $request->combined_years,
-            'objectives_by_year' => $request->objectives_by_year,
-            'standards_by_year'  => $request->standards_by_year,
-            'activities_by_year' => $request->activities_by_year,
-            'assessment_by_year' => $request->assessment_by_year,
-            'status'             => 'pending',
+        DB::transaction(function () use ($request) {
+            $rph = RphRecord::create([
+                'school_id'      => auth()->user()->school_id,
+                'user_id'        => auth()->id(),
+                'kafa_class_id'  => $request->kafa_class_id,
+                'date'           => $request->date,
+                'hari'           => $request->hari,
+                'week'           => $request->week,
+                'class_type'     => 'gabungan',
+                'combined_years' => $request->combined_years,
+                'status'         => 'pending',
+            ]);
+
+            foreach ([1, 2, 3] as $no) {
+                $p = $request->input("periods.{$no}", []);
+                if (empty($p)) continue;
+
+                RphPeriod::create([
+                    'rph_id'               => $rph->id,
+                    'period_no'            => $no,
+                    'mata_pelajaran_jawi'  => $p['mata_pelajaran_jawi'] ?? null,
+                    'masa'                 => $p['masa'] ?? null,
+                    'tajuk_by_year'        => $p['tajuk_by_year'] ?? null,
+                    'isi_pelajaran_by_year' => $p['isi_pelajaran_by_year'] ?? null,
+                    'objective_by_year'    => $p['objective_by_year'] ?? null,
+                    'aktiviti_by_year'     => $p['aktiviti_by_year'] ?? null,
+                    'kemahiran_selected'   => $p['kemahiran_selected'] ?? null,
+                    'strategi_pdc'         => $p['strategi_pdc'] ?? null,
+                    'impak'                => isset($p['impak']) ? $p['impak'] : null,
+                ]);
+            }
+        });
+
+        return redirect()->route('rph.index')->with('success', 'RPH Cantum berjaya dihantar untuk semakan.');
+    }
+
+    private function updateGabungan(Request $request, RphRecord $rph)
+    {
+        $request->validate([
+            'date'             => 'required|date',
+            'hari'             => 'required|string',
+            'week'             => 'required|integer|min:1|max:52',
+            'combined_years'   => 'required|array|min:2|max:3',
+            'combined_years.*' => 'integer|between:1,6',
+            'periods'          => 'required|array',
         ]);
 
-        return redirect()->route('rph.index')->with('success', 'RPH Gabungan berjaya dihantar untuk semakan.');
+        DB::transaction(function () use ($request, $rph) {
+            $rph->update([
+                'date'           => $request->date,
+                'hari'           => $request->hari,
+                'week'           => $request->week,
+                'combined_years' => $request->combined_years,
+                'status'         => 'pending',
+                'review_comment' => null,
+                'reviewer_id'    => null,
+            ]);
+
+            $rph->periods()->delete();
+
+            foreach ([1, 2, 3] as $no) {
+                $p = $request->input("periods.{$no}", []);
+                if (empty($p)) continue;
+
+                RphPeriod::create([
+                    'rph_id'               => $rph->id,
+                    'period_no'            => $no,
+                    'mata_pelajaran_jawi'  => $p['mata_pelajaran_jawi'] ?? null,
+                    'masa'                 => $p['masa'] ?? null,
+                    'tajuk_by_year'        => $p['tajuk_by_year'] ?? null,
+                    'isi_pelajaran_by_year' => $p['isi_pelajaran_by_year'] ?? null,
+                    'objective_by_year'    => $p['objective_by_year'] ?? null,
+                    'aktiviti_by_year'     => $p['aktiviti_by_year'] ?? null,
+                    'kemahiran_selected'   => $p['kemahiran_selected'] ?? null,
+                    'strategi_pdc'         => $p['strategi_pdc'] ?? null,
+                    'impak'                => isset($p['impak']) ? $p['impak'] : null,
+                ]);
+            }
+        });
+
+        return redirect()->route('rph.index')->with('success', 'RPH Cantum berjaya dikemaskini dan dihantar semula untuk semakan.');
     }
 
     public function show(RphRecord $rph)
@@ -179,10 +234,15 @@ class RphRecordController extends Controller
             return redirect()->route('rph.index')->with('error', 'RPH yang telah diluluskan tidak boleh disunting.');
         }
         $classes = KafaClass::where('school_id', auth()->user()->school_id)->orderBy('name')->get();
+        $rph->load('periods.kafaClass');
+
+        if ($rph->isGabungan() && $rph->periods()->whereNotNull('tajuk_by_year')->exists()) {
+            return view('rph.edit_gabungan', compact('rph', 'classes'));
+        }
+
         $timeSlots = auth()->user()->school_id
             ? TimeSlot::where('school_id', auth()->user()->school_id)->orderBy('start_time')->get()
             : collect();
-        $rph->load('periods.kafaClass');
         return view('rph.edit', compact('rph', 'classes', 'timeSlots'));
     }
 
@@ -191,6 +251,10 @@ class RphRecordController extends Controller
         if ($rph->user_id !== auth()->id()) abort(403);
         if ($rph->status === 'approved') {
             return redirect()->route('rph.index')->with('error', 'RPH yang telah diluluskan tidak boleh disunting.');
+        }
+
+        if ($request->class_type === 'gabungan') {
+            return $this->updateGabungan($request, $rph);
         }
 
         $request->validate([

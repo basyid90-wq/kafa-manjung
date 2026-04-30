@@ -92,12 +92,27 @@
                                         @foreach($days as $day)
                                             <td style="min-width: 120px; vertical-align: middle;">
                                                 @if(isset($timetableData[$slot->id][$day]))
+                                                    @php $item = $timetableData[$slot->id][$day]; @endphp
                                                     <div class="rbt-badge bg-primary-opacity mb--5" style="display: block; white-space: normal;">
-                                                        {{ $timetableData[$slot->id][$day]->subject->name }}
+                                                        {{ $item->subject->name }}
                                                     </div>
                                                     <small class="text-muted d-block" style="line-height: 1.2;">
-                                                        {{ $timetableData[$slot->id][$day]->teacher->name }}
+                                                        {{ $item->teacher->name }}
                                                     </small>
+                                                    @role('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+                                                    <div class="mt--10">
+                                                        <a href="{{ route('timetable.edit', $item->id) }}" class="btn btn-sm btn-icon btn-primary" title="Edit">
+                                                            <i class="feather-edit"></i>
+                                                        </a>
+                                                        <form action="{{ route('timetable.destroy', $item->id) }}" method="POST" style="display:inline-block;" data-delete-form data-name="{{ $item->subject->name }} ({{ $day }})">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Padam">
+                                                                <i class="feather-trash-2"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    @endrole
                                                 @else
                                                     <span class="text-disabled">-</span>
                                                 @endif

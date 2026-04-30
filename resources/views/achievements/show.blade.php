@@ -48,6 +48,36 @@ $allSlots = array_keys($formSlotLabels);
                             </div>
                         </div>
 
+                        @php
+                            $hasMissingMid = $achievement->midyear_exam_id && $midResults->count() < count($allSlots);
+                            $hasMissingEnd = $achievement->endyear_exam_id && $endResults->count() < count($allSlots);
+                            $noExamLinked  = !$achievement->midyear_exam_id && !$achievement->endyear_exam_id;
+                        @endphp
+
+                        @if($noExamLinked || $hasMissingMid || $hasMissingEnd || $achievement->status === 'draft')
+                        <div class="alert alert-warning d-flex align-items-start gap-2 mb--20" style="font-size:13px;">
+                            <i class="feather-alert-triangle mt-1"></i>
+                            <div>
+                                @if($achievement->status === 'draft')
+                                    <strong>Rekod ini masih DRAF.</strong> PDF boleh dicetak tetapi ditandakan sebagai draf.<br>
+                                @endif
+                                @if($noExamLinked)
+                                    <strong>Tiada peperiksaan dipaut.</strong> Markah tidak akan muncul dalam rekod ini.<br>
+                                @else
+                                    @if($hasMissingMid)
+                                        Markah <strong>Pertengahan Tahun</strong> belum lengkap ({{ $midResults->count() }}/{{ count($allSlots) }} mata pelajaran diisi).<br>
+                                    @endif
+                                    @if($hasMissingEnd)
+                                        Markah <strong>Akhir Tahun</strong> belum lengkap ({{ $endResults->count() }}/{{ count($allSlots) }} mata pelajaran diisi).<br>
+                                    @endif
+                                @endif
+                                @hasanyrole('Guru Besar|Guru KAFA')
+                                <a href="{{ route('achievements.edit', $achievement->id) }}" class="text-warning fw-bold">Kemaskini rekod &rarr;</a>
+                                @endhasanyrole
+                            </div>
+                        </div>
+                        @endif
+
                         {{-- Maklumat Murid --}}
                         <div class="row mb--20" style="background:#f8f9fa;padding:14px;border-radius:8px;">
                             <div class="col-md-6">

@@ -52,19 +52,15 @@
                                         <td>{{ $rph->hari ?? '-' }}</td>
                                         <td class="jawi-cell">
                                             @if($rph->isGabungan())
-                                                <span class="badge bg-info me-1">Gabungan</span>
+                                                <span class="badge bg-info me-1">Kelas Cantum</span>
                                                 <small class="d-block text-muted">{{ $rph->getCombinedYearsLabel() }}</small>
-                                                {{ $rph->mata_pelajaran ?? '-' }}
+                                                {{ $p1?->mata_pelajaran_jawi ?? '-' }}
                                             @else
                                                 {{ $p1?->mata_pelajaran_jawi ?? '-' }}
                                             @endif
                                         </td>
                                         <td class="jawi-cell">
-                                            @if($rph->isGabungan())
-                                                {{ $rph->topic ?? '-' }}
-                                            @else
-                                                {{ $p1?->topic_jawi ?? $rph->topic_jawi ?? '-' }}
-                                            @endif
+                                            {{ $p1?->topic_jawi ?? $rph->topic_jawi ?? '-' }}
                                         </td>
                                         <td>
                                             @if($rph->status == 'pending')

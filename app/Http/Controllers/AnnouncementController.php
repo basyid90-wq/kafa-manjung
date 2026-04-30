@@ -192,6 +192,68 @@ class AnnouncementController extends Controller
         }
     }
 
+    public function editHomepage(Announcement $announcement)
+    {
+        // Only Super Admin can edit homepage announcements
+        if (!Auth::user()->hasRole('Super Admin')) {
+            abort(403);
+        }
+
+        // Must be a homepage announcement
+        if (!$announcement->is_homepage) {
+            abort(404, 'Hebahan ini bukan hebahan homepage.');
+        }
+
+        return view('announcements.edit-homepage', compact('announcement'));
+    }
+
+    public function updateHomepage(Request $request, Announcement $announcement)
+    {
+        // Only Super Admin
+        if (!Auth::user()->hasRole('Super Admin')) {
+            abort(403);
+        }
+
+        // Must be a homepage announcement
+        if (!$announcement->is_homepage) {
+            abort(404);
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'homepage_label' => 'required|in:Ciri Baharu,Pembaikan,Penyelenggaraan,Kritikal,Pengumuman',
+            'expires_at' => 'required|date|after:now',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $announcement->update([
+                'title' => $request->title,
+                'content' => $request->content,
+                'homepage_label' => $request->homepage_label,
+                'expires_at' => $request->expires_at,
+            ]);
+
+            DB::commit();
+            return redirect()->route('announcements.index')->with('success', 'Hebahan homepage berjaya dikemaskini.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Gagal mengemaskini hebahan: ' . $e->getMessage());
+        }
+    }
+
+    public function incrementView(Announcement $announcement)
+    {
+        // Increment view count for homepage announcements
+        if ($announcement->is_homepage) {
+            $announcement->incrementViewCount();
+        }
+
+        return response()->json(['success' => true]);
+    }
+
     public function destroy(Announcement $announcement)
     {
         if (Auth::id() !== $announcement->user_id && !Auth::user()->hasRole('Super Admin')) {

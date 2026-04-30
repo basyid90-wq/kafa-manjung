@@ -97,7 +97,10 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <a href="{{ route('achievements.show', $rec->id) }}" class="rbt-btn-link" title="Lihat"><i class="feather-eye"></i></a>
+                                            <a href="{{ route('achievements.show', ['achievement' => $rec->id, 'page' => $records->currentPage()]) }}" class="rbt-btn-link" title="Lihat"><i class="feather-eye"></i></a>
+                                            @hasanyrole('Guru Besar|Guru KAFA|Super Admin')
+                                            <a href="{{ route('achievements.edit', ['achievement' => $rec->id, 'page' => $records->currentPage()]) }}" class="rbt-btn-link ms-2" title="Kemaskini"><i class="feather-edit-2"></i></a>
+                                            @endhasanyrole
                                             <a href="javascript:void(0);" onclick="openPdfBlob(this, '{{ route('achievements.pdf', $rec->id) }}')" class="rbt-btn-link ms-2" title="Cetak PDF"><i class="feather-printer"></i></a>
                                         </td>
                                     </tr>
