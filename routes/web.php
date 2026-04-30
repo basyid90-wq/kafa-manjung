@@ -167,6 +167,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:Super Admin'])->group(function () {
         Route::get('announcements/create-homepage', [AnnouncementController::class, 'createHomepage'])->name('announcements.create-homepage');
         Route::post('announcements/store-homepage', [AnnouncementController::class, 'storeHomepage'])->name('announcements.store-homepage');
+        Route::get('announcements/{announcement}/edit-homepage', [AnnouncementController::class, 'editHomepage'])->name('announcements.edit-homepage');
+        Route::put('announcements/{announcement}/update-homepage', [AnnouncementController::class, 'updateHomepage'])->name('announcements.update-homepage');
     });
 
     // All authenticated users (except Ibu Bapa) can view announcements
