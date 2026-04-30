@@ -123,6 +123,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/timetable/create', [TimetableController::class, 'create'])->name('timetable.create');
         Route::post('/timetable', [TimetableController::class, 'store'])->name('timetable.store');
         Route::get('/timetable/print/{kafa_class_id}', [TimetableController::class, 'printPdf'])->name('timetable.pdf');
+        Route::get('/timetable/{id}/edit', [TimetableController::class, 'edit'])->name('timetable.edit');
+        Route::put('/timetable/{id}', [TimetableController::class, 'update'])->name('timetable.update');
+        Route::delete('/timetable/{id}', [TimetableController::class, 'destroy'])->name('timetable.destroy');
     });
 
     // 7. Buku (Tempahan)
