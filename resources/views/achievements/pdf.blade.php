@@ -357,6 +357,10 @@ $bulan = ($monthNamesJawi[(int) now()->format('n')] ?? '') . ' ' . now()->format
         <td class="mv" colspan="2">{{ $achievement->kebersihan ?? '-' }}</td>
     </tr>
     <tr>
+        <td class="ms">عملي صلاة (ڤنيلاين)</td>
+        <td class="mv" colspan="2">{{ $achievement->amali_solat ?? '-' }}</td>
+    </tr>
+    <tr>
         <td class="ms">کدودوکن دالم کلس</td>
         <td class="mv" colspan="2">{{ $achievement->class_rank ?? '-' }} / {{ $achievement->total_in_class ?? '-' }}</td>
     </tr>

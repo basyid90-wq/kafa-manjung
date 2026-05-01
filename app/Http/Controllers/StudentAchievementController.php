@@ -378,21 +378,25 @@ class StudentAchievementController extends Controller
         $endResults  = $this->getResultsBySlot($achievement->student_id, $achievement->endyear_exam_id);
         $examService = $this->examService;
 
-        $html = view('achievements.pdf', compact(
+        // Use PNG background template if available (Cara A)
+        $useBgTemplate = file_exists(public_path('images/rekod-pencapaian-template.png'));
+        $view = $useBgTemplate ? 'achievements.pdf_bg' : 'achievements.pdf';
+
+        $html = view($view, compact(
             'achievement', 'subjects', 'midResults', 'endResults', 'examService'
         ))->render();
 
-        $mpdf = new \Mpdf\Mpdf([
+        $margins = $useBgTemplate
+            ? ['margin_top' => 0, 'margin_bottom' => 0, 'margin_left' => 0, 'margin_right' => 0]
+            : ['margin_top' => 8, 'margin_bottom' => 6, 'margin_left' => 8, 'margin_right' => 8];
+
+        $mpdf = new \Mpdf\Mpdf(array_merge([
             'mode'         => 'utf-8',
             'autoArabic'   => true,
             'default_font' => 'lateef',
             'format'       => 'A4',
             'tempDir'      => storage_path('app/mpdf_temp'),
-            'margin_top'   => 8,
-            'margin_bottom'=> 6,
-            'margin_left'  => 8,
-            'margin_right' => 8,
-        ]);
+        ], $margins));
         $mpdf->SetDirectionality('rtl');
         $mpdf->SetTitle('Rekod Pencapaian Murid');
         $mpdf->WriteHTML($html);

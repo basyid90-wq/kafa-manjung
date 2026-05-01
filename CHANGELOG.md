@@ -66,6 +66,11 @@ php artisan view:cache
 | 20 | 2026-05-02 | `resources/views/achievements/index.blade.php` | Tambah: status filter, lock icon, unlock button, completion stats kelas (Guru Besar), bulk finalize per kelas | ✅ Sudah Push |
 | 21 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Tambah: Amali Solat field, markah peperiksaan preview, lock warning rekod Final, disable input untuk rekod dikunci | ✅ Sudah Push |
 | 22 | 2026-05-02 | `resources/views/achievements/show.blade.php` | Tambah: Amali Solat display, unlock button (Guru Besar), kemaskini button untuk rekod Draf | ✅ Sudah Push |
+| 23 | 2026-05-02 | `app/Models/KafaClass.php` | Fix: tambah relationship `achievementRecords()` — fix BadMethodCallException pada halaman pencapaian Guru Besar | ⏳ Belum Push |
+| 24 | 2026-05-02 | `resources/views/achievements/pdf.blade.php` | Tambah baris Amali Solat dalam jadual PDF sedia ada | ⏳ Belum Push |
+| 25 | 2026-05-02 | `resources/views/achievements/pdf_bg.blade.php` | Baharu: PDF Cara A — overlay teks di atas PNG template rasmi borang pencapaian | ⏳ Belum Push |
+| 26 | 2026-05-02 | `public/images/rekod-pencapaian-template.png` | Tambah PNG template borang rasmi sebagai background PDF | ⏳ Belum Push |
+| 27 | 2026-05-02 | `app/Http/Controllers/StudentAchievementController.php` | Kemaskini generatePdf() — auto guna pdf_bg jika PNG template wujud (Cara A) | ⏳ Belum Push |
 
 ---
 
