@@ -105,38 +105,34 @@
                         @endhasrole
 
                         {{-- Filter --}}
-                        <form method="GET" action="{{ isset($school) ? route('achievements.school_list', $school->id) : route('achievements.index') }}" class="row g-2 mb--20">
-                            <div class="col-md-3">
-                                <select name="kafa_class_id" class="form-select form-select-sm">
-                                    <option value="">-- Semua Kelas --</option>
-                                    @foreach($classes as $kelas)
-                                        <option value="{{ $kelas->id }}" {{ request('kafa_class_id') == $kelas->id ? 'selected' : '' }}>
-                                            {{ $kelas->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <select name="academic_year" class="form-select form-select-sm">
-                                    <option value="">-- Semua Tahun --</option>
-                                    @foreach($years as $y)
-                                        <option value="{{ $y }}" {{ request('academic_year') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <select name="status" class="form-select form-select-sm">
-                                    <option value="">-- Semua Status --</option>
-                                    <option value="draft"  {{ request('status') === 'draft'  ? 'selected' : '' }}>Draf</option>
-                                    <option value="final"  {{ request('status') === 'final'  ? 'selected' : '' }}>Final</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="rbt-btn btn-border btn-sm w-100">Tapis</button>
-                            </div>
-                            <div class="col-md-2">
-                                <a href="{{ isset($school) ? route('achievements.school_list', $school->id) : route('achievements.index') }}" class="rbt-btn btn-sm w-100" style="background:#eee;color:#333">Set Semula</a>
-                            </div>
+                        <form method="GET" action="{{ isset($school) ? route('achievements.school_list', $school->id) : route('achievements.index') }}"
+                              class="d-flex align-items-center flex-wrap gap-2 mb--20">
+                            <select name="kafa_class_id" class="form-select form-select-sm" style="width:auto; min-width:160px; max-width:200px;">
+                                <option value="">Semua Kelas</option>
+                                @foreach($classes as $kelas)
+                                    <option value="{{ $kelas->id }}" {{ request('kafa_class_id') == $kelas->id ? 'selected' : '' }}>
+                                        {{ $kelas->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <select name="academic_year" class="form-select form-select-sm" style="width:auto; min-width:90px;">
+                                <option value="">Semua Tahun</option>
+                                @foreach($years as $y)
+                                    <option value="{{ $y }}" {{ request('academic_year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                @endforeach
+                            </select>
+                            <select name="status" class="form-select form-select-sm" style="width:auto; min-width:110px;">
+                                <option value="">Semua Status</option>
+                                <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draf</option>
+                                <option value="final" {{ request('status') === 'final' ? 'selected' : '' }}>Final</option>
+                            </select>
+                            <button type="submit" class="rbt-btn btn-border btn-sm">
+                                <i class="feather-filter me-1"></i>Tapis
+                            </button>
+                            <a href="{{ isset($school) ? route('achievements.school_list', $school->id) : route('achievements.index') }}"
+                               class="rbt-btn btn-sm" style="background:#f0f0f0; color:#555;">
+                                <i class="feather-x me-1"></i>Set Semula
+                            </a>
                         </form>
 
                         <div class="table-responsive">
