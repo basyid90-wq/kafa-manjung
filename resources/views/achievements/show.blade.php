@@ -35,7 +35,29 @@ $allSlots = array_keys($formSlotLabels);
                     <div class="content">
                         <div class="d-flex justify-content-between align-items-center mb--20">
                             <h4 class="rbt-title-style-3">Rekod Pencapaian — {{ $achievement->student->name }}</h4>
-                            <div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                @hasanyrole('Guru Besar|Super Admin')
+                                @if($achievement->status === 'final')
+                                <form method="POST" action="{{ route('achievements.unlock', $achievement->id) }}"
+                                      onsubmit="return confirm('Buka semula rekod ini sebagai Draf?')">
+                                    @csrf
+                                    <button type="submit" class="rbt-btn btn-border btn-sm" style="color:#fd7e14;border-color:#fd7e14;">
+                                        <i class="feather-unlock me-1"></i> Buka Semula
+                                    </button>
+                                </form>
+                                @else
+                                <a href="{{ route('achievements.edit', $achievement->id) }}" class="rbt-btn btn-border btn-sm">
+                                    <i class="feather-edit-2 me-1"></i> Kemaskini
+                                </a>
+                                @endif
+                                @endhasanyrole
+                                @hasrole('Guru KAFA')
+                                @if($achievement->status !== 'final')
+                                <a href="{{ route('achievements.edit', $achievement->id) }}" class="rbt-btn btn-border btn-sm">
+                                    <i class="feather-edit-2 me-1"></i> Kemaskini
+                                </a>
+                                @endif
+                                @endhasrole
                                 <a href="javascript:void(0);" onclick="openPdfBlob(this, '{{ route('achievements.pdf', $achievement->id) }}')"
                                    class="rbt-btn btn-gradient btn-sm hover-icon-reverse">
                                     <span class="icon-reverse-wrapper">
@@ -44,7 +66,7 @@ $allSlots = array_keys($formSlotLabels);
                                         <span class="btn-icon"><i class="feather-printer"></i></span>
                                     </span>
                                 </a>
-                                <a href="{{ route('achievements.index') }}" class="rbt-btn btn-border btn-sm ms-2">Kembali</a>
+                                <a href="{{ route('achievements.index') }}" class="rbt-btn btn-border btn-sm">Kembali</a>
                             </div>
                         </div>
 
@@ -165,7 +187,18 @@ $allSlots = array_keys($formSlotLabels);
                             <div class="col-md-3">
                                 <p><strong>Kebersihan:</strong> {{ $achievement->kebersihan ?? '-' }}</p>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
+                                <p><strong>Amali Solat:</strong>
+                                    @if($achievement->amali_solat === 'Lulus')
+                                        <span class="badge bg-success">Lulus</span>
+                                    @elseif($achievement->amali_solat === 'Tidak Lulus')
+                                        <span class="badge bg-danger">Tidak Lulus</span>
+                                    @else
+                                        -
+                                    @endif
+                                </p>
+                            </div>
+                            <div class="col-md-3">
                                 <p><strong>Ulasan Guru:</strong> {{ $achievement->teacher_comments ?? '-' }}</p>
                             </div>
                         </div>

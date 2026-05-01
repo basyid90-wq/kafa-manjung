@@ -13,7 +13,7 @@ class StudentAchievementRecord extends Model
         'student_id', 'school_id', 'kafa_class_id', 'academic_year',
         'midyear_exam_id', 'endyear_exam_id',
         'phci_midyear', 'phci_endyear',
-        'kelakuan', 'kebersihan',
+        'kelakuan', 'kebersihan', 'amali_solat',
         'class_rank', 'grade_rank', 'total_in_class', 'total_in_grade',
         'teacher_comments', 'generated_by', 'status',
     ];

@@ -51,6 +51,9 @@ class StudentAchievementController extends Controller
         if ($request->filled('academic_year')) {
             $query->where('academic_year', $request->academic_year);
         }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
         $records = $query->orderBy('academic_year', 'desc')
             ->orderBy('kafa_class_id')
@@ -59,7 +62,19 @@ class StudentAchievementController extends Controller
         $classes = KafaClass::where('school_id', $user->school_id ?? 0)->orderBy('name')->get();
         $years   = range(date('Y'), 2024);
 
-        return view('achievements.index', compact('records', 'classes', 'years'));
+        // Class completion stats for Guru Besar
+        $completionStats = null;
+        if ($user->hasRole('Guru Besar')) {
+            $selectedYear = $request->get('academic_year', date('Y'));
+            $completionStats = KafaClass::where('school_id', $user->school_id)
+                ->withCount([
+                    'students as students_count',
+                    'achievementRecords as recorded_count' => fn($q) => $q->where('academic_year', $selectedYear),
+                    'achievementRecords as final_count'    => fn($q) => $q->where('academic_year', $selectedYear)->where('status', 'final'),
+                ])->orderBy('name')->get();
+        }
+
+        return view('achievements.index', compact('records', 'classes', 'years', 'completionStats'));
     }
 
     private function indexPenyelia(Request $request)
@@ -133,6 +148,9 @@ class StudentAchievementController extends Controller
         if ($request->filled('academic_year')) {
             $query->where('academic_year', $request->academic_year);
         }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
         $records = $query->orderBy('academic_year', 'desc')
             ->orderBy('kafa_class_id')
@@ -154,7 +172,8 @@ class StudentAchievementController extends Controller
             ->get();
 
         // Security: verify selected class belongs to user's school
-        $selectedClass = null;
+        $selectedClass   = null;
+        $existingRecords = collect();
         if ($request->filled('kafa_class_id')) {
             $selectedClass = KafaClass::with('students')
                 ->where('school_id', $user->school_id)
@@ -164,11 +183,18 @@ class StudentAchievementController extends Controller
                 return redirect()->route('achievements.create')
                     ->with('error', 'Kelas tidak dijumpai atau tidak dalam sekolah anda.');
             }
+
+            // Load all existing records for students in this class
+            $studentIds = $selectedClass->students->pluck('id');
+            $existingRecords = StudentAchievementRecord::whereIn('student_id', $studentIds)
+                ->orderBy('academic_year', 'desc')
+                ->get()
+                ->keyBy('student_id');
         }
 
         $scrollToStudents = $request->filled('kafa_class_id');
 
-        return view('achievements.create', compact('classes', 'exams', 'selectedClass', 'scrollToStudents'));
+        return view('achievements.create', compact('classes', 'exams', 'selectedClass', 'scrollToStudents', 'existingRecords'));
     }
 
     public function edit(StudentAchievementRecord $achievement, Request $request)
@@ -182,6 +208,12 @@ class StudentAchievementController extends Controller
         // Security: verify achievement belongs to user's school
         if (!$user->hasRole('Super Admin') && $achievement->school_id !== $user->school_id) {
             abort(403, 'Anda tidak dibenarkan mengedit rekod ini.');
+        }
+
+        // Status lock: Guru KAFA cannot edit Final records (Guru Besar + Super Admin can unlock)
+        if ($achievement->status === 'final' && $user->hasRole('Guru KAFA')) {
+            return redirect()->route('achievements.show', $achievement->id)
+                ->with('error', 'Rekod ini telah difinalkan. Hubungi Guru Besar untuk membuka semula.');
         }
 
         $classes = KafaClass::where('school_id', $user->school_id ?? $achievement->school_id)->orderBy('name')->get();
@@ -215,6 +247,7 @@ class StudentAchievementController extends Controller
             'phci_endyear.*'     => 'nullable|integer|min:0|max:100',
             'kelakuan.*'         => 'nullable|in:A,B,C,D',
             'kebersihan.*'       => 'nullable|in:A,B,C,D',
+            'amali_solat.*'      => 'nullable|in:Lulus,Tidak Lulus',
             'teacher_comments.*' => 'nullable|string|max:1000',
             'status'             => 'nullable|in:draft,final',
         ]);
@@ -228,15 +261,24 @@ class StudentAchievementController extends Controller
 
         DB::transaction(function () use ($request, $user, $students) {
             foreach ($students as $student) {
-                // Double-check each student belongs to user's school
                 if ($student->school_id !== $user->school_id) {
                     continue;
                 }
 
-                $phciMid  = $request->input("phci_midyear.{$student->id}");
-                $phciEnd  = $request->input("phci_endyear.{$student->id}");
+                // Respect status lock: skip Final records for Guru KAFA
+                $existing = StudentAchievementRecord::where('student_id', $student->id)
+                    ->where('academic_year', $request->academic_year)
+                    ->first();
+
+                if ($existing && $existing->status === 'final' && auth()->user()->hasRole('Guru KAFA')) {
+                    continue;
+                }
+
+                $phciMid    = $request->input("phci_midyear.{$student->id}");
+                $phciEnd    = $request->input("phci_endyear.{$student->id}");
                 $kelakuan   = $request->input("kelakuan.{$student->id}");
                 $kebersihan = $request->input("kebersihan.{$student->id}");
+                $amaliSolat = $request->input("amali_solat.{$student->id}");
                 $comments   = $request->input("teacher_comments.{$student->id}");
 
                 StudentAchievementRecord::updateOrCreate(
@@ -253,6 +295,7 @@ class StudentAchievementController extends Controller
                         'phci_endyear'     => is_numeric($phciEnd) ? $phciEnd : null,
                         'kelakuan'         => $kelakuan ?: null,
                         'kebersihan'       => $kebersihan ?: null,
+                        'amali_solat'      => $amaliSolat ?: null,
                         'teacher_comments' => $comments,
                         'generated_by'     => $user->id,
                         'status'           => $request->input('status', 'draft'),
@@ -265,6 +308,48 @@ class StudentAchievementController extends Controller
 
         return redirect()->route('achievements.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Rekod pencapaian berjaya disimpan.');
+    }
+
+    public function bulkFinalize(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole(['Guru Besar', 'Super Admin'])) {
+            abort(403, 'Hanya Guru Besar boleh finalisasikan rekod kelas.');
+        }
+
+        $request->validate([
+            'kafa_class_id'  => 'required|exists:kafa_classes,id',
+            'academic_year'  => 'required|integer|min:2000|max:2099',
+        ]);
+
+        $class = KafaClass::where('school_id', $user->school_id)->findOrFail($request->kafa_class_id);
+
+        $updated = StudentAchievementRecord::where('kafa_class_id', $class->id)
+            ->where('academic_year', $request->academic_year)
+            ->where('status', 'draft')
+            ->update(['status' => 'final']);
+
+        return redirect()->back()
+            ->with('success', "{$updated} rekod kelas {$class->name} ({$request->academic_year}) telah difinalkan.");
+    }
+
+    public function unlock(StudentAchievementRecord $achievement)
+    {
+        $user = auth()->user();
+
+        if (!$user->hasAnyRole(['Guru Besar', 'Super Admin'])) {
+            abort(403, 'Hanya Guru Besar boleh membuka semula rekod final.');
+        }
+
+        if (!$user->hasRole('Super Admin') && $achievement->school_id !== $user->school_id) {
+            abort(403);
+        }
+
+        $achievement->update(['status' => 'draft']);
+
+        return redirect()->route('achievements.edit', $achievement->id)
+            ->with('success', 'Rekod berjaya dibuka semula sebagai Draf.');
     }
 
     public function show(StudentAchievementRecord $achievement)

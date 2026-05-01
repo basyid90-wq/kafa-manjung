@@ -261,6 +261,8 @@ Route::middleware('auth')->group(function () {
         Route::get('achievements/{achievement}/edit', [\App\Http\Controllers\StudentAchievementController::class, 'edit'])->name('achievements.edit');
         Route::get('achievements/{achievement}', [\App\Http\Controllers\StudentAchievementController::class, 'show'])->name('achievements.show');
         Route::get('achievements/{achievement}/pdf', [\App\Http\Controllers\StudentAchievementController::class, 'generatePdf'])->name('achievements.pdf');
+        Route::post('achievements/bulk-finalize', [\App\Http\Controllers\StudentAchievementController::class, 'bulkFinalize'])->name('achievements.bulk_finalize');
+        Route::post('achievements/{achievement}/unlock', [\App\Http\Controllers\StudentAchievementController::class, 'unlock'])->name('achievements.unlock');
     });
 
     // 15. Panduan Pengguna
