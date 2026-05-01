@@ -394,6 +394,13 @@
     </script>
     @endauth
 
+    {{-- Anti-FOUC: reveal body once all CSS and DOM are ready --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.style.visibility = 'visible';
+        });
+    </script>
+
 </body>
 
 </html>

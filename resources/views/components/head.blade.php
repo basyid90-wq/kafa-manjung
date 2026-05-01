@@ -29,4 +29,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+
+    {{-- Anti-FOUC: hide body until all CSS is fully loaded --}}
+    <style>body { visibility: hidden; }</style>
 </head>
