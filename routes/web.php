@@ -233,6 +233,7 @@ Route::middleware('auth')->group(function () {
         // Laluan spesifik MESTI di atas laluan wildcard {student}
         Route::get('reports/attendance', [\App\Http\Controllers\ReportController::class, 'attendance'])->name('reports.attendance');
         Route::get('reports/exams', [\App\Http\Controllers\ReportController::class, 'exams'])->name('reports.exams');
+        Route::get('reports/exams/{school}/detail', [\App\Http\Controllers\ReportController::class, 'examsSchoolDetail'])->name('reports.exams.detail');
         Route::get('reports/rph', [ReportController::class, 'rphKpi'])->name('reports.rph_kpi');
         
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');

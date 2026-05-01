@@ -47,11 +47,14 @@ class ExamController extends Controller
 
     public function edit(Exam $exam)
     {
+        $this->authorizeSchoolAccess($exam);
         return view('exams.edit', compact('exam'));
     }
 
     public function update(Request $request, Exam $exam)
     {
+        $this->authorizeSchoolAccess($exam);
+
         $request->validate([
             'name' => 'required|string|max:255',
             'year' => 'required|integer|min:2000|max:2099',
@@ -64,7 +67,16 @@ class ExamController extends Controller
 
     public function destroy(Exam $exam)
     {
+        $this->authorizeSchoolAccess($exam);
         $exam->delete();
         return redirect()->route('exams.index')->with('success', 'Peperiksaan berjaya dipadam.');
+    }
+
+    private function authorizeSchoolAccess(Exam $exam): void
+    {
+        $user = auth()->user();
+        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir']) && $exam->school_id !== $user->school_id) {
+            abort(403, 'Anda tidak dibenarkan mengakses peperiksaan ini.');
+        }
     }
 }
