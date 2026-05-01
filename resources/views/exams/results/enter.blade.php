@@ -21,6 +21,18 @@
                             </div>
                         </div>
 
+                        {{-- Slot warning --}}
+                        @if(!empty($slot_warning))
+                        <div class="alert alert-warning d-flex align-items-start gap-2 mb--20">
+                            <i class="feather-alert-triangle mt-1 flex-shrink-0"></i>
+                            <div>
+                                <strong>Subjek ini tiada <code>form_slot</code> yang dikenali.</strong>
+                                Markah akan disimpan tetapi <strong>tidak akan muncul dalam Rekod Pencapaian Murid</strong>.
+                                Sila tetapkan <em>Form Slot</em> yang betul pada subjek ini dalam Pengurusan Subjek.
+                            </div>
+                        </div>
+                        @endif
+
                         <form action="{{ route('exams.results.store') }}" method="POST" id="marksForm">
                             @csrf
                             <input type="hidden" name="exam_id" value="{{ $exam->id }}">
@@ -34,7 +46,8 @@
                                             <th>No</th>
                                             <th>Nama Murid</th>
                                             <th class="text-center" style="width: 150px;">Markah (0-100)</th>
-                                            <th class="text-center" style="width: 100px;">TH</th>
+                                            <th class="text-center" style="width: 80px;">TH</th>
+                                            <th class="text-center" style="width: 90px;">Kosongkan</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -49,25 +62,40 @@
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <input type="number" 
-                                                       name="marks[{{ $student->id }}]" 
-                                                       class="form-control text-center input-mark" 
-                                                       value="{{ $res ? $res->marks : '' }}" 
-                                                       min="0" max="100" 
-                                                       placeholder="0-100" 
+                                                <input type="number"
+                                                       name="marks[{{ $student->id }}]"
+                                                       class="form-control text-center input-mark"
+                                                       value="{{ $res ? $res->marks : '' }}"
+                                                       min="0" max="100"
+                                                       placeholder="0-100"
                                                        style="height: 50px; font-size: 18px; font-weight: bold;"
                                                        @if($res && $res->is_absent) disabled @endif>
                                             </td>
                                             <td class="text-center">
                                                 <div class="rbt-checkbox justify-content-center">
-                                                    <input type="checkbox" 
+                                                    <input type="checkbox"
                                                            id="th-{{ $student->id }}"
-                                                           name="absent[{{ $student->id }}]" 
-                                                           value="1" 
+                                                           name="absent[{{ $student->id }}]"
+                                                           value="1"
                                                            class="checkbox-absent"
                                                            @if($res && $res->is_absent) checked @endif>
                                                     <label for="th-{{ $student->id }}"></label>
                                                 </div>
+                                            </td>
+                                            <td class="text-center">
+                                                @if($res)
+                                                <div class="rbt-checkbox justify-content-center">
+                                                    <input type="checkbox"
+                                                           id="clear-{{ $student->id }}"
+                                                           name="clear[{{ $student->id }}]"
+                                                           value="1"
+                                                           class="checkbox-clear"
+                                                           title="Padamkan rekod murid ini">
+                                                    <label for="clear-{{ $student->id }}"></label>
+                                                </div>
+                                                @else
+                                                <span class="text-muted">—</span>
+                                                @endif
                                             </td>
                                         </tr>
                                         @endforeach
@@ -115,13 +143,34 @@ document.addEventListener('DOMContentLoaded', function() {
         checkbox.addEventListener('change', function() {
             const row = this.closest('tr');
             const markInput = row.querySelector('.input-mark');
-            
+
             if (this.checked) {
                 markInput.value = '';
                 markInput.disabled = true;
             } else {
                 markInput.disabled = false;
                 markInput.focus();
+            }
+        });
+    });
+
+    // Handle Kosongkan Checkbox — disables mark+TH, shows intent to delete record
+    const clearBoxes = document.querySelectorAll('.checkbox-clear');
+    clearBoxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            const row = this.closest('tr');
+            const markInput = row.querySelector('.input-mark');
+            const thCheckbox = row.querySelector('.checkbox-absent');
+
+            if (this.checked) {
+                markInput.value = '';
+                markInput.disabled = true;
+                if (thCheckbox) { thCheckbox.checked = false; thCheckbox.disabled = true; }
+                row.style.opacity = '0.5';
+            } else {
+                markInput.disabled = false;
+                if (thCheckbox) thCheckbox.disabled = false;
+                row.style.opacity = '';
             }
         });
     });

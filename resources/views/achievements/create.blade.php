@@ -150,18 +150,26 @@
                                     $preComments   = old("teacher_comments.{$student->id}", $existing->teacher_comments ?? '');
 
                                     // Load existing exam marks for preview
-                                    $midTotal = 0;
-                                    $endTotal = 0;
+                                    $midTotal    = 0; $endTotal = 0;
+                                    $midCount    = 0; $endCount = 0;
+                                    $expectedSlots = 9; // EXPECTED_SLOTS count in ExamResultController
                                     if ($existing && $existing->midyear_exam_id) {
-                                        $midTotal = \App\Models\ExamResult::where('student_id', $student->id)
+                                        $midResults = \App\Models\ExamResult::where('student_id', $student->id)
                                             ->where('exam_id', $existing->midyear_exam_id)
-                                            ->where('is_absent', false)->sum('marks');
+                                            ->where('is_absent', false)->get();
+                                        $midTotal = $midResults->sum('marks');
+                                        $midCount = $midResults->count();
                                     }
                                     if ($existing && $existing->endyear_exam_id) {
-                                        $endTotal = \App\Models\ExamResult::where('student_id', $student->id)
+                                        $endResults = \App\Models\ExamResult::where('student_id', $student->id)
                                             ->where('exam_id', $existing->endyear_exam_id)
-                                            ->where('is_absent', false)->sum('marks');
+                                            ->where('is_absent', false)->get();
+                                        $endTotal = $endResults->sum('marks');
+                                        $endCount = $endResults->count();
                                     }
+                                    $marksIncomplete = $existing &&
+                                        (($existing->midyear_exam_id && $midCount < $expectedSlots) ||
+                                         ($existing->endyear_exam_id && $endCount < $expectedSlots));
                                 @endphp
 
                                 <div class="rbt-shadow-box mb--20 p-4 bg-color-white" style="border:1px solid {{ $isLocked ? '#28a745' : '#e6e6e6' }};border-radius:8px;">
@@ -177,14 +185,16 @@
                                                 @endif
                                             @endif
                                         </h5>
-                                        {{-- Markah Peperiksaan Preview --}}
-                                        @if($existing && ($midTotal > 0 || $endTotal > 0))
-                                        <div style="font-size:11px;">
+                                        {{-- Markah Peperiksaan Preview + completeness --}}
+                                        @if($existing && ($existing->midyear_exam_id || $existing->endyear_exam_id))
+                                        <div style="font-size:11px;" class="d-flex flex-wrap gap-1 align-items-center">
                                             @if($existing->midyear_exam_id)
-                                                <span class="badge bg-light text-dark border me-1">PT: {{ $midTotal }}</span>
+                                                <span class="badge bg-light text-dark border">PT: {{ $midTotal }}</span>
+                                                <span class="badge {{ $midCount >= $expectedSlots ? 'bg-success' : 'bg-warning text-dark' }}">{{ $midCount }}/{{ $expectedSlots }} subj</span>
                                             @endif
                                             @if($existing->endyear_exam_id)
-                                                <span class="badge bg-light text-dark border me-1">AT: {{ $endTotal }}</span>
+                                                <span class="badge bg-light text-dark border">AT: {{ $endTotal }}</span>
+                                                <span class="badge {{ $endCount >= $expectedSlots ? 'bg-success' : 'bg-warning text-dark' }}">{{ $endCount }}/{{ $expectedSlots }} subj</span>
                                             @endif
                                             <span class="badge bg-primary">Jumlah: {{ $midTotal + $endTotal }}</span>
                                         </div>
@@ -194,6 +204,17 @@
                                     @if($isLocked)
                                     <div class="alert alert-success py-2 mb--15" style="font-size:12px;">
                                         <i class="feather-lock me-1"></i> Rekod ini telah difinalkan — tidak boleh diubah.
+                                    </div>
+                                    @endif
+
+                                    @if($marksIncomplete)
+                                    <div class="alert alert-warning py-2 mb--15 d-flex align-items-center gap-2" style="font-size:12px;">
+                                        <i class="feather-alert-triangle flex-shrink-0"></i>
+                                        <span>Markah belum lengkap —
+                                            @if($existing->midyear_exam_id && $midCount < $expectedSlots) PT: {{ $midCount }}/{{ $expectedSlots }} subjek @endif
+                                            @if($existing->endyear_exam_id && $endCount < $expectedSlots) AT: {{ $endCount }}/{{ $expectedSlots }} subjek @endif
+                                            . Rekod Pencapaian mungkin tidak lengkap.
+                                        </span>
                                     </div>
                                     @endif
 

@@ -167,7 +167,6 @@ class StudentAchievementController extends Controller
         $user    = auth()->user();
         $classes = KafaClass::where('school_id', $user->school_id)->orderBy('name')->get();
         $exams   = Exam::where('school_id', $user->school_id)
-            ->whereIn('term', ['pertengahan_tahun', 'akhir_tahun'])
             ->orderBy('year', 'desc')
             ->get();
 
@@ -218,7 +217,6 @@ class StudentAchievementController extends Controller
 
         $classes = KafaClass::where('school_id', $user->school_id ?? $achievement->school_id)->orderBy('name')->get();
         $exams   = Exam::where('school_id', $user->school_id ?? $achievement->school_id)
-            ->whereIn('term', ['pertengahan_tahun', 'akhir_tahun'])
             ->orderBy('year', 'desc')
             ->get();
 

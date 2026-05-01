@@ -52,6 +52,18 @@
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
 
+                        {{-- FIX 1: Warning if subject not linked to Rekod Pencapaian --}}
+                        @if(!empty($slot_warning))
+                        <div class="alert alert-warning d-flex align-items-start gap-2 mb--20">
+                            <i class="feather-alert-triangle mt-1 flex-shrink-0"></i>
+                            <div>
+                                <strong>Subjek ini tiada <code>form_slot</code> yang dikenali.</strong>
+                                Markah akan disimpan tetapi <strong>tidak akan muncul dalam Rekod Pencapaian Murid</strong>.
+                                Sila tetapkan <em>Form Slot</em> yang betul pada subjek ini dalam Pengurusan Subjek.
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="table-responsive">
                             <table class="rbt-table table table-borderless">
                                 <thead>

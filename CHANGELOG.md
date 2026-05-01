@@ -71,6 +71,12 @@ php artisan view:cache
 | 25 | 2026-05-02 | `resources/views/achievements/pdf_bg.blade.php` | Baharu: PDF Cara A — overlay teks di atas PNG template rasmi borang pencapaian | ⏳ Belum Push |
 | 26 | 2026-05-02 | `public/images/rekod-pencapaian-template.png` | Tambah PNG template borang rasmi sebagai background PDF | ⏳ Belum Push |
 | 27 | 2026-05-02 | `app/Http/Controllers/StudentAchievementController.php` | Kemaskini generatePdf() — auto guna pdf_bg jika PNG template wujud (Cara A) | ⏳ Belum Push |
+| 28 | 2026-05-02 | `app/Http/Controllers/ExamResultController.php` | Fix 1+2+5: tambah EXPECTED_SLOTS, slot_warning, ranking recalculate selepas save/lock, lindungi delete senyap | ⏳ Belum Push |
+| 29 | 2026-05-02 | `resources/views/exams/results/index.blade.php` | Fix 1: icon 🔗⚠️❌ pada subjek dropdown, alert slot hilang, tunjuk term dalam label peperiksaan | ⏳ Belum Push |
+| 30 | 2026-05-02 | `resources/views/exams/results/show.blade.php` | Fix 1: tambah alert amaran jika subjek tiada form_slot yang dikenali | ⏳ Belum Push |
+| 31 | 2026-05-02 | `resources/views/exams/results/enter.blade.php` | Fix 1+5: tambah slot_warning alert + kolum Kosongkan (explicit delete checkbox) per murid | ⏳ Belum Push |
+| 32 | 2026-05-02 | `app/Http/Controllers/StudentAchievementController.php` | Fix 4: buang whereIn term filter — semua peperiksaan boleh dipilih dalam Rekod Pencapaian | ⏳ Belum Push |
+| 33 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Fix 3: badge kelengkapan markah per murid (X/9 subjek) + alert amaran jika markah belum lengkap | ⏳ Belum Push |
 
 ---
 
