@@ -1,49 +1,161 @@
 ## Context
-- Project: KAFA Manjung (Educational Management).
+- Project: KAFA Manjung (Educational Management System — Malaysia).
 - Framework: Laravel 12.x (PHP 8.2+), MVC structure.
 - UI: HiStudy Premium Template (Bootstrap 5).
-- Language: Bahasa Melayu STRICTLY for all UI labels, errors, and system messages.
+- **UI Language:** ALL labels, error messages, and system text MUST be in Bahasa Melayu.
+- **Code/Rules Language:** English only.
+- **Also read:** `AGENTS.md` for the full prohibited/required actions list.
 
-## 🎨 UI & Styling (STRICT RULES)
-- ❌ **NO CUSTOM CSS:** Do NOT alter `public/assets/css/styles.css` or invent new classes. 
-- ⚠️ **DROPDOWN SIZING:** All `bootstrap-select` dropdowns MUST match text field height exactly (Height: 50px). Refer to `layout.blade.php`.
-- ❌ **NO TAILWIND:** Stick to Bootstrap 5 and the HiStudy theme.
-- **Layout:** Always use `@extends('layout.layout')` and `@section('content')`.
-- **Spacing:** Keep design compact. Avoid excessive margins (`mt--`) or unnecessary row wraps.
+---
+
+## 📝 CHANGELOG — Auto-Update Rule (MANDATORY)
+
+After EVERY file change, update `CHANGELOG.md` in the project root. Add a new row:
+
+| # | Date | File Changed | Description | Status |
+|---|------|-------------|-------------|--------|
+| N | YYYY-MM-DD | `path/to/file.php` | Brief summary | ⏳ Belum Push |
+
+- `N` = next sequence number from the last row.
+- Status MUST start as `⏳ Belum Push`. Only the user changes it to `✅ Sudah Push`.
+- Before push: check `docs/SECURITY.md`. If editing a connected module: check `docs/SYSTEM_FLOW.md`.
+
+---
+
+## 📚 Project Reference Docs
+
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` | Universal rules for ALL AI agents (read this first) |
+| `CHANGELOG.md` | Change log + git push commands |
+| `docs/SECURITY.md` | Security checklist + known recurring issues |
+| `docs/SYSTEM_FLOW.md` | System data flow + 22-module dependency map |
+
+---
+
+## 👥 Roles & Access Hierarchy (Spatie RBAC)
+
+| # | Role | Data Scope |
+|---|------|-----------|
+| 1 | Super Admin | Full access — all districts & schools |
+| 2 | Pentadbir | Own district only (`district_id`) |
+| 3 | Penyelia KAFA | Own district only (`district_id`) |
+| 4 | Guru Besar | Own school only (`school_id`) |
+| 5 | Guru KAFA | Own school + own class (`school_id` + `kafa_class_id`) |
+| 6 | Ibu Bapa | Own children only (`student_id`) |
+
+**Rule:** Every query MUST be scoped by `school_id` or `district_id` based on the user's role. Never return cross-school or cross-district data without a role check.
+
+---
+
+## 🏷️ Naming Conventions
+
+| Type | Convention | Example |
+|------|-----------|---------|
+| Controllers | PascalCase + `Controller` | `RphRecordController` |
+| Models | PascalCase singular | `ExamResult`, `KafaClass` |
+| DB tables | snake_case plural | `kafa_classes`, `exam_results` |
+| Routes | kebab-case | `/rph-records`, `/kafa-classes` |
+| Blade views | snake_case or kebab-case | per module folder |
+
+---
+
+## 🎨 UI & Styling (STRICT)
+
+- **NO CUSTOM CSS** — Do NOT alter `public/assets/css/styles.css` or add new classes.
+- **NO TAILWIND** — Bootstrap 5 and HiStudy theme only.
+- **Layout:** Always `@extends('layout.layout')` with `@section('content')`.
+- **Dropdowns:** All `bootstrap-select` dropdowns MUST be 50px height (same as text inputs). See `resources/views/layout/layout.blade.php`.
+- **Icons:** Use existing template icon classes only. Do NOT substitute a different icon set.
+- **Spacing:** Compact layout. No extra `mt-5`, `mb-5`, or unnecessary wrapper divs.
+
+---
+
+## ⚡ JavaScript Rules
+
+- **Framework:** Alpine.js only (`x-data`, `x-show`, `x-on:click`). NOT Vue, React, or jQuery.
+- Do NOT import new JS libraries without user approval.
+
+---
 
 ## 📊 Table & Data View Rules
-- **Column "No":** Every table MUST start with a "No" column for sequence numbering.
-- **Pagination:** STRICTLY limit to 10 rows per page (`->paginate(10)`). NO long vertical scrolling.
-- **Action Column ("Tindakan"):** Use ICONS ONLY for edit/delete actions. Match existing template icon classes.
 
-## 📌 State & Scroll Preservation (UX RULES)
-- **Pagination State:** MUST maintain page position after Edit, View, or Cancel actions.
-  - *Implementation:* Pass the `page` parameter in URLs: `route('users.edit', ['user' => $id, 'page' => request()->page])`.
-  - *Redirect:* After saving, redirect back to the specific page: `return redirect()->route('users.index', ['page' => request()->page]);`.
-- **Scroll Retention:** JANGAN biarkan page melompat ke atas selepas kemaskini.
-  - *Method:* Use row IDs (`<tr id="row-{{ $item->id }}">`). Redirect using fragments: `->withFragment('row-'.$item->id)`.
-  - *Buttons:* Ensure "Kembali/Batal" buttons preserve the `page` parameter.
+- **"No" column:** Every table MUST start with a sequential "No" column.
+- **Pagination:** Always `->paginate(10)`. Never more.
+- **Action column ("Tindakan"):** Icons only — no text labels. Match existing icon classes.
 
-## ⚙️ Backend & Workflow Playbook
-- **Data Isolation:** Data MUST be filtered by `school_id` or `district_id` based on user role (Spatie RBAC).
-- **Delete Actions:** ALWAYS use `data-delete-form` and `data-name` attributes for automated SweetAlert2 handling.
-- **PDF Viewing:** ❌ NEVER use `window.open` or direct `<iframe>`. ALWAYS use `openPdfBlob(this, url)` for the PDF.js overlay to prevent IDM hijacking.
-- **Notifications:** Use `session('success')` or `session('error')`. SweetAlert2 is handled globally.
+---
 
-## 🚫 Known Failure Modes & Do Not
-- ❌ Do not enable global smooth scrolling. It causes jarring jumps.
-- ❌ Do not write paragraphs of explanation. Show code first, keep notes to 1 sentence.
-- ❌ If I ask to fix a bug, do not apologize. Just provide the fix.
-- ❌ Do not assume database structure. Ask for migration files if unsure.
+## 📌 Pagination & Scroll State (UX)
 
-## 📖 Panduan Pengguna (WAJIB DIKEMASKINI)
-- **SOP Wajib:** Setiap kali modul atau fungsi baharu disiapkan, anda WAJIB mengemaskini fail `resources/views/manuals/[role].blade.php` yang berkaitan untuk memastikan Panduan Pengguna sentiasa memaparkan ciri terkini.
-- Fail panduan: `guru-kafa`, `guru-besar`, `penyelia-kafa`, `ibu-bapa`, `bendahari-sekolah`, `pentadbir`, `pembekal`.
+- Pass `page` param in all edit/view URLs: `route('x.edit', ['id' => $id, 'page' => request()->page])`
+- After save, redirect to same page: `redirect()->route('x.index', ['page' => request()->page])`
+- Add row IDs: `<tr id="row-{{ $item->id }}">` and redirect with fragment: `->withFragment('row-'.$item->id)`
+- "Kembali / Batal" buttons MUST preserve the `page` parameter.
+- Do NOT enable global CSS smooth scrolling — causes jarring page jumps.
 
-## 🖨️ PDF Generation Rules (STRICT STANDARD & JAWI SUPPORT)
-- ⚠️ **Library (WAJIB mPDF):** JANGAN sesekali cadangkan atau gunakan DomPDF. Sistem ini MESTI menggunakan `mPDF` kerana sokongan tulisan Jawi (RTL).
-- 🚨 **Konfigurasi Jawi (CRITICAL - DO NOT TOUCH):** Semasa *initialize* objek mPDF di Controller, WAJIB sertakan parameter berikut tanpa diubah/dibuang: `'mode' => 'utf-8'`, `'autoArabic' => true`, dan `'default_font' => 'lateef'`. 
-- **Elak Ralat $cw (Font/Cache):** Sentiasa tetapkan konfigurasi `tempDir` kepada folder yang *writable* (contoh: `storage_path('app/mpdf_temp')`) semasa *initialize* objek PDF.
-- **Frontend / Anti-IDM Hijack:** JANGAN sesekali guna `<a target="_blank">`, `window.open()`, atau direct `<iframe>` untuk paparan PDF.
-- **Wajib Guna PDF.js:** Semua butang "Cetak" WAJIB memanggil fungsi AJAX untuk tarik base64 data, dan paparkan guna `PDF.js` dalam *modal/overlay* (rujuk fungsi `openPdfBlob(this, url)`).
-- **Template Berasingan:** Gunakan fail `.blade.php` khusus untuk PDF (tanpa navbar/sidebar) berserta CSS inline yang ringkas untuk elak layout pecah.
+---
+
+## ⚙️ Backend Rules
+
+- **Data isolation:** Filter all queries by `school_id` or `district_id` per role.
+- **Delete:** Use `data-delete-form` + `data-name` for SweetAlert2 confirmation.
+- **PDF display:** NEVER `window.open()` or `<iframe>`. ALWAYS `openPdfBlob(this, url)`.
+- **Notifications:** Use `session('success')` or `session('error')`. SweetAlert2 handles display globally.
+
+---
+
+## 🖨️ PDF Generation (STRICT — Jawi/Arabic Support)
+
+- **Library:** mPDF ONLY. NEVER DomPDF. DomPDF cannot render Jawi script.
+- **Required mPDF config — DO NOT MODIFY:**
+  ```php
+  'mode'         => 'utf-8',
+  'autoArabic'   => true,
+  'default_font' => 'lateef',
+  'tempDir'      => storage_path('app/mpdf_temp'),
+  ```
+- **Display:** All "Cetak" buttons MUST call AJAX → return base64 → display via `openPdfBlob(this, url)` in a PDF.js modal.
+- **Template:** Separate `.blade.php` file per PDF (no navbar/sidebar). Use inline CSS only.
+
+---
+
+## 📥 Excel Import / Export
+
+- Package: `maatwebsite/excel`. Import classes in `app/Imports/`, Export in `app/Exports/`.
+- Accept `.xlsx` only. Validate MIME type before processing.
+- Use `ToCollection` or `ToModel` concern as needed.
+
+---
+
+## 🔲 QR Code
+
+- Package: `simplesoftwareio/simple-qrcode`.
+- Output as inline SVG in Blade: `{!! QrCode::size(150)->generate($url) !!}`
+
+---
+
+## 🧪 Testing
+
+- Existing tests: Feature (Auth, Profile) + Unit — in `/tests/`.
+- Do NOT modify existing tests without a reason. Run `php artisan test` after any change.
+- New routes/controllers → write Feature tests (not Unit tests).
+- If unsure about DB structure: ask for migration files or `php artisan migrate:status` output.
+
+---
+
+## 📖 User Manual (MANDATORY UPDATE)
+
+Every time a new module or feature is completed, update the relevant manual file:
+`resources/views/manuals/[role].blade.php`
+
+Roles: `guru-kafa`, `guru-besar`, `penyelia-kafa`, `ibu-bapa`, `bendahari-sekolah`, `pentadbir`, `pembekal`
+
+---
+
+## 🚫 Do Not
+
+- Do NOT write paragraphs of explanation. Show code first. One sentence max for notes.
+- Do NOT apologize when fixing bugs. Just provide the fix.
+- Do NOT assume DB structure. Ask for migration files if unsure.
+- Do NOT leave `dd()`, `dump()`, `var_dump()`, or `console.log()` in code.
