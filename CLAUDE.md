@@ -8,17 +8,47 @@
 
 ---
 
-## 📝 CHANGELOG — Auto-Update Rule (MANDATORY)
+## 📝 CHANGELOG + GIT — Auto-Commit Rule (MANDATORY)
 
-After EVERY file change, update `CHANGELOG.md` in the project root. Add a new row:
+After EVERY file change session, Claude MUST complete ALL of the following steps — no exceptions:
+
+### Step 1 — Update CHANGELOG.md
+Add a new row for every file changed:
 
 | # | Date | File Changed | Description | Status |
 |---|------|-------------|-------------|--------|
 | N | YYYY-MM-DD | `path/to/file.php` | Brief summary | ⏳ Belum Push |
 
 - `N` = next sequence number from the last row.
-- Status MUST start as `⏳ Belum Push`. Only the user changes it to `✅ Sudah Push`.
-- Before push: check `docs/SECURITY.md`. If editing a connected module: check `docs/SYSTEM_FLOW.md`.
+- Status MUST start as `⏳ Belum Push`.
+- Before committing: check `docs/SECURITY.md`. If editing a connected module: check `docs/SYSTEM_FLOW.md`.
+
+### Step 2 — Verify with git status
+Run `git status` to confirm all changed files are tracked. NEVER assume files are staged.
+
+### Step 3 — Stage and commit automatically
+Claude made the edits, so Claude MUST stage and commit — do NOT leave this to the user:
+
+```bash
+git add <specific files changed>
+git commit -m "type: short description of what changed"
+```
+
+### Step 4 — Push to remote main
+```bash
+git push origin claude/strange-jennings-fba0ae:main
+```
+
+### Step 5 — Give user VPS commands only
+After push, tell the user to run ONLY these on VPS (do NOT repeat localhost commands):
+
+```bash
+git pull origin main
+php artisan view:clear && php artisan route:clear && php artisan cache:clear
+php artisan route:cache && php artisan view:cache
+```
+
+> **Rule:** If a new route was added → include `route:cache`. If only views changed → `view:clear` + `view:cache` is enough. Always state which commands are needed and why.
 
 ---
 

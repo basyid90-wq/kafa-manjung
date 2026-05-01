@@ -52,6 +52,8 @@ php artisan view:cache
 | 6 | 2026-05-01 | `routes/web.php` | Tambah route `reports/exams/{school}/detail` untuk halaman perincian subjek & kelas | ✅ Sudah Push |
 | 7 | 2026-05-01 | `resources/views/reports/exams.blade.php` | Tambah kolum ranking, kad ringkasan daerah, baris jumlah daerah, tukar butang Tindakan ke perincian | ✅ Sudah Push |
 | 8 | 2026-05-01 | `resources/views/reports/exams_detail.blade.php` | Halaman baru — perincian prestasi per subjek & per kelas untuk setiap sekolah | ✅ Sudah Push |
+| 9 | 2026-05-01 | `CLAUDE.md` | Tambah peraturan auto-commit wajib (git status → commit → push → VPS commands) | ⏳ Belum Push |
+| 10 | 2026-05-01 | `AGENTS.md` | Kemaskini CHANGELOG rule → tambah workflow git wajib untuk semua agent | ⏳ Belum Push |
 
 ---
 

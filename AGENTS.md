@@ -102,19 +102,41 @@ Before editing any module, check `docs/SYSTEM_FLOW.md` for dependent modules.
 
 ---
 
-## 📋 CHANGELOG Rule
+## 📋 CHANGELOG + GIT — Mandatory Post-Edit Workflow
 
-After EVERY file change, update `CHANGELOG.md` in the project root.
-Add a new row to the log table:
+After EVERY edit session, complete ALL steps below in order:
 
+**Step 1 — Update CHANGELOG.md**
 ```
 | N | YYYY-MM-DD | path/to/changed/file.php | What was changed | ⏳ Belum Push |
 ```
+- `N` = next sequence number. Status MUST start as `⏳ Belum Push`.
 
-- `N` = next sequence number
-- Use today's date
-- Status MUST start as `⏳ Belum Push`
-- Do NOT mark as pushed — only the user does that
+**Step 2 — Run git status**
+```bash
+git status
+```
+Verify ALL changed files appear. NEVER assume they are staged.
+
+**Step 3 — Stage and commit (AI does this, NOT the user)**
+```bash
+git add <specific files>
+git commit -m "type: description"
+```
+
+**Step 4 — Push to remote main**
+```bash
+git push origin claude/strange-jennings-fba0ae:main
+```
+
+**Step 5 — Give user VPS commands only**
+Tell the user to run on VPS:
+```bash
+git pull origin main
+php artisan view:clear && php artisan route:clear && php artisan cache:clear
+php artisan route:cache && php artisan view:cache
+```
+Only include `route:cache` if a new route was added. State why each command is needed.
 
 ---
 
