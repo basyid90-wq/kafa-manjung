@@ -79,6 +79,7 @@ php artisan view:cache
 | 33 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Fix 3: badge kelengkapan markah per murid (X/9 subjek) + alert amaran jika markah belum lengkap | ⏳ Belum Push |
 | 34 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Fix: buang filter term dalam dropdown PT/AT — tunjuk semua peperiksaan dengan label PT/AT/lain | ⏳ Belum Push |
 | 35 | 2026-05-02 | `resources/views/exams/results/index.blade.php` | Tambah butang "Urus Peperiksaan" → `exams.index` di bahagian atas halaman Kemasukan Markah | ⏳ Belum Push |
+| 36 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Tukar dropdown kelas dari `name` ke `display_name` — tunjuk "Tahun X — Nama" supaya kelas tidak kelihatan duplikasi | ⏳ Belum Push |
 
 ---
 

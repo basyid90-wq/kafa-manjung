@@ -51,7 +51,7 @@
                                         <option value="">-- Pilih Kelas --</option>
                                         @foreach($classes as $kelas)
                                             <option value="{{ $kelas->id }}" {{ request('kafa_class_id') == $kelas->id ? 'selected' : '' }}>
-                                                {{ $kelas->name }}
+                                                {{ $kelas->display_name }}
                                             </option>
                                         @endforeach
                                     </select>
