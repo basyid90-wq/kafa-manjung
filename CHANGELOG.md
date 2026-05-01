@@ -80,6 +80,7 @@ php artisan view:cache
 | 34 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Fix: buang filter term dalam dropdown PT/AT — tunjuk semua peperiksaan dengan label PT/AT/lain | ⏳ Belum Push |
 | 35 | 2026-05-02 | `resources/views/exams/results/index.blade.php` | Tambah butang "Urus Peperiksaan" → `exams.index` di bahagian atas halaman Kemasukan Markah | ⏳ Belum Push |
 | 36 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Tukar dropdown kelas dari `name` ke `display_name` — tunjuk "Tahun X — Nama" supaya kelas tidak kelihatan duplikasi | ⏳ Belum Push |
+| 37 | 2026-05-02 | `resources/views/achievements/index.blade.php` | Tukar table stats & dropdown filter kelas guna `display_name` — tunjuk tahun bersama nama kelas | ⏳ Belum Push |
 
 ---
 

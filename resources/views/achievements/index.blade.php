@@ -62,7 +62,7 @@
                                             $allFinal = $cls->recorded_count > 0 && $cls->final_count === $cls->recorded_count;
                                         @endphp
                                         <tr>
-                                            <td><strong>{{ $cls->name }}</strong></td>
+                                            <td><strong>{{ $cls->display_name }}</strong></td>
                                             <td class="text-center">{{ $cls->students_count }}</td>
                                             <td class="text-center">{{ $cls->recorded_count }}</td>
                                             <td class="text-center">{{ $cls->final_count }}</td>
@@ -84,7 +84,7 @@
                                                     <input type="hidden" name="kafa_class_id" value="{{ $cls->id }}">
                                                     <input type="hidden" name="academic_year" value="{{ request('academic_year', date('Y')) }}">
                                                     <button type="submit" class="rbt-btn btn-xs btn-border"
-                                                        onclick="return confirm('Finalkan semua rekod draf kelas {{ $cls->name }}?')"
+                                                        onclick="return confirm('Finalkan semua rekod draf kelas {{ $cls->display_name }}?')"
                                                         title="Finalkan Semua Draf">
                                                         <i class="feather-check-square"></i> Final
                                                     </button>
@@ -111,7 +111,7 @@
                                 <option value="">Semua Kelas</option>
                                 @foreach($classes as $kelas)
                                     <option value="{{ $kelas->id }}" {{ request('kafa_class_id') == $kelas->id ? 'selected' : '' }}>
-                                        {{ $kelas->name }}
+                                        {{ $kelas->display_name }}
                                     </option>
                                 @endforeach
                             </select>
