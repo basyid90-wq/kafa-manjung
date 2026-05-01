@@ -25,18 +25,16 @@ class StudentAchievementController extends Controller
     {
         $user = auth()->user();
 
-        // Penyelia KAFA & Pentadbir: Paparan Analitik
         if ($user->hasAnyRole(['Penyelia KAFA', 'Pentadbir'])) {
             return $this->indexPenyelia($request);
         }
 
-        // Guru Besar & Guru KAFA: Paparan Senarai Pelajar
         return $this->indexGuru($request);
     }
 
     private function indexGuru(Request $request)
     {
-        $user = auth()->user();
+        $user  = auth()->user();
         $query = StudentAchievementRecord::with(['student', 'kafaClass', 'school']);
 
         if ($user->hasRole('Super Admin')) {
@@ -66,10 +64,9 @@ class StudentAchievementController extends Controller
 
     private function indexPenyelia(Request $request)
     {
-        $user = auth()->user();
-        $currentYear = date('Y');
+        $user        = auth()->user();
+        $selectedYear = (int) $request->get('academic_year', date('Y'));
 
-        // Query Senarai Sekolah dengan statistik
         $schoolsQuery = \App\Models\School::query();
 
         if ($user->hasRole('Penyelia KAFA')) {
@@ -77,15 +74,27 @@ class StudentAchievementController extends Controller
         }
 
         $schools = $schoolsQuery->withCount([
-            'students',
-            'achievementRecords as achievements_count' => function ($q) use ($currentYear) {
-                $q->where('academic_year', $currentYear);
-            }
+            'students as students_count',
+            'achievementRecords as achievements_count' => fn($q) => $q->where('academic_year', $selectedYear),
         ])->orderBy('name')->get();
 
-        // Query Top 10 Pelajar Terbaik
+        // Ranking: sort by achievement % descending
+        $schools = $schools->sortByDesc(function ($s) {
+            return $s->students_count > 0 ? ($s->achievements_count / $s->students_count) : 0;
+        })->values();
+
+        // Summary stats
+        $totalSchools   = $schools->count();
+        $totalStudents  = $schools->sum('students_count');
+        $totalRecorded  = $schools->sum('achievements_count');
+        $overallPct     = $totalStudents > 0 ? round(($totalRecorded / $totalStudents) * 100, 1) : 0;
+        $belumRekod     = $schools->where('achievements_count', 0)->count();
+
+        $summary = compact('totalSchools', 'totalStudents', 'totalRecorded', 'overallPct', 'belumRekod');
+
+        // Top 10 students for selected year
         $topStudentsQuery = StudentAchievementRecord::with(['student', 'school'])
-            ->where('academic_year', $currentYear);
+            ->where('academic_year', $selectedYear);
 
         if ($user->hasRole('Penyelia KAFA')) {
             $topStudentsQuery->whereHas('school', fn($q) => $q->where('district_id', $user->district_id));
@@ -94,24 +103,23 @@ class StudentAchievementController extends Controller
         $topStudents = $topStudentsQuery->get()->map(function ($rec) {
             $midSum = ExamResult::where('student_id', $rec->student_id)
                 ->where('exam_id', $rec->midyear_exam_id)
-                ->where('is_absent', false)
-                ->sum('marks');
+                ->where('is_absent', false)->sum('marks');
             $endSum = ExamResult::where('student_id', $rec->student_id)
                 ->where('exam_id', $rec->endyear_exam_id)
-                ->where('is_absent', false)
-                ->sum('marks');
+                ->where('is_absent', false)->sum('marks');
             $rec->total_marks = $midSum + $endSum;
             return $rec;
         })->sortByDesc('total_marks')->take(10)->values();
 
-        return view('achievements.index_penyelia', compact('schools', 'topStudents'));
+        $years = range(date('Y'), 2024);
+
+        return view('achievements.index_penyelia', compact('schools', 'topStudents', 'summary', 'selectedYear', 'years'));
     }
 
     public function schoolList(\App\Models\School $school, Request $request)
     {
         $user = auth()->user();
 
-        // Pastikan Penyelia hanya boleh akses sekolah dalam daerahnya
         if ($user->hasRole('Penyelia KAFA') && $school->district_id !== $user->district_id) {
             abort(403, 'Akses tidak dibenarkan.');
         }
@@ -145,11 +153,22 @@ class StudentAchievementController extends Controller
             ->orderBy('year', 'desc')
             ->get();
 
-        $selectedClass = $request->kafa_class_id
-            ? KafaClass::with('students')->find($request->kafa_class_id)
-            : null;
+        // Security: verify selected class belongs to user's school
+        $selectedClass = null;
+        if ($request->filled('kafa_class_id')) {
+            $selectedClass = KafaClass::with('students')
+                ->where('school_id', $user->school_id)
+                ->find($request->kafa_class_id);
 
-        return view('achievements.create', compact('classes', 'exams', 'selectedClass'));
+            if (!$selectedClass) {
+                return redirect()->route('achievements.create')
+                    ->with('error', 'Kelas tidak dijumpai atau tidak dalam sekolah anda.');
+            }
+        }
+
+        $scrollToStudents = $request->filled('kafa_class_id');
+
+        return view('achievements.create', compact('classes', 'exams', 'selectedClass', 'scrollToStudents'));
     }
 
     public function edit(StudentAchievementRecord $achievement, Request $request)
@@ -160,6 +179,11 @@ class StudentAchievementController extends Controller
             abort(403);
         }
 
+        // Security: verify achievement belongs to user's school
+        if (!$user->hasRole('Super Admin') && $achievement->school_id !== $user->school_id) {
+            abort(403, 'Anda tidak dibenarkan mengedit rekod ini.');
+        }
+
         $classes = KafaClass::where('school_id', $user->school_id ?? $achievement->school_id)->orderBy('name')->get();
         $exams   = Exam::where('school_id', $user->school_id ?? $achievement->school_id)
             ->whereIn('term', ['pertengahan_tahun', 'akhir_tahun'])
@@ -168,15 +192,15 @@ class StudentAchievementController extends Controller
 
         $selectedClass = $achievement->kafaClass()->with('students')->first();
 
-        // Load existing values per student for pre-fill
         $existingRecords = StudentAchievementRecord::where('kafa_class_id', $achievement->kafa_class_id)
             ->where('academic_year', $achievement->academic_year)
             ->get()
             ->keyBy('student_id');
 
         $page = $request->page;
+        $scrollToStudents = true;
 
-        return view('achievements.create', compact('classes', 'exams', 'selectedClass', 'existingRecords', 'achievement', 'page'));
+        return view('achievements.create', compact('classes', 'exams', 'selectedClass', 'existingRecords', 'achievement', 'page', 'scrollToStudents'));
     }
 
     public function store(Request $request)
@@ -195,16 +219,25 @@ class StudentAchievementController extends Controller
             'status'             => 'nullable|in:draft,final',
         ]);
 
-        $class   = KafaClass::with('students')->findOrFail($request->kafa_class_id);
+        // Security: verify class belongs to user's school
+        $class = KafaClass::with('students')
+            ->where('school_id', $user->school_id)
+            ->findOrFail($request->kafa_class_id);
+
         $students = $class->students;
 
         DB::transaction(function () use ($request, $user, $students) {
             foreach ($students as $student) {
-                $phciMid = $request->input("phci_midyear.{$student->id}");
-                $phciEnd = $request->input("phci_endyear.{$student->id}");
-                $kelakuan    = $request->input("kelakuan.{$student->id}");
-                $kebersihan  = $request->input("kebersihan.{$student->id}");
-                $comments    = $request->input("teacher_comments.{$student->id}");
+                // Double-check each student belongs to user's school
+                if ($student->school_id !== $user->school_id) {
+                    continue;
+                }
+
+                $phciMid  = $request->input("phci_midyear.{$student->id}");
+                $phciEnd  = $request->input("phci_endyear.{$student->id}");
+                $kelakuan   = $request->input("kelakuan.{$student->id}");
+                $kebersihan = $request->input("kebersihan.{$student->id}");
+                $comments   = $request->input("teacher_comments.{$student->id}");
 
                 StudentAchievementRecord::updateOrCreate(
                     [
@@ -228,7 +261,6 @@ class StudentAchievementController extends Controller
             }
         });
 
-        // Recalculate rankings after save
         $this->recalculateRankings($request->kafa_class_id, $request->academic_year);
 
         return redirect()->route('achievements.index', ['page' => $request->input('page', 1)])
@@ -237,9 +269,12 @@ class StudentAchievementController extends Controller
 
     public function show(StudentAchievementRecord $achievement)
     {
+        $user = auth()->user();
+        $this->authorizeRecordAccess($achievement, $user);
+
         $achievement->load(['student', 'kafaClass', 'school', 'midyearExam', 'endyearExam']);
 
-        $subjects = $this->getSubjectsWithSlots($achievement->school_id);
+        $subjects   = $this->getSubjectsWithSlots($achievement->school_id);
         $midResults = $this->getResultsBySlot($achievement->student_id, $achievement->midyear_exam_id);
         $endResults = $this->getResultsBySlot($achievement->student_id, $achievement->endyear_exam_id);
 
@@ -248,6 +283,9 @@ class StudentAchievementController extends Controller
 
     public function generatePdf(StudentAchievementRecord $achievement)
     {
+        $user = auth()->user();
+        $this->authorizeRecordAccess($achievement, $user);
+
         $achievement->load(['student', 'kafaClass', 'school', 'midyearExam', 'endyearExam', 'generatedBy']);
 
         $subjects    = $this->getSubjectsWithSlots($achievement->school_id);
@@ -282,6 +320,25 @@ class StudentAchievementController extends Controller
 
     // ─── Private helpers ──────────────────────────────────────────────────────
 
+    private function authorizeRecordAccess(StudentAchievementRecord $achievement, $user): void
+    {
+        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+            return;
+        }
+
+        if ($user->hasRole('Penyelia KAFA')) {
+            $school = \App\Models\School::find($achievement->school_id);
+            if (!$school || $school->district_id !== $user->district_id) {
+                abort(403, 'Akses tidak dibenarkan.');
+            }
+            return;
+        }
+
+        if ($achievement->school_id !== $user->school_id) {
+            abort(403, 'Akses tidak dibenarkan.');
+        }
+    }
+
     private function getSubjectsWithSlots($schoolId)
     {
         return Subject::where(function ($q) use ($schoolId) {
@@ -314,19 +371,16 @@ class StudentAchievementController extends Controller
 
         if ($records->isEmpty()) return;
 
-        $schoolId = $records->first()->school_id;
+        $schoolId     = $records->first()->school_id;
         $totalInClass = $records->count();
 
-        // Sum total marks (midyear + endyear) for ranking
         $scored = $records->map(function ($rec) {
             $midSum = ExamResult::where('student_id', $rec->student_id)
                 ->where('exam_id', $rec->midyear_exam_id)
-                ->where('is_absent', false)
-                ->sum('marks');
+                ->where('is_absent', false)->sum('marks');
             $endSum = ExamResult::where('student_id', $rec->student_id)
                 ->where('exam_id', $rec->endyear_exam_id)
-                ->where('is_absent', false)
-                ->sum('marks');
+                ->where('is_absent', false)->sum('marks');
             return ['model' => $rec, 'total' => $midSum + $endSum];
         })->sortByDesc('total')->values();
 
@@ -337,22 +391,17 @@ class StudentAchievementController extends Controller
             ]);
         }
 
-        // Grade ranking: across all classes in same academic year & school
-        $allYear = StudentAchievementRecord::where('school_id', $schoolId)
-            ->where('academic_year', $academicYear)
-            ->get();
-
+        $allYear      = StudentAchievementRecord::where('school_id', $schoolId)
+            ->where('academic_year', $academicYear)->get();
         $totalInGrade = $allYear->count();
 
         $gradeScored = $allYear->map(function ($rec) {
             $midSum = ExamResult::where('student_id', $rec->student_id)
                 ->where('exam_id', $rec->midyear_exam_id)
-                ->where('is_absent', false)
-                ->sum('marks');
+                ->where('is_absent', false)->sum('marks');
             $endSum = ExamResult::where('student_id', $rec->student_id)
                 ->where('exam_id', $rec->endyear_exam_id)
-                ->where('is_absent', false)
-                ->sum('marks');
+                ->where('is_absent', false)->sum('marks');
             return ['model' => $rec, 'total' => $midSum + $endSum];
         })->sortByDesc('total')->values();
 

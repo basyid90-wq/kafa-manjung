@@ -62,6 +62,22 @@
                         </form>
 
                         @if($selectedClass)
+                        {{-- Auto-scroll ke senarai murid apabila kelas dipilih --}}
+                        @if(!empty($scrollToStudents))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                var el = document.getElementById('student-records-section');
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            });
+                        </script>
+                        @endif
+
+                        <div id="student-records-section">
+                        <div class="alert alert-success mb--20 d-flex align-items-center gap-2">
+                            <i class="feather-check-circle"></i>
+                            <span>Kelas <strong>{{ $selectedClass->name }}</strong> dipilih — {{ $selectedClass->students->count() }} murid dipaparkan di bawah.</span>
+                        </div>
+
                         <form action="{{ route('achievements.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="kafa_class_id" value="{{ $selectedClass->id }}">
@@ -196,6 +212,7 @@
                                 <a href="{{ route('achievements.index') }}" class="rbt-btn btn-border">Kembali</a>
                             </div>
                         </form>
+                        </div>{{-- end #student-records-section --}}
                         @else
                         <div class="alert alert-info">Pilih kelas di atas untuk memaparkan senarai murid.</div>
                         @endif
