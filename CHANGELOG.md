@@ -58,14 +58,14 @@ php artisan view:cache
 | 12 | 2026-05-01 | `resources/views/layout/layout.blade.php` | Fix FOUC — tambah script reveal body selepas DOMContentLoaded | ✅ Sudah Push |
 | 13 | 2026-05-01 | `app/Http/Controllers/StudentAchievementController.php` | Fix keselamatan: tambah authorizeRecordAccess() + semak school_id pada create/store/edit/show/generatePdf | ⏳ Belum Push |
 | 14 | 2026-05-01 | `resources/views/achievements/create.blade.php` | Fix UX: auto-scroll ke senarai murid selepas pilih kelas + alert konfirmasi kelas dipilih | ⏳ Belum Push |
-| 15 | 2026-05-01 | `resources/views/achievements/index_penyelia.blade.php` | Tambah: summary cards, filter tahun, ranking sekolah 🥇🥈🥉, highlight sekolah belum rekod, progress bar daerah | ⏳ Belum Push |
-| 16 | 2026-05-02 | `database/migrations/2026_05_02_000001_add_amali_solat_to_student_achievement_records_table.php` | Migration baru — tambah kolum `amali_solat` (Lulus/Tidak Lulus) ke jadual rekod pencapaian | ⏳ Belum Push |
-| 17 | 2026-05-02 | `app/Models/StudentAchievementRecord.php` | Tambah `amali_solat` ke `$fillable` | ⏳ Belum Push |
-| 18 | 2026-05-02 | `app/Http/Controllers/StudentAchievementController.php` | Fix: status lock (Guru KAFA), status filter, bulk finalize, unlock, completion stats Guru Besar, amali_solat, exam marks preview | ⏳ Belum Push |
-| 19 | 2026-05-02 | `routes/web.php` | Tambah route `achievements/bulk-finalize` dan `achievements/{achievement}/unlock` | ⏳ Belum Push |
-| 20 | 2026-05-02 | `resources/views/achievements/index.blade.php` | Tambah: status filter, lock icon, unlock button, completion stats kelas (Guru Besar), bulk finalize per kelas | ⏳ Belum Push |
-| 21 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Tambah: Amali Solat field, markah peperiksaan preview, lock warning rekod Final, disable input untuk rekod dikunci | ⏳ Belum Push |
-| 22 | 2026-05-02 | `resources/views/achievements/show.blade.php` | Tambah: Amali Solat display, unlock button (Guru Besar), kemaskini button untuk rekod Draf | ⏳ Belum Push |
+| 15 | 2026-05-01 | `resources/views/achievements/index_penyelia.blade.php` | Tambah: summary cards, filter tahun, ranking sekolah 🥇🥈🥉, highlight sekolah belum rekod, progress bar daerah | ✅ Sudah Push |
+| 16 | 2026-05-02 | `database/migrations/2026_05_02_000001_add_amali_solat_to_student_achievement_records_table.php` | Migration baru — tambah kolum `amali_solat` (Lulus/Tidak Lulus) ke jadual rekod pencapaian | ✅ Sudah Push |
+| 17 | 2026-05-02 | `app/Models/StudentAchievementRecord.php` | Tambah `amali_solat` ke `$fillable` | ✅ Sudah Push |
+| 18 | 2026-05-02 | `app/Http/Controllers/StudentAchievementController.php` | Fix: status lock (Guru KAFA), status filter, bulk finalize, unlock, completion stats Guru Besar, amali_solat, exam marks preview | ✅ Sudah Push |
+| 19 | 2026-05-02 | `routes/web.php` | Tambah route `achievements/bulk-finalize` dan `achievements/{achievement}/unlock` | ✅ Sudah Push |
+| 20 | 2026-05-02 | `resources/views/achievements/index.blade.php` | Tambah: status filter, lock icon, unlock button, completion stats kelas (Guru Besar), bulk finalize per kelas | ✅ Sudah Push |
+| 21 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Tambah: Amali Solat field, markah peperiksaan preview, lock warning rekod Final, disable input untuk rekod dikunci | ✅ Sudah Push |
+| 22 | 2026-05-02 | `resources/views/achievements/show.blade.php` | Tambah: Amali Solat display, unlock button (Guru Besar), kemaskini button untuk rekod Draf | ✅ Sudah Push |
 
 ---
 
