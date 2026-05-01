@@ -77,6 +77,8 @@ php artisan view:cache
 | 31 | 2026-05-02 | `resources/views/exams/results/enter.blade.php` | Fix 1+5: tambah slot_warning alert + kolum Kosongkan (explicit delete checkbox) per murid | ⏳ Belum Push |
 | 32 | 2026-05-02 | `app/Http/Controllers/StudentAchievementController.php` | Fix 4: buang whereIn term filter — semua peperiksaan boleh dipilih dalam Rekod Pencapaian | ⏳ Belum Push |
 | 33 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Fix 3: badge kelengkapan markah per murid (X/9 subjek) + alert amaran jika markah belum lengkap | ⏳ Belum Push |
+| 34 | 2026-05-02 | `resources/views/achievements/create.blade.php` | Fix: buang filter term dalam dropdown PT/AT — tunjuk semua peperiksaan dengan label PT/AT/lain | ⏳ Belum Push |
+| 35 | 2026-05-02 | `resources/views/exams/results/index.blade.php` | Tambah butang "Urus Peperiksaan" → `exams.index` di bahagian atas halaman Kemasukan Markah | ⏳ Belum Push |
 
 ---
 

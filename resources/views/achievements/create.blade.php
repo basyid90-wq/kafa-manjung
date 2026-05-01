@@ -107,15 +107,19 @@
                                             min="2020" max="2099" required>
                                     </div>
                                 </div>
+                                @php
+                                    $termLabel = ['pertengahan_tahun' => 'PT', 'akhir_tahun' => 'AT', 'lain' => ''];
+                                @endphp
                                 <div class="col-md-4">
                                     <div class="rbt-form-group">
                                         <label>Peperiksaan Pertengahan Tahun</label>
                                         <select name="midyear_exam_id" class="rbt-big-select">
                                             <option value="">-- Tiada --</option>
-                                            @foreach($exams->where('term', 'pertengahan_tahun') as $exam)
+                                            @foreach($exams as $exam)
+                                                @php $tl = $termLabel[$exam->term] ?? ''; @endphp
                                                 <option value="{{ $exam->id }}"
                                                     {{ old('midyear_exam_id', $achievement->midyear_exam_id ?? '') == $exam->id ? 'selected' : '' }}>
-                                                    {{ $exam->name }} ({{ $exam->year }})
+                                                    {{ $exam->name }} ({{ $exam->year }}){{ $tl ? ' — '.$tl : '' }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -126,10 +130,11 @@
                                         <label>Peperiksaan Akhir Tahun</label>
                                         <select name="endyear_exam_id" class="rbt-big-select">
                                             <option value="">-- Tiada --</option>
-                                            @foreach($exams->where('term', 'akhir_tahun') as $exam)
+                                            @foreach($exams as $exam)
+                                                @php $tl = $termLabel[$exam->term] ?? ''; @endphp
                                                 <option value="{{ $exam->id }}"
                                                     {{ old('endyear_exam_id', $achievement->endyear_exam_id ?? '') == $exam->id ? 'selected' : '' }}>
-                                                    {{ $exam->name }} ({{ $exam->year }})
+                                                    {{ $exam->name }} ({{ $exam->year }}){{ $tl ? ' — '.$tl : '' }}
                                                 </option>
                                             @endforeach
                                         </select>

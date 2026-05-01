@@ -14,8 +14,11 @@
             <div class="col-lg-9">
                 <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
                     <div class="content">
-                        <div class="section-title mb--20">
+                        <div class="section-title d-flex justify-content-between align-items-center mb--20">
                             <h4 class="rbt-title-style-3">Kemasukan Markah Peperiksaan</h4>
+                            <a href="{{ route('exams.index') }}" class="rbt-btn btn-border btn-sm">
+                                <i class="feather-settings me-1"></i> Urus Peperiksaan
+                            </a>
                         </div>
 
                         @if(session('success'))
