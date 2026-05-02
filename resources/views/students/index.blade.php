@@ -1,399 +1,375 @@
-@extends('layout.layout')
+@extends('layout-fb.layout')
 
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@section('title', 'Pengurusan Murid')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
-
-            <div class="col-lg-9" id="student-list-section">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-
-                        {{-- ── Header ── --}}
-                        <div class="section-title d-flex justify-content-between align-items-center mb--20">
-                            <h4 class="rbt-title-style-3">Pengurusan Murid</h4>
-                            <div class="d-flex gap-2">
-                                <button type="button" id="btnBulkDelete" class="rbt-btn btn-sm btn-gradient btn-gradient-danger" disabled>
-                                    <i class="feather-trash-2 me-1"></i>Padam Terpilih
-                                </button>
-                                <button type="button" class="rbt-btn btn-sm btn-border-gradient" data-bs-toggle="modal" data-bs-target="#importModal">
-                                    <i class="feather-file-plus me-1"></i>Import SIMPENI
-                                </button>
-                                <a href="{{ route('students.create') }}" class="rbt-btn btn-sm hover-icon-reverse">
-                                    <span class="icon-reverse-wrapper">
-                                        <span class="btn-text">Tambah Murid</span>
-                                        <span class="btn-icon"><i class="feather-plus"></i></span>
-                                        <span class="btn-icon"><i class="feather-plus"></i></span>
-                                    </span>
-                                </a>
-                            </div>
-                        </div>
-
-                        @if(session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
-
-                        {{-- ── Filter Panel ── --}}
-                        <form method="GET" id="filterForm" action="{{ route('students.index') }}" class="rbt-search-filter mb--20">
-                            @if($filterTahun)
-                                <input type="hidden" name="tahun" value="{{ $filterTahun }}">
-                            @endif
-
-                            <div class="row g-3">
-                                {{-- Daerah (SA/Pentadbir) --}}
-                                @if(in_array($authRole, ['Super Admin', 'Pentadbir']) && $districts->isNotEmpty())
-                                <div class="col-lg-2 col-md-3 col-6">
-                                    <div class="rbt-form-group">
-                                        <select name="district_id" title="Semua Daerah" id="filterDaerah">
-                                            <option value="">Semua Daerah</option>
-                                            @foreach($districts as $d)
-                                                <option value="{{ $d->id }}" {{ $filterDistrict == $d->id ? 'selected' : '' }}>{{ $d->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                @endif
-
-                                {{-- Sekolah (SA/Pentadbir/Penyelia) --}}
-                                @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']) && $schools->isNotEmpty())
-                                <div class="col-lg-3 col-md-4 col-6">
-                                    <div class="rbt-form-group">
-                                        <select name="school_id" title="Semua Sekolah" id="filterSekolah">
-                                            <option value="">Semua Sekolah</option>
-                                            @foreach($schools as $s)
-                                                <option value="{{ $s->id }}" {{ $filterSchool == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                @endif
-
-                                {{-- Kelas --}}
-                                <div class="col-lg-2 col-md-3 col-sm-6 col-6">
-                                    <div class="rbt-form-group">
-                                        <select name="class_id" title="Semua Kelas" id="filterKelas">
-                                            <option value="">Semua Kelas</option>
-                                            <option value="none" {{ request('class_id') === 'none' ? 'selected' : '' }}>— Tiada Kelas</option>
-                                            @foreach($classes as $c)
-                                                <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->display_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {{-- Search + Buttons --}}
-                                <div class="col">
-                                    <div class="rbt-form-group d-flex gap-2 mb--0">
-                                        <input type="text" name="search" value="{{ $search }}"
-                                               placeholder="Cari nama / MyKid / No. Pendaftaran...">
-                                        <button type="submit" class="rbt-btn btn-gradient"
-                                                style="height:50px;min-width:50px;padding:0 16px;flex-shrink:0;">
-                                            <i class="feather-search"></i>
-                                        </button>
-                                        @if($search || $filterDistrict || $filterSchool || request('class_id') || request('show_archive') || $filterTahun)
-                                        <a href="{{ route('students.index') }}" title="Reset penapis"
-                                           class="rbt-btn btn-border"
-                                           style="height:50px;min-width:50px;padding:0 14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-                                            <i class="feather-x"></i>
-                                        </a>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Archive toggle --}}
-                            <div class="mt--10">
-                                <div class="form-check form-switch mb-0">
-                                    <input class="form-check-input" type="checkbox" name="show_archive" value="1"
-                                           id="showArchive" {{ request('show_archive') ? 'checked' : '' }}
-                                           onchange="this.form.submit()">
-                                    <label class="form-check-label small text-muted" for="showArchive" style="cursor:pointer;">
-                                        <i class="feather-archive me-1"></i>Papar Arkib (Berhenti / Pindah / Umur &gt; 13 Tahun)
-                                    </label>
-                                </div>
-                            </div>
-                        </form>
-
-                        {{-- ── Tab Tahun ── --}}
-                        @php
-                            $baseParams = array_filter([
-                                'district_id'  => $filterDistrict,
-                                'school_id'    => $filterSchool,
-                                'class_id'     => request('class_id'),
-                                'search'       => $search,
-                                'show_archive' => request('show_archive') ? '1' : null,
-                            ]);
-                        @endphp
-                        <div class="d-flex flex-wrap gap-2 mb--20">
-                            <a href="{{ route('students.index', $baseParams) }}"
-                               class="rbt-btn btn-xs {{ !$filterTahun ? 'btn-gradient' : 'btn-border' }}">
-                                Semua&nbsp;<span class="badge bg-light text-dark" style="font-size:10px;">{{ $tahunCounts['semua'] }}</span>
-                            </a>
-                            @for($t = 1; $t <= 6; $t++)
-                            <a href="{{ route('students.index', array_merge($baseParams, ['tahun' => $t])) }}"
-                               class="rbt-btn btn-xs {{ $filterTahun == $t ? 'btn-gradient' : 'btn-border' }}">
-                                Tahun {{ $t }}&nbsp;<span class="badge bg-light text-dark" style="font-size:10px;">{{ $tahunCounts[$t] }}</span>
-                            </a>
-                            @endfor
-                        </div>
-
-                        {{-- ── Bulk Delete Form (wraps table) ── --}}
-                        <form id="bulkDeleteForm" action="{{ route('students.bulk-delete') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="page" value="{{ $students->currentPage() }}">
-
-                            <div class="table-responsive">
-                                <table class="rbt-table table table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:40px; text-align:center; vertical-align:middle;">
-                                                <input type="checkbox" id="selectAll" class="form-check-input"
-                                                       style="width:18px;height:18px;cursor:pointer;display:inline-block !important;visibility:visible !important;opacity:1 !important;position:relative !important;appearance:auto !important;-webkit-appearance:checkbox !important;">
-                                            </th>
-                                            <th>No</th>
-                                            <th>Nama</th>
-                                            @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']))
-                                            <th>Sekolah</th>
-                                            @endif
-                                            <th>Jantina</th>
-                                            <th>Umur</th>
-                                            <th>Kelas</th>
-                                            <th class="text-center" style="width:90px;">Tindakan</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($students as $student)
-                                        <tr id="row-{{ $student->id }}">
-                                            <td style="text-align:center;vertical-align:middle;">
-                                                <input type="checkbox" name="student_ids[]" value="{{ $student->id }}"
-                                                       class="student-checkbox form-check-input"
-                                                       style="width:18px;height:18px;cursor:pointer;display:inline-block !important;visibility:visible !important;opacity:1 !important;position:relative !important;appearance:auto !important;-webkit-appearance:checkbox !important;">
-                                            </td>
-                                            <td>{{ ($students->currentPage() - 1) * $students->perPage() + $loop->iteration }}</td>
-                                            <td>
-                                                <strong style="font-size:13px;">{{ $student->name }}</strong><br>
-                                                <small class="text-muted" style="font-size:11px;">{{ $student->mykid }}</small>
-                                            </td>
-                                            @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']))
-                                            <td>
-                                                <span class="rbt-badge-5 bg-secondary-opacity" style="font-size:0.73em;">{{ $student->school->name ?? '—' }}</span>
-                                            </td>
-                                            @endif
-                                            <td>{{ $student->gender == 'L' ? 'Lelaki' : ($student->gender == 'P' ? 'Perempuan' : '—') }}</td>
-                                            <td>{{ $student->standard_age ?? '—' }}</td>
-                                            <td>{{ $student->kafaClass?->display_name ?? '—' }}</td>
-                                            <td class="text-center">
-                                                <div class="d-flex align-items-center justify-content-center gap-1">
-                                                    <a href="{{ route('students.show', $student) }}"
-                                                       class="rbt-btn btn-xs btn-border-gradient"
-                                                       style="height:32px;width:32px;padding:0;display:flex;align-items:center;justify-content:center;" title="Lihat">
-                                                        <i class="feather-eye" style="font-size:13px;"></i>
-                                                    </a>
-                                                    <a href="{{ route('students.edit', array_merge(['student' => $student->id], request()->query())) }}"
-                                                       class="rbt-btn btn-xs btn-border-gradient"
-                                                       style="height:32px;width:32px;padding:0;display:flex;align-items:center;justify-content:center;" title="Edit">
-                                                        <i class="feather-edit" style="font-size:13px;"></i>
-                                                    </a>
-                                                    <button type="button"
-                                                            data-delete-url="{{ route('students.destroy', $student) }}"
-                                                            data-delete-name="{{ $student->name }}"
-                                                            onclick="confirmSingleDelete(this)"
-                                                            class="rbt-btn btn-xs btn-border-gradient"
-                                                            style="height:32px;width:32px;padding:0;display:flex;align-items:center;justify-content:center;" title="Padam">
-                                                        <i class="feather-trash-2" style="font-size:13px;"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="{{ in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']) ? 8 : 7 }}" class="text-center text-muted p-4">
-                                                <i class="feather-users me-2"></i>
-                                                @if($search)
-                                                    Tiada murid sepadan dengan carian "<strong>{{ $search }}</strong>".
-                                                @else
-                                                    Tiada rekod murid ditemui.
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </form>
-
-                        {{-- Hidden form for single delete --}}
-                        <form id="singleDeleteForm" action="" method="POST" style="display:none;">
-                            @csrf
-                            @method('DELETE')
-                            <input type="hidden" name="page" value="{{ $students->currentPage() }}">
-                        </form>
-
-                        {{-- Pagination --}}
-                        <div class="mt--20 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <small class="text-muted">
-                                Jumlah: {{ $students->total() }} murid
-                                @if($filterTahun) · Tahun <strong>{{ $filterTahun }}</strong>@endif
-                                @if($search) · carian "<strong>{{ $search }}</strong>"@endif
-                            </small>
-                            {{ $students->links() }}
-                        </div>
-
-                    </div>
-                </div>
-            </div>
+    {{-- ── Header ── --}}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Pengurusan Murid</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                Jumlah: <strong class="text-gray-700 dark:text-gray-300">{{ $students->total() }}</strong> murid
+                @if($filterTahun) · Tahun <strong>{{ $filterTahun }}</strong>@endif
+                @if($search) · carian "<strong>{{ $search }}</strong>"@endif
+            </p>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+            <button type="button" id="btnBulkDelete" disabled
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Padam Terpilih
+            </button>
+            <button type="button" data-modal-target="importModal" data-modal-toggle="importModal"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                Import SIMPENI
+            </button>
+            <a href="{{ route('students.create') }}"
+               class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Tambah Murid
+            </a>
         </div>
     </div>
-</div>
 
-{{-- Import Modal --}}
-<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="importModalLabel">Import Data SIMPENI (Excel)</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data" id="importForm">
-                @csrf
-                <div class="modal-body">
-                    <div class="alert alert-info" style="font-size:0.88em;">
-                        <i class="feather-info me-2"></i>
-                        Fail mesti dalam format SIMPENI JAKIM. Lajur yang dikesan secara automatik:
-                        <strong>Nama Pelajar, Kp Baru, Kelas, Tarikh Lahir, Jantina</strong> dan lain-lain.
-                    </div>
+    {{-- ── Filter Panel ── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+        <form method="GET" id="filterForm" action="{{ route('students.index') }}">
+            @if($filterTahun)
+                <input type="hidden" name="tahun" value="{{ $filterTahun }}">
+            @endif
+            <div class="flex flex-wrap gap-3">
 
-                    @if($importSchools->isNotEmpty())
-                    <div class="rbt-form-group">
-                        <label for="import_school_id">Sekolah <span class="text-danger">*</span></label>
-                        <select name="school_id" id="import_school_id" class="rbt-big-select" required>
-                            <option value="">-- Pilih Sekolah --</option>
-                            @foreach($importSchools as $s)
-                                <option value="{{ $s->id }}">{{ $s->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @endif
-
-                    <div class="rbt-form-group">
-                        <label for="import_file">Pilih Fail Excel (.xls, .xlsx, .csv) <span class="text-danger">*</span></label>
-                        <input type="file" name="file" id="import_file" class="form-control"
-                               style="height:50px; line-height:35px;" accept=".xls,.xlsx,.csv" required>
-                    </div>
-                    <p class="small text-muted mt-2">
-                        Sistem akan padankan kelas secara automatik berdasarkan nama kelas dalam Excel dengan kelas dalam sistem.
-                    </p>
+                {{-- Daerah --}}
+                @if(in_array($authRole, ['Super Admin', 'Pentadbir']) && $districts->isNotEmpty())
+                <div class="min-w-[140px]">
+                    <select name="district_id" onchange="this.form.submit()"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">Semua Daerah</option>
+                        @foreach($districts as $d)
+                            <option value="{{ $d->id }}" {{ $filterDistrict == $d->id ? 'selected' : '' }}>{{ $d->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="rbt-btn btn-border-gradient" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" id="btnImportSubmit" class="rbt-btn btn-gradient">
-                        <i class="feather-upload me-1"></i>Mula Import
+                @endif
+
+                {{-- Sekolah --}}
+                @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']) && $schools->isNotEmpty())
+                <div class="min-w-[180px]">
+                    <select name="school_id" onchange="this.form.submit()"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">Semua Sekolah</option>
+                        @foreach($schools as $s)
+                            <option value="{{ $s->id }}" {{ $filterSchool == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
+                {{-- Kelas --}}
+                <div class="min-w-[150px]">
+                    <select name="class_id" onchange="this.form.submit()"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">Semua Kelas</option>
+                        <option value="none" {{ request('class_id') === 'none' ? 'selected' : '' }}>— Tiada Kelas</option>
+                        @foreach($classes as $c)
+                            <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->display_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Search --}}
+                <div class="flex-1 min-w-[200px]">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+                        </div>
+                        <input type="text" name="search" value="{{ $search }}"
+                               class="block w-full ps-10 p-2.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                               placeholder="Cari nama / MyKid...">
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="px-4 py-2.5 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">
+                    Cari
+                </button>
+
+                @if($search || $filterDistrict || $filterSchool || request('class_id') || request('show_archive') || $filterTahun)
+                <a href="{{ route('students.index') }}"
+                   class="px-3 py-2.5 text-sm text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 flex items-center" title="Reset penapis">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </a>
+                @endif
+            </div>
+
+            {{-- Archive toggle --}}
+            <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="show_archive" value="1"
+                           id="showArchive" {{ request('show_archive') ? 'checked' : '' }}
+                           onchange="this.form.submit()"
+                           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-700">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Papar Arkib (Berhenti / Pindah / Umur &gt; 13 Tahun)</span>
+                </label>
+            </div>
+        </form>
+    </div>
+
+    {{-- ── Tab Tahun ── --}}
+    @php
+        $baseParams = array_filter([
+            'district_id'  => $filterDistrict,
+            'school_id'    => $filterSchool,
+            'class_id'     => request('class_id'),
+            'search'       => $search,
+            'show_archive' => request('show_archive') ? '1' : null,
+        ]);
+    @endphp
+    <div class="flex flex-wrap gap-2 mb-4">
+        <a href="{{ route('students.index', $baseParams) }}"
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border
+               {{ !$filterTahun ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600' }}">
+            Semua
+            <span class="inline-flex items-center justify-center px-1.5 h-5 text-xs rounded-full
+                {{ !$filterTahun ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">
+                {{ $tahunCounts['semua'] }}
+            </span>
+        </a>
+        @for($t = 1; $t <= 6; $t++)
+        <a href="{{ route('students.index', array_merge($baseParams, ['tahun' => $t])) }}"
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border
+               {{ $filterTahun == $t ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600' }}">
+            Tahun {{ $t }}
+            <span class="inline-flex items-center justify-center px-1.5 h-5 text-xs rounded-full
+                {{ $filterTahun == $t ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">
+                {{ $tahunCounts[$t] }}
+            </span>
+        </a>
+        @endfor
+    </div>
+
+    {{-- ── Table ── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+
+        <form id="bulkDeleteForm" action="{{ route('students.bulk-delete') }}" method="POST">
+            @csrf
+            <input type="hidden" name="page" value="{{ $students->currentPage() }}">
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3 w-10">
+                                <input type="checkbox" id="selectAll"
+                                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                            </th>
+                            <th class="px-4 py-3 w-8">No</th>
+                            <th class="px-4 py-3">Nama</th>
+                            @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']))
+                            <th class="px-4 py-3">Sekolah</th>
+                            @endif
+                            <th class="px-4 py-3">Jantina</th>
+                            <th class="px-4 py-3">Umur</th>
+                            <th class="px-4 py-3">Kelas</th>
+                            <th class="px-4 py-3 text-center w-24">Tindakan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @forelse($students as $student)
+                        <tr id="row-{{ $student->id }}" class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
+                            <td class="px-4 py-3">
+                                <input type="checkbox" name="student_ids[]" value="{{ $student->id }}"
+                                       class="student-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                            </td>
+                            <td class="px-4 py-3 text-gray-400">{{ ($students->currentPage() - 1) * $students->perPage() + $loop->iteration }}</td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0
+                                        {{ $student->gender === 'L' ? 'bg-blue-500' : 'bg-pink-500' }}">
+                                        {{ strtoupper(mb_substr($student->name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900 dark:text-white text-sm">{{ $student->name }}</p>
+                                        <p class="text-xs text-gray-400">{{ $student->mykid }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']))
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                                    {{ $student->school->name ?? '—' }}
+                                </span>
+                            </td>
+                            @endif
+                            <td class="px-4 py-3">
+                                @if($student->gender === 'L')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Lelaki</span>
+                                @elseif($student->gender === 'P')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400">Perempuan</span>
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-gray-700 dark:text-gray-300">{{ $student->standard_age ?? '—' }}</td>
+                            <td class="px-4 py-3 text-gray-700 dark:text-gray-300 text-sm">{{ $student->kafaClass?->display_name ?? '—' }}</td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center justify-center gap-1">
+                                    <a href="{{ route('students.show', $student) }}" title="Lihat"
+                                       class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg dark:hover:bg-gray-700">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    </a>
+                                    <a href="{{ route('students.edit', array_merge(['student' => $student->id], request()->query())) }}" title="Edit"
+                                       class="p-1.5 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg dark:hover:bg-gray-700">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    </a>
+                                    <button type="button" title="Padam"
+                                            data-delete-url="{{ route('students.destroy', $student) }}"
+                                            data-delete-name="{{ $student->name }}"
+                                            onclick="confirmSingleDelete(this)"
+                                            class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg dark:hover:bg-gray-700">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="{{ in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']) ? 8 : 7 }}"
+                                class="px-4 py-10 text-center text-gray-400">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                @if($search)
+                                    Tiada murid sepadan dengan carian "<strong>{{ $search }}</strong>".
+                                @else
+                                    Tiada rekod murid ditemui.
+                                @endif
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </form>
+
+        {{-- Pagination --}}
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Papar <strong class="text-gray-900 dark:text-white">{{ $students->firstItem() }}–{{ $students->lastItem() }}</strong>
+                daripada <strong class="text-gray-900 dark:text-white">{{ $students->total() }}</strong> murid
+            </p>
+            {{ $students->links() }}
+        </div>
+    </div>
+
+    {{-- Hidden form for single delete --}}
+    <form id="singleDeleteForm" action="" method="POST" class="hidden">
+        @csrf @method('DELETE')
+        <input type="hidden" name="page" value="{{ $students->currentPage() }}">
+    </form>
+
+    {{-- ── Import Modal (Flowbite) ── --}}
+    <div id="importModal" tabindex="-1" aria-hidden="true"
+         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-lg max-h-full">
+            <div class="relative bg-white rounded-xl shadow dark:bg-gray-700">
+                <div class="flex items-center justify-between p-4 border-b dark:border-gray-600 rounded-t-xl">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Import Data SIMPENI (Excel)</h3>
+                    <button type="button" data-modal-hide="importModal"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
                     </button>
                 </div>
-            </form>
+                <form action="{{ route('students.import') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                    @csrf
+                    <div class="p-4 space-y-4">
+                        <div class="p-3 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400">
+                            Fail mesti dalam format SIMPENI JAKIM. Lajur yang dikesan: <strong>Nama Pelajar, Kp Baru, Kelas, Tarikh Lahir, Jantina</strong>.
+                        </div>
+                        @if($importSchools->isNotEmpty())
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sekolah <span class="text-red-500">*</span></label>
+                            <select name="school_id" required
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                <option value="">-- Pilih Sekolah --</option>
+                                @foreach($importSchools as $s)
+                                    <option value="{{ $s->id }}">{{ $s->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fail Excel (.xls, .xlsx, .csv) <span class="text-red-500">*</span></label>
+                            <input type="file" name="file" required accept=".xls,.xlsx,.csv"
+                                   class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400">
+                        </div>
+                    </div>
+                    <div class="flex gap-2 p-4 border-t border-gray-200 dark:border-gray-600">
+                        <button type="button" data-modal-hide="importModal"
+                                class="flex-1 py-2 px-4 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
+                        <button type="submit" id="btnImportSubmit"
+                                class="flex-1 py-2 px-4 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800">
+                            Mula Import
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 @endsection
 
 @push('scripts')
 <script>
-// Auto-submit filter form bila dropdown berubah (bootstrap-select event)
-$(document).ready(function () {
-    $('#filterDaerah, #filterSekolah, #filterKelas').on('changed.bs.select', function () {
-        $('#filterForm').submit();
-    });
-});
-
-@if($errors->has('file') || $errors->has('school_id'))
-document.addEventListener('DOMContentLoaded', function () {
-    var importModal = new bootstrap.Modal(document.getElementById('importModal'));
-    importModal.show();
-    @foreach($errors->all() as $error)
-    Swal.fire({ icon: 'error', title: 'Ralat Import', text: '{{ $error }}', confirmButtonText: 'OK' });
-    @endforeach
-});
-@endif
-
 document.addEventListener('DOMContentLoaded', function () {
     const selectAll      = document.getElementById('selectAll');
-    const checkboxes     = document.querySelectorAll('.student-checkbox');
     const btnBulkDelete  = document.getElementById('btnBulkDelete');
     const bulkDeleteForm = document.getElementById('bulkDeleteForm');
 
-    function toggleBulkDeleteButton() {
+    function updateBulkBtn() {
         const count = document.querySelectorAll('.student-checkbox:checked').length;
         btnBulkDelete.disabled = count === 0;
     }
 
     if (selectAll) {
         selectAll.addEventListener('change', function () {
-            checkboxes.forEach(cb => cb.checked = selectAll.checked);
-            toggleBulkDeleteButton();
+            document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = selectAll.checked);
+            updateBulkBtn();
         });
     }
 
-    checkboxes.forEach(cb => cb.addEventListener('change', toggleBulkDeleteButton));
+    document.querySelectorAll('.student-checkbox').forEach(cb => cb.addEventListener('change', updateBulkBtn));
 
     if (btnBulkDelete) {
         btnBulkDelete.addEventListener('click', function () {
             const count = document.querySelectorAll('.student-checkbox:checked').length;
-            Swal.fire({
-                title: 'Padam Rekod Terpilih?',
-                text: `Anda akan memadam ${count} rekod murid secara kekal. Tindakan ini tidak boleh dikembalikan!`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Padam Sekarang!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) bulkDeleteForm.submit();
-            });
+            if (confirm(`Padam ${count} rekod murid secara kekal?`)) bulkDeleteForm.submit();
         });
     }
-});
 
-const importForm = document.getElementById('importForm');
-if (importForm) {
-    importForm.addEventListener('submit', function () {
+    // Reopen import modal if validation error
+    @if($errors->has('file') || $errors->has('school_id'))
+    const importModalEl = document.getElementById('importModal');
+    if (importModalEl && typeof FlowbiteInstances !== 'undefined') {
+        const modal = FlowbiteInstances.getInstance('Modal', 'importModal');
+        if (modal) modal.show();
+    }
+    @endif
+
+    document.getElementById('importForm')?.addEventListener('submit', function () {
         const btn = document.getElementById('btnImportSubmit');
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '<i class="feather-loader me-1"></i> Sedang Memproses...';
-        }
+        if (btn) { btn.disabled = true; btn.textContent = 'Sedang Memproses...'; }
     });
-}
+});
 
 function confirmSingleDelete(btn) {
     const url  = btn.dataset.deleteUrl;
     const name = btn.dataset.deleteName;
-    Swal.fire({
-        title: 'Padam Murid?',
-        text: `Rekod "${name}" akan dipadam secara kekal. Tindakan ini tidak boleh dikembalikan!`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Ya, Padam!',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const form = document.getElementById('singleDeleteForm');
-            form.action = url;
-            form.submit();
-        }
-    });
+    if (confirm(`Padam rekod "${name}" secara kekal?`)) {
+        const form = document.getElementById('singleDeleteForm');
+        form.action = url;
+        form.submit();
+    }
 }
 </script>
 @endpush
