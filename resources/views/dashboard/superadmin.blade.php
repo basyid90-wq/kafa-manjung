@@ -1,3 +1,11 @@
+{{-- DEBUG SEMENTARA --}}
+<div class="alert alert-warning mb--20" style="font-size:12px; font-family:monospace;">
+    role={{ $role }} |
+    stats_set={{ isset($data['stats']) ? 'YES' : 'NO' }} |
+    schools={{ $data['stats']['schools'] ?? 'UNSET' }} |
+    users={{ $data['stats']['total_users'] ?? 'UNSET' }}
+</div>
+
 {{-- Super Admin Dashboard --}}
 @php
     $cards = [
