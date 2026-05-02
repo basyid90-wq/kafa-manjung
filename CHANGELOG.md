@@ -96,6 +96,8 @@ php artisan view:cache
 | 50 | 2026-05-02 | `resources/views/dashboard/index.blade.php` | Pisahkan route paparan Super Admin ke `dashboard.superadmin`, Pentadbir tetap `dashboard.admin` | ⏳ Belum Push |
 | 51 | 2026-05-02 | `app/Http/Controllers/UserController.php` | Revamp index() — tambah tab peranan + search nama/emel, kiraan badge per tab, filter role, paginate 15 | ⏳ Belum Push |
 | 52 | 2026-05-02 | `resources/views/users/index.blade.php` | Revamp — tambah tab peranan (SA/Penyelia), search bar, emel dalam baris nama, empty state mesej | ⏳ Belum Push |
+| 53 | 2026-05-02 | `app/Http/Controllers/StudentController.php` | Revamp index() — tambah filter daerah/sekolah/tahun/kelas/search, tahunCounts, $applyScope closure, buang kod lama bertindih | ⏳ Belum Push |
+| 54 | 2026-05-02 | `resources/views/students/index.blade.php` | Revamp — tambah dropdown Daerah (SA), Sekolah (SA/Penyelia), Kelas, search bar, tab Tahun 1-6 dengan badge kiraan, kolum Sekolah untuk SA/Penyelia | ⏳ Belum Push |
 
 ---
 

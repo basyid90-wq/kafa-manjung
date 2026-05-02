@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\KafaClass;
 use App\Models\School;
+use App\Models\District;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -14,70 +15,104 @@ class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $query = Student::with(['kafaClass', 'school']);
-        $search = $request->query('search');
+        $user     = auth()->user();
+        $authRole = $user->getRoleNames()->first();
 
-        if ($user->hasRole('Penyelia KAFA')) {
-            $query->whereHas('school', function ($q) use ($user) {
-                $q->where('district_id', $user->district_id);
-            });
-        } elseif (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
-            $query->where('school_id', $user->school_id);
-        }
+        $filterDistrict = $request->input('district_id');
+        $filterSchool   = $request->input('school_id');
+        $filterTahun    = $request->input('tahun');
+        $search         = $request->input('search');
 
-        // Penapisan Aktif & Umur (Standard SIMPENI/APKM)
-        // Kita asingkan murid > 13 tahun dan status tidak aktif kecuali diminta papar semua
-        if (!$request->has('show_archive')) {
-            $query->whereNotIn('status', ['Berhenti', 'Pindah'])
-                  ->where(function($q) {
-                      $q->whereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) <= 13')
-                        ->orWhereNull('dob');
-                  });
-        } else {
-            $query->where(function($q) {
-                $q->where('status', 'Berhenti')
-                  ->orWhere('status', 'Pindah')
-                  ->orWhereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) > 13');
-            });
-        }
-
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('mykid', 'like', "%{$search}%")
-                  ->orWhere('registration_no', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('class_id')) {
-            if ($request->class_id === 'none') {
-                $query->whereNull('kafa_class_id');
-            } else {
-                $query->where('kafa_class_id', $request->class_id);
+        // ── Base scope (role isolation + archive) ──
+        $applyScope = function ($q) use ($user, $authRole, $request, $filterDistrict, $filterSchool) {
+            if ($authRole === 'Penyelia KAFA') {
+                $q->whereHas('school', fn($sq) => $sq->where('district_id', $user->district_id));
+            } elseif (!in_array($authRole, ['Super Admin', 'Pentadbir', 'Pembekal'])) {
+                $q->where('school_id', $user->school_id);
             }
+            if (!$request->has('show_archive')) {
+                $q->whereNotIn('status', ['Berhenti', 'Pindah'])
+                  ->where(fn($sq) => $sq->whereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) <= 13')->orWhereNull('dob'));
+            } else {
+                $q->where(fn($sq) => $sq->where('status', 'Berhenti')
+                    ->orWhere('status', 'Pindah')
+                    ->orWhereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) > 13'));
+            }
+            if ($filterDistrict && in_array($authRole, ['Super Admin', 'Pentadbir'])) {
+                $q->whereHas('school', fn($sq) => $sq->where('district_id', $filterDistrict));
+            }
+            if ($filterSchool) {
+                $q->where('school_id', $filterSchool);
+            }
+        };
+
+        // ── Tahun counts ──
+        $tahunCounts = ['semua' => Student::query()->tap($applyScope)->count()];
+        for ($t = 1; $t <= 6; $t++) {
+            $tahunCounts[$t] = Student::query()->tap($applyScope)
+                ->whereHas('kafaClass', fn($q) => $q->where('tahun', $t))->count();
         }
 
-        $students = $query->orderBy('dob', 'desc')
-            ->orderBy('name', 'asc')
-            ->paginate(10)
+        // ── Main query ──
+        $query = Student::with(['kafaClass', 'school'])->tap($applyScope);
+        if ($filterTahun) {
+            $query->whereHas('kafaClass', fn($q) => $q->where('tahun', $filterTahun));
+        }
+        if ($request->filled('class_id')) {
+            $request->class_id === 'none'
+                ? $query->whereNull('kafa_class_id')
+                : $query->where('kafa_class_id', $request->class_id);
+        }
+        if ($search) {
+            $query->where(fn($q) => $q
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('mykid', 'like', "%{$search}%")
+                ->orWhere('registration_no', 'like', "%{$search}%"));
+        }
+
+        $students = $query->orderBy('name')
+            ->paginate(15)
             ->fragment('student-list-section')
-            ->appends($request->query());
+            ->withQueryString();
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
-            $classes       = KafaClass::orderBy('tahun')->orderBy('name')->get();
-            $importSchools = School::orderBy('name')->get();
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $classes       = KafaClass::whereHas('school', function ($q) use ($user) {
-                $q->where('district_id', $user->district_id);
-            })->orderBy('tahun')->orderBy('name')->get();
-            $importSchools = School::where('district_id', $user->district_id)->orderBy('name')->get();
+        // ── Dropdown data ──
+        $districts = in_array($authRole, ['Super Admin', 'Pentadbir'])
+            ? District::orderBy('name')->get() : collect();
+
+        if (in_array($authRole, ['Super Admin', 'Pentadbir'])) {
+            $schools = $filterDistrict
+                ? School::where('district_id', $filterDistrict)->orderBy('name')->get()
+                : School::orderBy('name')->get();
+        } elseif ($authRole === 'Penyelia KAFA') {
+            $schools = School::where('district_id', $user->district_id)->orderBy('name')->get();
         } else {
-            $classes       = KafaClass::where('school_id', $user->school_id)->orderBy('tahun')->orderBy('name')->get();
-            $importSchools = collect(); // school-level users: school_id taken from their profile
+            $schools = collect();
         }
 
-        return view('students.index', compact('students', 'classes', 'importSchools'));
+        if ($filterSchool) {
+            $classes = KafaClass::where('school_id', $filterSchool)->orderBy('tahun')->orderBy('name')->get();
+        } elseif (in_array($authRole, ['Super Admin', 'Pentadbir'])) {
+            $classes = $filterDistrict
+                ? KafaClass::whereHas('school', fn($q) => $q->where('district_id', $filterDistrict))->orderBy('tahun')->orderBy('name')->get()
+                : KafaClass::orderBy('tahun')->orderBy('name')->get();
+        } elseif ($authRole === 'Penyelia KAFA') {
+            $classes = KafaClass::whereHas('school', fn($q) => $q->where('district_id', $user->district_id))->orderBy('tahun')->orderBy('name')->get();
+        } else {
+            $classes = KafaClass::where('school_id', $user->school_id)->orderBy('tahun')->orderBy('name')->get();
+        }
+
+        $importSchools = in_array($authRole, ['Super Admin', 'Pentadbir', 'Pembekal'])
+            ? School::orderBy('name')->get()
+            : ($authRole === 'Penyelia KAFA'
+                ? School::where('district_id', $user->district_id)->orderBy('name')->get()
+                : collect());
+
+        return view('students.index', compact(
+            'students', 'classes', 'importSchools',
+            'districts', 'schools',
+            'tahunCounts', 'filterTahun', 'filterDistrict', 'filterSchool',
+            'search', 'authRole'
+        ));
     }
 
     public function create()
