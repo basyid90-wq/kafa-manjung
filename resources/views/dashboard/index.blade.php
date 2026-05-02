@@ -39,25 +39,19 @@
                             <h4 class="rbt-title-style-3">Dashboard ({{ $role }})</h4>
                         </div>
 
-                        @role('Super Admin')
+                        @php $authRole = auth()->user()->getRoleNames()->first(); @endphp
+
+                        @if($authRole === 'Super Admin')
                             @include('dashboard.superadmin')
-                        @endrole
-
-                        @role('Pentadbir')
+                        @elseif($authRole === 'Pentadbir')
                             @include('dashboard.admin')
-                        @endrole
-
-                        @role('Penyelia KAFA')
+                        @elseif($authRole === 'Penyelia KAFA')
                             @include('dashboard.penyelia')
-                        @endrole
-
-                        @role('Guru Besar')
+                        @elseif($authRole === 'Guru Besar')
                             @include('dashboard.gurubesar')
-                        @endrole
-
-                        @role('Guru KAFA')
+                        @elseif($authRole === 'Guru KAFA')
                             @include('dashboard.guru')
-                        @endrole
+                        @endif
                         
                     </div>
                 </div>

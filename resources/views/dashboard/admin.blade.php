@@ -1,11 +1,12 @@
 <!-- Admin Dashboard Content -->
 <div class="row g-5">
     @php
+        $uc = $data['user_counts'] ?? ['Admin' => 0, 'Penyelia' => 0, 'Guru Besar' => 0, 'Pembekal' => 0];
         $adminStats = [
-            ['title' => 'Pentadbir', 'count' => $data['user_counts']['Admin'], 'icon' => 'feather-shield', 'class' => 'bg-primary-opacity', 'color' => 'color-primary'],
-            ['title' => 'Penyelia KAFA', 'count' => $data['user_counts']['Penyelia'], 'icon' => 'feather-map', 'class' => 'bg-secondary-opacity', 'color' => 'color-secondary'],
-            ['title' => 'Guru Besar', 'count' => $data['user_counts']['Guru Besar'], 'icon' => 'feather-user-check', 'class' => 'bg-pink-opacity', 'color' => 'color-pink'],
-            ['title' => 'Pembekal', 'count' => $data['user_counts']['Pembekal'], 'icon' => 'feather-truck', 'class' => 'bg-warning-opacity', 'color' => 'color-warning'],
+            ['title' => 'Pentadbir', 'count' => $uc['Admin'], 'icon' => 'feather-shield', 'class' => 'bg-primary-opacity', 'color' => 'color-primary'],
+            ['title' => 'Penyelia KAFA', 'count' => $uc['Penyelia'], 'icon' => 'feather-map', 'class' => 'bg-secondary-opacity', 'color' => 'color-secondary'],
+            ['title' => 'Guru Besar', 'count' => $uc['Guru Besar'], 'icon' => 'feather-user-check', 'class' => 'bg-pink-opacity', 'color' => 'color-pink'],
+            ['title' => 'Pembekal', 'count' => $uc['Pembekal'], 'icon' => 'feather-truck', 'class' => 'bg-warning-opacity', 'color' => 'color-warning'],
         ];
     @endphp
 
