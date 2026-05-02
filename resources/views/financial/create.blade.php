@@ -1,89 +1,80 @@
-@extends('layout.layout')
-
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Tambah Rekod Kewangan</h1>
+        <a href="{{ route('financial.index') }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Kembali
+        </a>
+    </div>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title">
-                            <h4 class="rbt-title-style-3">Tambah Rekod Kewangan</h4>
-                        </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+        <form action="{{ route('financial.store') }}" method="POST">
+            @csrf
 
-                        <form action="{{ route('financial.store') }}" method="POST" class="rbt-profile-row rbt-default-form row row--15">
-                            @csrf
-                            
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="transaction_type">Jenis Transaksi</label>
-                                    <select id="transaction_type" name="transaction_type" class="rbt-big-select" required>
-                                        <option value="in">Wang Masuk (+)</option>
-                                        <option value="out">Wang Keluar (-)</option>
-                                    </select>
-                                </div>
-                            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="account_category_id">Kategori Akaun</label>
-                                    <select id="account_category_id" name="account_category_id" class="rbt-big-select" required>
-                                        @foreach($categories as $cat)
-                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jenis Transaksi <span class="text-red-500">*</span></label>
+                    <select name="transaction_type" required
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="in">Wang Masuk (+)</option>
+                        <option value="out">Wang Keluar (-)</option>
+                    </select>
+                </div>
 
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="amount">Jumlah (RM)</label>
-                                    <input type="number" step="0.01" id="amount" name="amount" placeholder="0.00" required>
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori Akaun <span class="text-red-500">*</span></label>
+                    <select name="account_category_id" required
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="transaction_date">Tarikh Transaksi</label>
-                                    <input type="date" id="transaction_date" name="transaction_date" value="{{ date('Y-m-d') }}" required>
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jumlah (RM) <span class="text-red-500">*</span></label>
+                    <input type="number" step="0.01" name="amount" placeholder="0.00" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                            <div class="col-lg-12">
-                                <div class="rbt-form-group">
-                                    <label for="reference_no">No. Rujukan / Resit</label>
-                                    <input type="text" id="reference_no" name="reference_no" placeholder="Masukkan no rujukan jika ada">
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tarikh Transaksi <span class="text-red-500">*</span></label>
+                    <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                            <div class="col-lg-12">
-                                <div class="rbt-form-group">
-                                    <label for="description">Keterangan / Catatan</label>
-                                    <textarea id="description" name="description" placeholder="Catatan tambahan..."></textarea>
-                                </div>
-                            </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No. Rujukan / Resit</label>
+                    <input type="text" name="reference_no" placeholder="Masukkan no rujukan jika ada"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                            <div class="col-12 mt--20">
-                                <div class="rbt-form-group">
-                                    <button class="rbt-btn btn-gradient" type="submit">Simpan Rekod</button>
-                                    <a href="{{ route('financial.index') }}" class="rbt-btn btn-border-gradient">Batal</a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Keterangan / Catatan</label>
+                    <textarea name="description" rows="3" placeholder="Catatan tambahan..."
+                              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
             </div>
-        </div>
+
+            <div class="flex gap-3">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Simpan Rekod
+                </button>
+                <a href="{{ route('financial.index') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                    Batal
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
