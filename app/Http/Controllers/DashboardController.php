@@ -23,7 +23,7 @@ class DashboardController extends Controller
         // Data according to role
         $data = [];
 
-        if ($user->hasRole('Super Admin')) {
+        if ($role === 'Super Admin') {
             // ── Super Admin: System-level stats ──
             $data['stats'] = [
                 'schools'      => \App\Models\School::count(),
@@ -60,7 +60,7 @@ class DashboardController extends Controller
             $data['storage_ok'] = is_writable(storage_path('app/public'));
             try { DB::connection()->getPdo(); } catch (\Exception $e) { $data['db_ok'] = false; }
 
-        } elseif ($user->hasRole('Pentadbir')) {
+        } elseif ($role === 'Pentadbir') {
             // ── Pentadbir ──
             $data['user_counts'] = [
                 'Admin' => \App\Models\User::role(['Super Admin', 'Pentadbir'])->count(),
@@ -76,7 +76,7 @@ class DashboardController extends Controller
                 return $district;
             });
 
-        } elseif ($user->hasRole('Penyelia KAFA')) {
+        } elseif ($role === 'Penyelia KAFA') {
             // 2. Penyelia KAFA Logic (District Scope)
             $districtId = $user->district_id;
             $data['stats'] = [
@@ -95,7 +95,7 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get();
 
-        } elseif ($user->hasRole('Guru Besar')) {
+        } elseif ($role === 'Guru Besar') {
             // 3. Guru Besar Logic (School Scope)
             $schoolId = $user->school_id;
             $data['stats'] = [
@@ -112,7 +112,7 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get();
 
-        } elseif ($user->hasRole('Guru KAFA')) {
+        } elseif ($role === 'Guru KAFA') {
             // 4. Guru KAFA Logic
             $data['stats'] = [
                 'classes_taught' => \App\Models\KafaClass::where('teacher_id', $user->id)->count(),
