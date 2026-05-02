@@ -1,122 +1,112 @@
-@extends('layout.layout')
-
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Tambah Sekolah</h1>
+        <a href="{{ route('schools.index') }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Kembali
+        </a>
+    </div>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title">
-                            <h4 class="rbt-title-style-3">Tambah Sekolah</h4>
-                        </div>
+    <form action="{{ route('schools.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                        <form action="{{ route('schools.store') }}" method="POST" enctype="multipart/form-data" class="rbt-profile-row rbt-default-form row row--15">
-                            @csrf
-                            
-                            <!-- Lajur Kiri: Profil Sekolah -->
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <h5 class="mb--20">Profil Sekolah</h5>
-                                
-                                <div class="rbt-form-group">
-                                    <label for="name">Nama Sekolah <span class="text-danger">*</span></label>
-                                    <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Contoh: KAFA Al-Hidayah" required>
-                                </div>
+            {{-- Lajur Kiri: Profil Sekolah --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700 pb-2">Profil Sekolah</h2>
 
-                                <div class="rbt-form-group">
-                                    <label for="code">Kod Sekolah / Kod KAFA <span class="text-danger">*</span></label>
-                                    <input type="text" id="code" name="code" value="{{ old('code') }}" placeholder="Cth: AYQ1007" required>
-                                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Sekolah <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Contoh: KAFA Al-Hidayah" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                                @role('Penyelia KAFA')
-                                    <div class="rbt-form-group">
-                                        <label>Daerah</label>
-                                        <input type="text" value="{{ auth()->user()->district->name }}" disabled>
-                                        <input type="hidden" name="district_id" value="{{ auth()->user()->district_id }}">
-                                    </div>
-                                @else
-                                    <div class="rbt-form-group">
-                                        <label for="district_id">Daerah <span class="text-danger">*</span></label>
-                                        <select id="district_id" name="district_id" class="rbt-big-select" required>
-                                            <option value="">-- Pilih Daerah --</option>
-                                            @foreach($districts as $district)
-                                                <option value="{{ $district->id }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                @endrole
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kod Sekolah / Kod KAFA <span class="text-red-500">*</span></label>
+                    <input type="text" name="code" value="{{ old('code') }}" placeholder="Cth: AYQ1007" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                                <div class="rbt-form-group">
-                                    <label for="jenis_premis">Jenis Premis</label>
-                                    <select id="jenis_premis" name="jenis_premis" class="rbt-big-select">
-                                        <option value="">Sila Pilih</option>
-                                        <option value="Sekolah Rendah Agama Rakyat (SRAR)" {{ old('jenis_premis') == 'Sekolah Rendah Agama Rakyat (SRAR)' ? 'selected' : '' }}>Sekolah Rendah Agama Rakyat (SRAR)</option>
-                                        <option value="Menumpang Sekolah Kebangsaan (SK)" {{ old('jenis_premis') == 'Menumpang Sekolah Kebangsaan (SK)' ? 'selected' : '' }}>Menumpang Sekolah Kebangsaan (SK)</option>
-                                        <option value="Menyewa" {{ old('jenis_premis') == 'Menyewa' ? 'selected' : '' }}>Menyewa</option>
-                                        <option value="Wakaf" {{ old('jenis_premis') == 'Wakaf' ? 'selected' : '' }}>Wakaf</option>
-                                        <option value="Surau" {{ old('jenis_premis') == 'Surau' ? 'selected' : '' }}>Surau</option>
-                                        <option value="Masjid" {{ old('jenis_premis') == 'Masjid' ? 'selected' : '' }}>Masjid</option>
-                                        <option value="Balai Raya / Dewan Orang Ramai" {{ old('jenis_premis') == 'Balai Raya / Dewan Orang Ramai' ? 'selected' : '' }}>Balai Raya / Dewan Orang Ramai</option>
-                                        <option value="Bangunan Sendiri" {{ old('jenis_premis') == 'Bangunan Sendiri' ? 'selected' : '' }}>Bangunan Sendiri</option>
-                                    </select>
-                                </div>
+                @role('Penyelia KAFA')
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Daerah</label>
+                    <input type="text" value="{{ auth()->user()->district->name }}" disabled
+                           class="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+                    <input type="hidden" name="district_id" value="{{ auth()->user()->district_id }}">
+                </div>
+                @else
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Daerah <span class="text-red-500">*</span></label>
+                    <select name="district_id" required
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Pilih Daerah --</option>
+                        @foreach($districts as $district)
+                        <option value="{{ $district->id }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endrole
 
-                                <div class="rbt-form-group">
-                                    <label for="logo">Logo Sekolah</label>
-                                    <input type="file" id="logo" name="logo" class="form-control" style="height: 50px; line-height: 35px;" accept="image/*">
-                                    <small class="text-muted">Format: JPG, PNG, GIF. Maksimum 2MB.</small>
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jenis Premis</label>
+                    <select name="jenis_premis"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">Sila Pilih</option>
+                        @foreach(['Sekolah Rendah Agama Rakyat (SRAR)','Menumpang Sekolah Kebangsaan (SK)','Menyewa','Wakaf','Surau','Masjid','Balai Raya / Dewan Orang Ramai','Bangunan Sendiri'] as $opt)
+                        <option value="{{ $opt }}" {{ old('jenis_premis') == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                            <!-- Lajur Kanan: Maklumat Pengurusan -->
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <h5 class="mb--20">Maklumat Pengurusan</h5>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Logo Sekolah</label>
+                    <input type="file" name="logo" accept="image/*"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-900/30 dark:file:text-blue-300">
+                    <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, GIF. Maksimum 2MB.</p>
+                </div>
+            </div>
 
-                                <div class="rbt-form-group">
-                                    <label for="nama_guru_besar">Nama Guru Besar / Penyelaras</label>
-                                    <input type="text" id="nama_guru_besar" name="nama_guru_besar" value="{{ old('nama_guru_besar') }}" placeholder="Nama penuh">
-                                </div>
+            {{-- Lajur Kanan: Maklumat Pengurusan --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700 pb-2">Maklumat Pengurusan</h2>
 
-                                <div class="rbt-form-group">
-                                    <label for="no_telefon">No. Telefon</label>
-                                    <input type="text" id="no_telefon" name="no_telefon" value="{{ old('no_telefon') }}" placeholder="Cth: 012-3456789">
-                                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Guru Besar / Penyelaras</label>
+                    <input type="text" name="nama_guru_besar" value="{{ old('nama_guru_besar') }}" placeholder="Nama penuh"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                                <div class="rbt-form-group">
-                                    <label for="alamat">Alamat Penuh Sekolah</label>
-                                    <textarea id="alamat" name="alamat" rows="4">{{ old('alamat') }}</textarea>
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No. Telefon</label>
+                    <input type="text" name="no_telefon" value="{{ old('no_telefon') }}" placeholder="Cth: 012-3456789"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                            <!-- Butang Tindakan -->
-                            <div class="col-12 mt--30">
-                                <hr class="mb--30">
-                                <div class="rbt-button-group justify-content-end">
-                                    <a href="{{ route('schools.index') }}" class="rbt-btn btn-border-gradient">Batal</a>
-                                    <button class="rbt-btn btn-gradient hover-icon-reverse" type="submit">
-                                        <span class="icon-reverse-wrapper">
-                                            <span class="btn-text">Simpan Sekolah</span>
-                                            <span class="btn-icon"><i class="feather-check"></i></span>
-                                            <span class="btn-icon"><i class="feather-check"></i></span>
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alamat Penuh Sekolah</label>
+                    <textarea name="alamat" rows="4"
+                              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">{{ old('alamat') }}</textarea>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="flex justify-end gap-3 mt-5">
+            <a href="{{ route('schools.index') }}"
+               class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                Batal
+            </a>
+            <button type="submit"
+                    class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                Simpan Sekolah
+            </button>
+        </div>
+    </form>
 </div>
 @endsection

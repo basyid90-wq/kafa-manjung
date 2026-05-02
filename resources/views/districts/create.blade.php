@@ -1,59 +1,46 @@
-@extends('layout.layout')
-
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Tambah Daerah</h1>
+        <a href="{{ route('districts.index') }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Kembali
+        </a>
+    </div>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title">
-                            <h4 class="rbt-title-style-3">Tambah Daerah</h4>
-                        </div>
-
-                        <form action="{{ route('districts.store') }}" method="POST" class="rbt-profile-row rbt-default-form row row--15">
-                            @csrf
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="name">Nama Daerah</label>
-                                    <input type="text" id="name" name="name" placeholder="Contoh: Manjung" required>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="code">Kod Daerah (Pilihan)</label>
-                                    <input type="text" id="code" name="code" placeholder="Contoh: MAN">
-                                </div>
-                            </div>
-
-                            <div class="col-12 mt--30">
-                                <div class="rbt-button-group justify-content-start">
-                                    <button class="rbt-btn btn-gradient hover-icon-reverse" type="submit">
-                                        <span class="icon-reverse-wrapper">
-                                            <span class="btn-text">Simpan Daerah</span>
-                                            <span class="btn-icon"><i class="feather-check"></i></span>
-                                            <span class="btn-icon"><i class="feather-check"></i></span>
-                                        </span>
-                                    </button>
-                                    <a href="{{ route('districts.index') }}" class="rbt-btn btn-border-gradient">Batal</a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+        <form action="{{ route('districts.store') }}" method="POST">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Daerah <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" placeholder="Contoh: Manjung" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kod Daerah <span class="text-gray-400 font-normal">(Pilihan)</span></label>
+                    <input type="text" name="code" placeholder="Contoh: MAN"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
-        </div>
+
+            <div class="flex gap-3">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Simpan Daerah
+                </button>
+                <a href="{{ route('districts.index') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                    Batal
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

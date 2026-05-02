@@ -1,92 +1,88 @@
-@extends('layout.layout')
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Kemaskini Mata Pelajaran</h1>
+        <a href="{{ route('subjects.index', ['page' => request('page', 1)]) }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Kembali
+        </a>
+    </div>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title mb--30">
-                            <h4 class="rbt-title-style-3">Kemaskini Mata Pelajaran</h4>
-                        </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+        <form action="{{ route('subjects.update', $subject->id) }}" method="POST">
+            @csrf @method('PUT')
+            <input type="hidden" name="page" value="{{ request('page', 1) }}">
 
-                        <form action="{{ route('subjects.update', $subject->id) }}" method="POST" class="rbt-profile-row rbt-default-form row row--15">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="page" value="{{ request('page', 1) }}">
+            @php
+            $formSlots = [
+                'tilawah_tahfiz' => 'Tilawah & Tahfiz Al-Quran',
+                'lughati'        => 'Lughati (Lughatul Quran)',
+                'ibadah'         => 'Ibadah',
+                'akidah'         => 'Akidah',
+                'sirah'          => 'Sirah & Tamadun Islam',
+                'adab'           => 'Adab & Akhlak',
+                'jawi_khat'      => 'Jawi & Khat',
+                'bahasa_arab'    => 'Bahasa Arab',
+                'amali_solat'    => 'Amali Solat',
+            ];
+            @endphp
 
-                            <div class="col-lg-8">
-                                <div class="rbt-form-group">
-                                    <label for="name">Nama Mata Pelajaran</label>
-                                    <input type="text" id="name" name="name" value="{{ $subject->name }}" required>
-                                </div>
-                            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 
-                            <div class="col-lg-4">
-                                <div class="rbt-form-group">
-                                    <label for="code">Kod Subjek</label>
-                                    <input type="text" id="code" name="code" value="{{ $subject->code }}" required>
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Mata Pelajaran <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" value="{{ $subject->name }}" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                            @role('Super Admin|Pentadbir|Penyelia KAFA')
-                            <div class="col-lg-8">
-                                <div class="rbt-form-group">
-                                    <label for="school_id">Sekolah (Pilihan: Kosongkan untuk Global)</label>
-                                    <select id="school_id" name="school_id" class="rbt-big-select">
-                                        <option value="">-- Subjek Global --</option>
-                                        @foreach($schools as $school)
-                                            <option value="{{ $school->id }}" {{ $subject->school_id == $school->id ? 'selected' : '' }}>
-                                                {{ $school->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            @endrole
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kod Subjek <span class="text-red-500">*</span></label>
+                    <input type="text" name="code" value="{{ $subject->code }}" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                            @php
-                            $formSlots = [
-                                'tilawah_tahfiz' => 'Tilawah & Tahfiz Al-Quran',
-                                'lughati'        => 'Lughati (Lughatul Quran)',
-                                'ibadah'         => 'Ibadah',
-                                'akidah'         => 'Akidah',
-                                'sirah'          => 'Sirah & Tamadun Islam',
-                                'adab'           => 'Adab & Akhlak',
-                                'jawi_khat'      => 'Jawi & Khat',
-                                'bahasa_arab'    => 'Bahasa Arab',
-                                'amali_solat'    => 'Amali Solat',
-                            ];
-                            @endphp
-                            <div class="col-lg-4">
-                                <div class="rbt-form-group">
-                                    <label for="form_slot">Slot Borang Pencapaian</label>
-                                    <select id="form_slot" name="form_slot" class="rbt-big-select">
-                                        <option value="">-- Tiada --</option>
-                                        @foreach($formSlots as $key => $label)
-                                            <option value="{{ $key }}" {{ $subject->form_slot === $key ? 'selected' : '' }}>{{ $label }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                @role('Super Admin|Pentadbir|Penyelia KAFA')
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sekolah <span class="text-gray-400 font-normal">(Kosongkan untuk Global)</span></label>
+                    <select name="school_id"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Subjek Global --</option>
+                        @foreach($schools as $school)
+                        <option value="{{ $school->id }}" {{ $subject->school_id == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endrole
 
-                            <div class="col-12 mt--20">
-                                <div class="rbt-form-group">
-                                    <button class="rbt-btn btn-gradient" type="submit">Kemaskini Rekod</button>
-                                    <a class="rbt-btn btn-border" href="{{ route('subjects.index', ['page' => request('page', 1)]) }}">Batal</a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Slot Borang Pencapaian</label>
+                    <select name="form_slot"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Tiada --</option>
+                        @foreach($formSlots as $key => $label)
+                        <option value="{{ $key }}" {{ $subject->form_slot === $key ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
-        </div>
+
+            <div class="flex gap-3">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Kemaskini Rekod
+                </button>
+                <a href="{{ route('subjects.index', ['page' => request('page', 1)]) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                    Batal
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

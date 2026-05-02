@@ -1,158 +1,114 @@
-@extends('layout.layout')
-
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Kemaskini Kelas</h1>
+        <a href="{{ route('kafa_classes.index') }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Kembali
+        </a>
+    </div>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box" style="overflow: visible !important;">
-                    <div class="content" style="padding-top: 50px !important;">
-                        <div class="section-title">
-                            <h4 class="rbt-title-style-3">Kemaskini Kelas</h4>
-                        </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+        <form action="{{ route('kafa_classes.update', $kafaClass) }}" method="POST">
+            @csrf @method('PUT')
 
-                        <form action="{{ route('kafa_classes.update', $kafaClass) }}" method="POST" class="rbt-profile-row rbt-default-form row row--15">
-                            @csrf @method('PUT')
-                            
-                            @hasanyrole('Super Admin|Pentadbir')
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="school_id">Pilih Sekolah</label>
-                                    <select name="school_id" id="school_id" class="rbt-big-select" required>
-                                        <option value="">-- Pilih Sekolah --</option>
-                                        @foreach($schools as $school)
-                                        <option value="{{ $school->id }}" {{ old('school_id', $kafaClass->school_id) == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            @else
-                            <input type="hidden" name="school_id" value="{{ auth()->user()->school_id }}">
-                            @endhasanyrole
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 
-                            <div class="col-lg-3 col-md-4 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="tahun">Tahun <span class="text-danger">*</span></label>
-                                    <select id="tahun" name="tahun" class="rbt-big-select" required>
-                                        <option value="">-- Pilih Tahun --</option>
-                                        @for($t = 1; $t <= 6; $t++)
-                                            <option value="{{ $t }}" {{ old('tahun', $kafaClass->tahun) == $t ? 'selected' : '' }}>Tahun {{ $t }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-                            </div>
+                @hasanyrole('Super Admin|Pentadbir')
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pilih Sekolah <span class="text-red-500">*</span></label>
+                    <select name="school_id" id="school_id" required
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Pilih Sekolah --</option>
+                        @foreach($schools as $school)
+                        <option value="{{ $school->id }}" {{ old('school_id', $kafaClass->school_id) == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @else
+                <input type="hidden" name="school_id" value="{{ auth()->user()->school_id }}">
+                @endhasanyrole
 
-                            <div class="col-lg-5 col-md-8 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="name">Nama Kelas <span class="text-danger">*</span></label>
-                                    <input id="name" name="name" type="text" value="{{ old('name', $kafaClass->name) }}" required>
-                                    <small class="color-body">Nama kelas tanpa nombor tahun, sama seperti dalam SIMPENI.</small>
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tahun <span class="text-red-500">*</span></label>
+                    <select name="tahun" id="tahun" required
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Pilih Tahun --</option>
+                        @for($t = 1; $t <= 6; $t++)
+                        <option value="{{ $t }}" {{ old('tahun', $kafaClass->tahun) == $t ? 'selected' : '' }}>Tahun {{ $t }}</option>
+                        @endfor
+                    </select>
+                </div>
 
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="teacher_id">Guru Kelas (Pilihan)</label>
-                                    <select name="teacher_id" id="teacher_id" class="rbt-big-select">
-                                        <option value="">-- Pilih Guru --</option>
-                                        @foreach($teachers as $teacher)
-                                            <option value="{{ $teacher->id }}" {{ (isset($kafaClass) && $kafaClass->teacher_id == $teacher->id) ? 'selected' : '' }}>
-                                                {{ $teacher->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 mt--20">
-                                <div class="rbt-form-group">
-                                    <button class="rbt-btn btn-gradient" type="submit">Kemaskini Rekod</button>
-                                    <a class="rbt-btn btn-border" href="{{ route('kafa_classes.index') }}">Batal</a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Kelas <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" id="name" value="{{ old('name', $kafaClass->name) }}" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <p class="text-xs text-gray-400 mt-1">Nama kelas tanpa nombor tahun, sama seperti dalam SIMPENI.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guru Kelas <span class="text-gray-400 font-normal">(Pilihan)</span></label>
+                    <select name="teacher_id" id="teacher_id"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Pilih Guru --</option>
+                        @foreach($teachers as $teacher)
+                        <option value="{{ $teacher->id }}" {{ $kafaClass->teacher_id == $teacher->id ? 'selected' : '' }}>{{ $teacher->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
-        </div>
+
+            <div class="flex gap-3">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Kemaskini Rekod
+                </button>
+                <a href="{{ route('kafa_classes.index') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                    Batal
+                </a>
+            </div>
+        </form>
     </div>
 </div>
-@endsection
 
-@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Matikan selectpicker jika ia wujud pada elemen ini
-    function destroySelectPicker(id) {
-        const el = $(id);
-        if (el.length && typeof el.selectpicker === 'function') {
-            el.selectpicker('destroy');
-            // Paksa gaya paparan jika ia disembunyikan oleh plugin
-            el.show().css({
-                'display': 'block',
-                'visibility': 'visible',
-                'opacity': '1',
-                'position': 'relative'
-            });
-        }
-    }
-
-    destroySelectPicker('#school_id');
-    destroySelectPicker('#teacher_id');
-    destroySelectPicker('#tahun');
-
-    const schoolSelect = document.getElementById('school_id');
+    const schoolSelect  = document.getElementById('school_id');
     const teacherSelect = document.getElementById('teacher_id');
 
     if (schoolSelect) {
         schoolSelect.addEventListener('change', function () {
             const schoolId = this.value;
             teacherSelect.innerHTML = '<option value="">-- Memuatkan... --</option>';
-
             if (!schoolId) {
                 teacherSelect.innerHTML = '<option value="">-- Pilih Sekolah Terlebih Dahulu --</option>';
                 return;
             }
-
-            // Gunakan {{ url('get-teachers') }} untuk memastikan path yang betul mengikut persekitaran (Lokal/Pelayan)
-            const fetchUrl = "{{ url('get-teachers') }}/" + schoolId;
-
-            fetch(fetchUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
+            fetch("{{ url('get-teachers') }}/" + schoolId)
+                .then(r => { if (!r.ok) throw new Error(); return r.json(); })
                 .then(data => {
                     teacherSelect.innerHTML = '<option value="">-- Pilih Guru --</option>';
-                    if (data.length === 0) {
-                        const option = document.createElement('option');
-                        option.value = "";
-                        option.text = "Tiada Guru Berdaftar di Sekolah Ini";
-                        teacherSelect.add(option);
+                    if (!data.length) {
+                        teacherSelect.innerHTML += '<option value="" disabled>Tiada Guru Berdaftar di Sekolah Ini</option>';
                     } else {
-                        data.forEach(teacher => {
-                            const option = document.createElement('option');
-                            option.value = teacher.id;
-                            option.text = teacher.name;
-                            teacherSelect.add(option);
+                        data.forEach(t => {
+                            const o = document.createElement('option');
+                            o.value = t.id; o.text = t.name;
+                            teacherSelect.add(o);
                         });
                     }
                 })
-                .catch(error => {
-                    console.error('Error fetching teachers:', error);
-                    teacherSelect.innerHTML = '<option value="">-- Ralat memuatkan data --</option>';
-                });
+                .catch(() => { teacherSelect.innerHTML = '<option value="">-- Ralat memuatkan data --</option>'; });
         });
     }
 });
 </script>
-@endpush
+@endsection
