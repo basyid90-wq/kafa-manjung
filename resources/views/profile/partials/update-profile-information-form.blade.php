@@ -1,70 +1,55 @@
-<section>
-    <div class="section-title mb--20">
-        <h6 class="rbt-title-style-2">{{ __('Maklumat Profil') }}</h6>
-        <p class="description">{{ __("Kemaskini maklumat profil akaun dan alamat e-mel anda.") }}</p>
-    </div>
+<section class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-0.5">Maklumat Profil</h2>
+    <p class="text-xs text-gray-400 mb-4">Kemaskini maklumat profil akaun dan alamat e-mel anda.</p>
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="rbt-profile-row rbt-default-form row row--15">
-        @csrf
-        @method('patch')
+    <form method="post" action="{{ route('profile.update') }}">
+        @csrf @method('patch')
 
-        <div class="col-lg-6 col-md-6 col-12">
-            <div class="rbt-form-group">
-                <label for="name">{{ __('Nama') }}</label>
-                <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama <span class="text-red-500">*</span></label>
+                <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name"
+                       class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                 @if($errors->get('name'))
-                    <span class="text-danger small mt-1">{{ $errors->first('name') }}</span>
+                <p class="text-red-500 text-xs mt-1">{{ $errors->first('name') }}</p>
                 @endif
             </div>
-        </div>
 
-        <div class="col-lg-6 col-md-6 col-12">
-            <div class="rbt-form-group">
-                <label for="email">{{ __('E-mel') }}</label>
-                <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required autocomplete="username">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">E-mel <span class="text-red-500">*</span></label>
+                <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required autocomplete="username"
+                       class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                 @if($errors->get('email'))
-                    <span class="text-danger small mt-1">{{ $errors->first('email') }}</span>
+                <p class="text-red-500 text-xs mt-1">{{ $errors->first('email') }}</p>
                 @endif
 
                 @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                    <div class="mt-2">
-                        <p class="text-sm text-gray-800">
-                            {{ __('Alamat e-mel anda belum disahkan.') }}
-
-                            <button form="send-verification" class="rbt-btn-link">
-                                {{ __('Klik di sini untuk menghantar semula e-mel pengesahan.') }}
-                            </button>
-                        </p>
-
-                        @if (session('status') === 'verification-link-sent')
-                            <p class="mt-2 font-medium text-sm text-success">
-                                {{ __('Pautan pengesahan baharu telah dihantar ke alamat e-mel anda.') }}
-                            </p>
-                        @endif
-                    </div>
+                <div class="mt-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-xs text-yellow-800 dark:text-yellow-300">
+                    Alamat e-mel anda belum disahkan.
+                    <button form="send-verification" class="font-semibold underline ml-1">Hantar semula e-mel pengesahan.</button>
+                    @if (session('status') === 'verification-link-sent')
+                    <p class="mt-1 text-green-600 dark:text-green-400 font-medium">Pautan pengesahan baharu telah dihantar.</p>
+                    @endif
+                </div>
                 @endif
             </div>
         </div>
 
-        <div class="col-12 mt--20">
-            <div class="rbt-form-group d-flex align-items-center gap-4">
-                <button type="submit" class="rbt-btn btn-gradient btn-sm">{{ __('Simpan') }}</button>
-
-                @if (session('status') === 'profile-updated')
-                    <p
-                        x-data="{ show: true }"
-                        x-show="show"
-                        x-transition
-                        x-init="setTimeout(() => show = false, 2000)"
-                        class="text-sm text-success mb-0"
-                    >{{ __('Berjaya Disimpan.') }}</p>
-                @endif
-            </div>
+        <div class="flex items-center gap-3">
+            <button type="submit"
+                    class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                Simpan
+            </button>
+            @if (session('status') === 'profile-updated')
+            <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
+               class="text-sm text-green-600 dark:text-green-400 font-medium">
+                Berjaya Disimpan.
+            </p>
+            @endif
         </div>
     </form>
 </section>
-

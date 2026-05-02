@@ -1,58 +1,49 @@
-@extends('layout.layout')
-
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Tetapan Profil</h1>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title">
-                            <h4 class="rbt-title-style-3">Tetapan Profil</h4>
-                        </div>
+    {{-- Tabs --}}
+    <div class="flex gap-1 mb-5 bg-gray-100 dark:bg-gray-800 rounded-xl p-1" id="profileTabs">
+        <button type="button" id="tab-profile"
+                onclick="switchTab('profile')"
+                class="flex-1 px-4 py-2 text-xs font-medium rounded-lg transition-colors bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm">
+            Maklumat Profil
+        </button>
+        <button type="button" id="tab-password"
+                onclick="switchTab('password')"
+                class="flex-1 px-4 py-2 text-xs font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700">
+            Kata Laluan
+        </button>
+    </div>
 
-                        <div class="advance-tab-button mb--30">
-                            <ul class="nav nav-tabs tab-button-style-2 justify-content-start" id="settinsTab-4" role="tablist">
-                                <li role="presentation">
-                                    <a href="#" class="tab-button active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" role="tab" aria-controls="profile" aria-selected="true">
-                                        <span class="title">Maklumat Profil</span>
-                                    </a>
-                                </li>
-                                <li role="presentation">
-                                    <a href="#" class="tab-button" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" role="tab" aria-controls="password" aria-selected="false">
-                                        <span class="title">Kata Laluan</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+    {{-- Profile Panel --}}
+    <div id="panel-profile">
+        @include('profile.partials.update-profile-information-form')
+    </div>
 
-                        <div class="tab-content">
-                            <!-- Profil Tab -->
-                            <div class="tab-pane fade active show" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                @include('profile.partials.update-profile-information-form')
-                            </div>
-
-                            <!-- Password Tab -->
-                            <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
-                                @include('profile.partials.update-password-form')
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    {{-- Password Panel --}}
+    <div id="panel-password" class="hidden">
+        @include('profile.partials.update-password-form')
     </div>
 </div>
-@endsection
 
+<script>
+function switchTab(tab) {
+    ['profile','password'].forEach(function(t) {
+        document.getElementById('panel-' + t).classList.add('hidden');
+        document.getElementById('tab-' + t).classList.remove('bg-white','dark:bg-gray-700','text-blue-600','dark:text-blue-400','shadow-sm');
+        document.getElementById('tab-' + t).classList.add('text-gray-500','dark:text-gray-400');
+    });
+    document.getElementById('panel-' + tab).classList.remove('hidden');
+    document.getElementById('tab-' + tab).classList.add('bg-white','dark:bg-gray-700','text-blue-600','dark:text-blue-400','shadow-sm');
+    document.getElementById('tab-' + tab).classList.remove('text-gray-500','dark:text-gray-400');
+}
+// Auto-open password tab if there are password errors
+@if($errors->updatePassword->any())
+document.addEventListener('DOMContentLoaded', function() { switchTab('password'); });
+@endif
+</script>
+@endsection
