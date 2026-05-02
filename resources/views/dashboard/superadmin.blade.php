@@ -2,19 +2,19 @@
 @php
     $cards = [
         [
-            'title'  => 'Sekolah Aktif',
+            'title'  => 'Jumlah Sekolah',
             'count'  => $data['stats']['schools'],
             'icon'   => 'feather-home',
             'class'  => 'bg-primary-opacity',
             'color'  => 'color-primary',
         ],
         [
-            'title'  => 'Pengguna Aktif',
-            'count'  => $data['stats']['active_users'],
+            'title'  => 'Jumlah Pengguna',
+            'count'  => $data['stats']['total_users'],
             'icon'   => 'feather-users',
             'class'  => 'bg-secondary-opacity',
             'color'  => 'color-secondary',
-            'note'   => '90 hari terakhir',
+            'note'   => 'semua role',
         ],
         [
             'title'  => 'Jumlah Murid',
@@ -25,11 +25,11 @@
         ],
         [
             'title'  => 'Pengguna Baharu',
-            'count'  => $data['stats']['new_users_30'],
+            'count'  => $data['stats']['new_users_yr'],
             'icon'   => 'feather-user-plus',
             'class'  => 'bg-warning-opacity',
             'color'  => 'color-warning',
-            'note'   => '30 hari terakhir',
+            'note'   => 'tahun ' . now()->year,
         ],
     ];
 @endphp

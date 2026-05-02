@@ -27,9 +27,9 @@ class DashboardController extends Controller
             // ── Super Admin: System-level stats ──
             $data['stats'] = [
                 'schools'      => \App\Models\School::count(),
-                'active_users' => \App\Models\User::where('created_at', '>=', now()->subDays(90))->count(),
+                'total_users'  => \App\Models\User::count(),
                 'students'     => \App\Models\Student::count(),
-                'new_users_30' => \App\Models\User::where('created_at', '>=', now()->subDays(30))->count(),
+                'new_users_yr' => \App\Models\User::whereYear('created_at', now()->year)->count(),
             ];
 
             // Recent feedback (latest 5)
