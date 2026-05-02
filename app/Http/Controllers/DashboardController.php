@@ -134,6 +134,6 @@ class DashboardController extends Controller
                 });
         }
 
-        return view('dashboard.index', compact('data', 'role'));
+        return view('dashboard.index-fb', compact('data', 'role'));
     }
 }
