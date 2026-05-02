@@ -1,108 +1,110 @@
-@extends('layout.layout')
-
-@php $bodyClass = ''; $footer = 'true'; @endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Kemasukan Markah Peperiksaan</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Pilih peperiksaan, kelas dan mata pelajaran untuk kemaskini markah</p>
+        </div>
+        <a href="{{ route('exams.index') }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            Urus Peperiksaan
+        </a>
+    </div>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title d-flex justify-content-between align-items-center mb--20">
-                            <h4 class="rbt-title-style-3">Kemasukan Markah Peperiksaan</h4>
-                            <a href="{{ route('exams.index') }}" class="rbt-btn btn-border btn-sm">
-                                <i class="feather-settings me-1"></i> Urus Peperiksaan
-                            </a>
-                        </div>
+    {{-- ── Missing Slots Warning ── --}}
+    @if(!empty($missingSlots))
+    <div class="flex items-start gap-3 p-4 mb-5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+        <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <div>
+            <p class="text-sm font-semibold text-red-800 dark:text-red-300">
+                Amaran: {{ count($missingSlots) }} subjek KAFA tiada rekod dalam sistem!
+            </p>
+            <p class="text-xs text-red-600 dark:text-red-400 mt-1 mb-2">
+                Slot berikut belum ada subjek dengan <code class="bg-red-100 dark:bg-red-900/40 px-1 rounded">form_slot</code> ditetapkan — markah untuk slot ini <strong>tidak akan muncul</strong> dalam Rekod Pencapaian Murid:
+            </p>
+            <div class="flex flex-wrap gap-1">
+                @foreach($missingSlots as $slot)
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400">{{ $slot }}</span>
+                @endforeach
+            </div>
+            <p class="text-xs text-red-500 dark:text-red-400 mt-2">
+                Sila tetapkan <strong>Form Slot</strong> yang betul pada setiap subjek dalam Pengurusan Subjek.
+            </p>
+        </div>
+    </div>
+    @endif
 
-                        @if(session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
+    {{-- ── Form ── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <form action="{{ route('exams.results.show') }}" method="GET" class="space-y-5">
 
-                        {{-- FIX 1: Peringatan slot subjek hilang --}}
-                        @if(!empty($missingSlots))
-                        <div class="alert alert-danger d-flex align-items-start gap-2 mb--20">
-                            <i class="feather-alert-triangle mt-1 flex-shrink-0"></i>
-                            <div>
-                                <strong>Amaran: {{ count($missingSlots) }} subjek KAFA tiada rekod dalam sistem!</strong><br>
-                                <small>Slot berikut belum ada subjek dengan <code>form_slot</code> ditetapkan — markah untuk slot ini <strong>tidak akan muncul</strong> dalam Rekod Pencapaian Murid:</small>
-                                <div class="mt-1">
-                                    @foreach($missingSlots as $slot)
-                                        <span class="badge bg-danger me-1">{{ $slot }}</span>
-                                    @endforeach
-                                </div>
-                                <small class="text-muted mt-1 d-block">Sila tetapkan <strong>Form Slot</strong> yang betul pada setiap subjek dalam Pengurusan Subjek.</small>
-                            </div>
-                        </div>
-                        @endif
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Pilih Peperiksaan <span class="text-red-500">*</span>
+                </label>
+                <select name="exam_id" required
+                        class="w-full px-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <option value="">— Pilih Peperiksaan —</option>
+                    @foreach($exams as $exam)
+                    <option value="{{ $exam->id }}">{{ $exam->name }} ({{ $exam->year }}) — {{ ucfirst(str_replace('_', ' ', $exam->term)) }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-                        <form action="{{ route('exams.results.show') }}" method="GET" class="rbt-profile-row rbt-default-form row row--15">
-                            <div class="col-lg-12">
-                                <div class="rbt-form-group">
-                                    <label for="exam_id">Pilih Peperiksaan</label>
-                                    <select id="exam_id" name="exam_id" class="selectpicker" data-width="100%" data-container="body" data-live-search="true" title="-- Pilih Peperiksaan --" required>
-                                        @foreach($exams as $exam)
-                                            <option value="{{ $exam->id }}">{{ $exam->name }} ({{ $exam->year }}) — {{ ucfirst(str_replace('_', ' ', $exam->term)) }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        Pilih Kelas <span class="text-red-500">*</span>
+                    </label>
+                    <select name="kafa_class_id" required
+                            class="w-full px-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value="">— Pilih Kelas —</option>
+                        @foreach($classes as $class)
+                        <option value="{{ $class->id }}">{{ $class->display_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                            <div class="col-lg-6 col-md-6 col-12 mt--20">
-                                <div class="rbt-form-group">
-                                    <label for="kafa_class_id">Pilih Kelas</label>
-                                    <select id="kafa_class_id" name="kafa_class_id" class="selectpicker" data-width="100%" data-container="body" data-live-search="true" title="-- Pilih Kelas --" required>
-                                        @foreach($classes as $class)
-                                            <option value="{{ $class->id }}">{{ $class->display_name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6 col-12 mt--20">
-                                <div class="rbt-form-group">
-                                    <label for="subject_id">
-                                        Pilih Mata Pelajaran
-                                        <small class="text-muted ms-1">(🔗 = tersambung ke Rekod Pencapaian)</small>
-                                    </label>
-                                    <select id="subject_id" name="subject_id" class="selectpicker" data-width="100%" data-container="body" data-live-search="true" data-size="8" title="-- Pilih Mata Pelajaran --" required>
-                                        @foreach($subjects as $subject)
-                                            <option value="{{ $subject->id }}"
-                                                data-content="{{ $subject->slot_linked ? '🔗' : ($subject->has_slot ? '⚠️' : '❌') }} {{ e($subject->name) }}{{ $subject->form_slot ? ' <small class=\'text-muted\'>['.$subject->form_slot.']</small>' : ' <small class=\'text-danger\'>[tiada slot]</small>' }}">
-                                                {{ $subject->slot_linked ? '🔗' : ($subject->has_slot ? '⚠️' : '❌') }} {{ $subject->name }}{{ $subject->form_slot ? ' ['.$subject->form_slot.']' : ' [tiada slot]' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <small class="text-muted d-block mt-1">
-                                        🔗 Tersambung ke Rekod Pencapaian &nbsp;|&nbsp;
-                                        ⚠️ Ada slot tapi tidak dikenali &nbsp;|&nbsp;
-                                        ❌ Tiada form_slot — markah tidak akan muncul dalam Rekod Pencapaian
-                                    </small>
-                                </div>
-                            </div>
-
-                            <div class="col-12 mt--30">
-                                <div class="rbt-button-group justify-content-start">
-                                    <button class="rbt-btn btn-gradient hover-icon-reverse" type="submit">
-                                        <span class="icon-reverse-wrapper">
-                                            <span class="btn-text">Teruskan</span>
-                                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        Pilih Mata Pelajaran <span class="text-red-500">*</span>
+                        <span class="text-xs font-normal text-gray-500 ml-1">(🔗 = tersambung ke Rekod Pencapaian)</span>
+                    </label>
+                    <select name="subject_id" required
+                            class="w-full px-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value="">— Pilih Mata Pelajaran —</option>
+                        @foreach($subjects as $subject)
+                        <option value="{{ $subject->id }}">
+                            {{ $subject->slot_linked ? '🔗' : ($subject->has_slot ? '⚠️' : '❌') }}
+                            {{ $subject->name }}{{ $subject->form_slot ? ' ['.$subject->form_slot.']' : ' [tiada slot]' }}
+                        </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-gray-400 mt-1.5">
+                        🔗 Tersambung &nbsp;|&nbsp; ⚠️ Ada slot tapi tidak dikenali &nbsp;|&nbsp; ❌ Tiada form_slot
+                    </p>
                 </div>
             </div>
-        </div>
+
+            <div>
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Teruskan
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

@@ -1,284 +1,285 @@
-@extends('layout.layout')
+@extends('layout-fb.layout')
 
 @php
-    $bodyClass = '';
-    $footer = 'true';
     $dateParts = explode('-', $date);
     $pdfYear  = (int) $dateParts[0];
     $pdfMonth = (int) $dateParts[1];
 @endphp
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    {{-- ── Header with date filter ── --}}
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Kehadiran Murid</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                {{ \Carbon\Carbon::parse($date)->translatedFormat('l, d F Y') }}
+            </p>
+        </div>
+        <form action="{{ route('attendances.index') }}" method="GET" class="flex items-center gap-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Tarikh:</label>
+            <input type="date" name="date" value="{{ $date }}" onchange="this.form.submit()"
+                   class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+        </form>
+    </div>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
+    @forelse($classes as $c)
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
 
-                        <div class="section-title d-flex justify-content-between align-items-center mb--30 flex-wrap gap-2">
-                            <h4 class="rbt-title-style-3">Kehadiran Murid</h4>
-                            <form action="{{ route('attendances.index') }}" method="GET" class="d-flex align-items-center">
-                                <label for="date" class="mb-0 me-3">Tarikh:</label>
-                                <input type="date" name="date" id="date" value="{{ $date }}"
-                                       class="form-control" onchange="this.form.submit()" style="max-width:200px;">
-                            </form>
-                        </div>
-
-                        @forelse($classes as $c)
-
-                            {{-- Per-class header: nama kelas + semua butang tindakan --}}
-                            <div class="d-flex justify-content-between align-items-center mb--20 flex-wrap gap-2">
-                                <h5 class="mb-0">Kelas: {{ $c->display_name }}</h5>
-                                <div class="d-flex gap-2 flex-wrap align-items-center">
-
-                                    {{-- Tanda Semua Hadir --}}
-                                    @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
-                                    <button type="button"
-                                            class="btn btn-sm btn-success"
-                                            onclick="tandaSemua({{ $c->id }})">
-                                        <i class="feather-check-circle me-1"></i> Semua Hadir
-                                    </button>
-                                    @endhasanyrole
-
-                                    @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
-                                    <a href="{{ route('kiosk.index') }}" target="_blank"
-                                       class="rbt-btn btn-border-gradient" style="padding:8px 14px; font-size:0.82em;">
-                                        <i class="feather-camera me-1"></i> Kiosk Imbasan
-                                    </a>
-                                    @endhasanyrole
-
-                                    @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
-                                    <a href="{{ route('students.qr_cards', $c) }}" target="_blank"
-                                       class="rbt-btn btn-border-gradient" style="padding:8px 14px; font-size:0.82em;">
-                                        <i class="feather-grid me-1"></i> Cetak Kad QR
-                                    </a>
-                                    @endhasanyrole
-
-                                    @hasanyrole('Super Admin|Pentadbir|Penyelia KAFA|Guru Besar|Guru KAFA')
-                                    <button type="button"
-                                            class="rbt-btn btn-gradient"
-                                            style="padding:8px 14px; font-size:0.82em;"
-                                            data-class-id="{{ $c->id }}"
-                                            data-class-name="{{ $c->display_name }}"
-                                            onclick="openKedatanganModal(this)">
-                                        <i class="feather-book-open me-1"></i> Buku Kedatangan
-                                    </button>
-                                    @endhasanyrole
-
-                                </div>
-                            </div>
-
-                            <form id="class-form-{{ $c->id }}"
-                                  action="{{ route('attendances.store') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="date" value="{{ $date }}">
-
-                                <div class="table-responsive mb--30">
-                                    <table class="rbt-table table table-borderless">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>No. MyKid</th>
-                                                <th>Nama Murid</th>
-                                                <th>Status Kehadiran</th>
-                                                @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
-                                                <th class="text-center">Cuti</th>
-                                                @endhasanyrole
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse($c->students as $i => $student)
-                                                @php
-                                                    $attendance = $student->attendances->first();
-                                                    $status = $attendance ? $attendance->status : null;
-                                                @endphp
-                                                <tr id="row-{{ $student->id }}">
-                                                    <td>{{ $i + 1 }}</td>
-                                                    <td>{{ $student->mykid }}</td>
-                                                    <td>{{ $student->name }}</td>
-                                                    <td>
-                                                        {{-- Quick Radio Buttons --}}
-                                                        <div class="btn-group" role="group"
-                                                             aria-label="Status kehadiran {{ $student->name }}">
-
-                                                            <input type="radio"
-                                                                   class="btn-check"
-                                                                   name="attendances[{{ $student->id }}]"
-                                                                   id="H_{{ $student->id }}"
-                                                                   value="Hadir"
-                                                                   {{ $status === 'Hadir' ? 'checked' : '' }}>
-                                                            <label class="btn btn-outline-success btn-sm"
-                                                                   for="H_{{ $student->id }}">Hadir</label>
-
-                                                            <input type="radio"
-                                                                   class="btn-check"
-                                                                   name="attendances[{{ $student->id }}]"
-                                                                   id="L_{{ $student->id }}"
-                                                                   value="Lewat"
-                                                                   {{ $status === 'Lewat' ? 'checked' : '' }}>
-                                                            <label class="btn btn-outline-warning btn-sm"
-                                                                   for="L_{{ $student->id }}">Lewat</label>
-
-                                                            <input type="radio"
-                                                                   class="btn-check"
-                                                                   name="attendances[{{ $student->id }}]"
-                                                                   id="TH_{{ $student->id }}"
-                                                                   value="Tidak Hadir"
-                                                                   {{ $status === 'Tidak Hadir' ? 'checked' : '' }}>
-                                                            <label class="btn btn-outline-danger btn-sm"
-                                                                   for="TH_{{ $student->id }}">T.Hadir</label>
-
-                                                            <input type="radio"
-                                                                   class="btn-check"
-                                                                   name="attendances[{{ $student->id }}]"
-                                                                   id="CS_{{ $student->id }}"
-                                                                   value="Cuti Sakit"
-                                                                   {{ $status === 'Cuti Sakit' ? 'checked' : '' }}>
-                                                            <label class="btn btn-outline-secondary btn-sm"
-                                                                   for="CS_{{ $student->id }}">Cuti Sakit</label>
-
-                                                        </div>
-                                                    </td>
-                                                    @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
-                                                    <td class="text-center">
-                                                        <button type="button"
-                                                                class="btn btn-sm btn-light border"
-                                                                title="Daftar Cuti Berjadual"
-                                                                data-student-id="{{ $student->id }}"
-                                                                data-student-name="{{ $student->name }}"
-                                                                onclick="openCutiModal(this)">
-                                                            <i class="feather-calendar" style="font-size:0.9em;"></i>
-                                                        </button>
-                                                    </td>
-                                                    @endhasanyrole
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="5" class="text-center">Tiada murid dalam kelas ini.</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                @if($c->students->count() > 0)
-                                    <div class="rbt-form-group d-flex justify-content-end mb--40">
-                                        <button type="submit" class="rbt-btn btn-md btn-gradient">Simpan Kehadiran</button>
-                                    </div>
-                                @endif
-                            </form>
-
-                        @empty
-                            <div class="alert alert-warning">Anda belum ditugaskan sebagai Guru Kelas bagi mana-mana kelas.</div>
-                        @endforelse
-
-                    </div>
-                </div>
+        {{-- Class Header --}}
+        <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">
+                Kelas: {{ $c->display_name }}
+            </h2>
+            <div class="flex flex-wrap items-center gap-2">
+                @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+                <button type="button" onclick="tandaSemua({{ $c->id }})"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Semua Hadir
+                </button>
+                <a href="{{ route('kiosk.index') }}" target="_blank"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Kiosk Imbasan
+                </a>
+                <a href="{{ route('students.qr_cards', $c) }}" target="_blank"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 3.5V16M4 16.5V20m0 0h4M4 20v-4"/>
+                    </svg>
+                    Cetak Kad QR
+                </a>
+                @endhasanyrole
+                @hasanyrole('Super Admin|Pentadbir|Penyelia KAFA|Guru Besar|Guru KAFA')
+                <button type="button"
+                        data-class-id="{{ $c->id }}"
+                        data-class-name="{{ $c->display_name }}"
+                        onclick="openKedatanganModal(this)"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    Buku Kedatangan
+                </button>
+                @endhasanyrole
             </div>
         </div>
-    </div>
-</div>
-@endsection
 
-{{-- ── Modal: Jana Buku Kedatangan ── --}}
-<div class="modal fade" id="kedatanganModal" tabindex="-1" aria-labelledby="kedatanganModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="kedatanganModalLabel">
-                    <i class="feather-book-open me-2"></i> Jana Buku Kedatangan (PDF Jawi)
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        {{-- Table --}}
+        <form id="class-form-{{ $c->id }}" action="{{ route('attendances.store') }}" method="POST">
+            @csrf
+            <input type="hidden" name="date" value="{{ $date }}">
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th class="px-5 py-3 w-12">No</th>
+                            <th class="px-5 py-3">No. MyKid</th>
+                            <th class="px-5 py-3">Nama Murid</th>
+                            <th class="px-5 py-3">Status Kehadiran</th>
+                            @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+                            <th class="px-5 py-3 text-center w-20">Cuti</th>
+                            @endhasanyrole
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @forelse($c->students as $i => $student)
+                        @php
+                            $attendance = $student->attendances->first();
+                            $status = $attendance ? $attendance->status : null;
+                        @endphp
+                        <tr id="row-{{ $student->id }}" class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
+                            <td class="px-5 py-2.5 text-gray-400 text-xs">{{ $i + 1 }}</td>
+                            <td class="px-5 py-2.5 font-mono text-xs text-gray-600 dark:text-gray-400">{{ $student->mykid }}</td>
+                            <td class="px-5 py-2.5 font-medium text-gray-900 dark:text-white text-sm">{{ $student->name }}</td>
+                            <td class="px-5 py-2.5">
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach([
+                                        ['Hadir',       'Hadir',      'green'],
+                                        ['Lewat',       'Lewat',      'yellow'],
+                                        ['Tidak Hadir', 'T.Hadir',    'red'],
+                                        ['Cuti Sakit',  'Cuti Sakit', 'gray'],
+                                    ] as [$val, $label, $color])
+                                    <label class="cursor-pointer">
+                                        <input type="radio"
+                                               name="attendances[{{ $student->id }}]"
+                                               value="{{ $val }}"
+                                               {{ $status === $val ? 'checked' : '' }}
+                                               class="peer sr-only">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border transition-colors
+                                            peer-checked:bg-{{ $color }}-600 peer-checked:text-white peer-checked:border-{{ $color }}-600
+                                            bg-white dark:bg-gray-800 text-{{ $color }}-700 dark:text-{{ $color }}-400 border-{{ $color }}-300 dark:border-{{ $color }}-700
+                                            hover:bg-{{ $color }}-50 dark:hover:bg-{{ $color }}-900/20">
+                                            {{ $label }}
+                                        </span>
+                                    </label>
+                                    @endforeach
+                                </div>
+                            </td>
+                            @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+                            <td class="px-5 py-2.5 text-center">
+                                <button type="button"
+                                        data-student-id="{{ $student->id }}"
+                                        data-student-name="{{ $student->name }}"
+                                        onclick="openCutiModal(this)"
+                                        class="p-1.5 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                        title="Daftar Cuti Berjadual">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                            </td>
+                            @endhasanyrole
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="px-5 py-8 text-center text-gray-400 text-sm">Tiada murid dalam kelas ini.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-            <div class="modal-body">
-                <p id="kdClassName" class="fw-bold mb--20" style="font-size:0.95em; color:var(--color-primary);"></p>
-                <div class="rbt-form-group">
-                    <label for="kdMonthYear">Bulan &amp; Tahun <span class="text-danger">*</span></label>
-                    <input type="month" id="kdMonthYear" class="form-control" style="height:50px;" required>
-                </div>
-                <div class="rbt-form-group mt--20">
-                    <label for="kdTotalDays">Jumlah Hari Persekolahan Bulan Ini <span class="text-danger">*</span></label>
-                    <input type="number" id="kdTotalDays" class="form-control"
-                           style="height:50px;" min="1" max="31" placeholder="Contoh: 20" required>
-                    <small class="color-body">Masukkan bilangan hari sekolah aktif (tidak termasuk cuti).</small>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="rbt-btn btn-border-gradient" data-bs-dismiss="modal">Batal</button>
-                <button type="button" id="kdSubmitBtn" class="rbt-btn btn-gradient" onclick="submitKedatanganPdf()">
-                    <i class="feather-file-text me-1"></i> Jana PDF (Jawi)
+
+            @if($c->students->count() > 0)
+            <div class="px-5 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                    </svg>
+                    Simpan Kehadiran
                 </button>
             </div>
+            @endif
+        </form>
+    </div>
+
+    @empty
+    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-5 text-sm text-yellow-700 dark:text-yellow-400">
+        Anda belum ditugaskan sebagai Guru Kelas bagi mana-mana kelas.
+    </div>
+    @endforelse
+
+</div>
+
+{{-- ── Modal: Buku Kedatangan ── --}}
+<div id="kedatanganModal" tabindex="-1" aria-hidden="true"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Jana Buku Kedatangan (PDF Jawi)</h3>
+            <button onclick="document.getElementById('kedatanganModal').classList.add('hidden')"
+                    class="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <p id="kdClassName" class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4"></p>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Bulan &amp; Tahun <span class="text-red-500">*</span>
+                </label>
+                <input type="month" id="kdMonthYear"
+                       class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Jumlah Hari Persekolahan <span class="text-red-500">*</span>
+                </label>
+                <input type="number" id="kdTotalDays" min="1" max="31" placeholder="Contoh: 20"
+                       class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" required>
+                <p class="text-xs text-gray-400 mt-1">Masukkan bilangan hari sekolah aktif (tidak termasuk cuti).</p>
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+            <button onclick="document.getElementById('kedatanganModal').classList.add('hidden')"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
+                Batal
+            </button>
+            <button id="kdSubmitBtn" type="button" onclick="submitKedatanganPdf()"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Jana PDF (Jawi)
+            </button>
         </div>
     </div>
 </div>
 
 {{-- ── Modal: Cuti Berjadual ── --}}
-<div class="modal fade" id="cutiModal" tabindex="-1" aria-labelledby="cutiModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cutiModalLabel">
-                    <i class="feather-calendar me-2"></i> Daftar Cuti Berjadual
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+<div id="cutiModal" tabindex="-1" aria-hidden="true"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Daftar Cuti Berjadual</h3>
+            <button onclick="document.getElementById('cutiModal').classList.add('hidden')"
+                    class="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <p id="cutiStudentName" class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4"></p>
+        <form id="cutiForm" action="{{ route('attendances.bulk_leave') }}" method="POST" class="space-y-4">
+            @csrf
+            <input type="hidden" id="cutiStudentId" name="student_id">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        Tarikh Mula <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date" name="start_date" id="cutiStart" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                        Tarikh Tamat <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date" name="end_date" id="cutiEnd" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
             </div>
-            <div class="modal-body">
-                <p id="cutiStudentName" class="fw-bold mb--20" style="color:var(--color-primary);"></p>
-                <form id="cutiForm" action="{{ route('attendances.bulk_leave') }}" method="POST">
-                    @csrf
-                    <input type="hidden" id="cutiStudentId" name="student_id">
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="rbt-form-group">
-                                <label>Tarikh Mula <span class="text-danger">*</span></label>
-                                <input type="date" name="start_date" id="cutiStart"
-                                       class="form-control" style="height:50px;" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="rbt-form-group">
-                                <label>Tarikh Tamat <span class="text-danger">*</span></label>
-                                <input type="date" name="end_date" id="cutiEnd"
-                                       class="form-control" style="height:50px;" required>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="rbt-form-group">
-                                <label>Status <span class="text-danger">*</span></label>
-                                <select name="status" class="rbt-big-select" required>
-                                    <option value="Tidak Hadir">Tidak Hadir</option>
-                                    <option value="Cuti Sakit">Cuti Sakit</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <small class="text-muted">
-                        <i class="feather-info" style="font-size:0.85em;"></i>
-                        Sabtu &amp; Ahad akan diabaikan secara automatik.
-                    </small>
-                </form>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    Status <span class="text-red-500">*</span>
+                </label>
+                <select name="status" required
+                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="Tidak Hadir">Tidak Hadir</option>
+                    <option value="Cuti Sakit">Cuti Sakit</option>
+                </select>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="rbt-btn btn-border-gradient" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" form="cutiForm" class="rbt-btn btn-gradient">
-                    <i class="feather-save me-1"></i> Simpan Cuti
-                </button>
-            </div>
+            <p class="text-xs text-gray-400">Sabtu &amp; Ahad akan diabaikan secara automatik.</p>
+        </form>
+        <div class="flex justify-end gap-2 mt-5">
+            <button onclick="document.getElementById('cutiModal').classList.add('hidden')"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
+                Batal
+            </button>
+            <button type="submit" form="cutiForm"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                </svg>
+                Simpan Cuti
+            </button>
         </div>
     </div>
 </div>
 
 @push('scripts')
 <script>
-/* ── Jana Buku Kedatangan PDF ── */
 let kdClassId = null;
 const kdBaseUrl = '{{ url("attendances") }}';
 
@@ -287,20 +288,16 @@ function openKedatanganModal(btn) {
     document.getElementById('kdClassName').textContent = 'Kelas: ' + btn.dataset.className;
     const now = new Date();
     const mm  = String(now.getMonth() + 1).padStart(2, '0');
-    document.getElementById('kdMonthYear').value = now.getFullYear() + '-' + mm;
-    document.getElementById('kdTotalDays').value  = '';
-    new bootstrap.Modal(document.getElementById('kedatanganModal')).show();
+    document.getElementById('kdMonthYear').value  = now.getFullYear() + '-' + mm;
+    document.getElementById('kdTotalDays').value   = '';
+    document.getElementById('kedatanganModal').classList.remove('hidden');
 }
 
 function submitKedatanganPdf() {
     const monthYear = document.getElementById('kdMonthYear').value;
     const totalDays = document.getElementById('kdTotalDays').value;
-    if (!monthYear) {
-        Swal.fire({ icon: 'warning', title: 'Bulan diperlukan', text: 'Sila pilih bulan dan tahun.' });
-        return;
-    }
-    if (!totalDays || parseInt(totalDays) < 1) {
-        Swal.fire({ icon: 'warning', title: 'Hari persekolahan diperlukan', text: 'Sila masukkan jumlah hari persekolahan (minimum 1).' });
+    if (!monthYear || !totalDays || parseInt(totalDays) < 1) {
+        alert('Sila lengkapkan semua maklumat yang diperlukan.');
         return;
     }
     const [year, month] = monthYear.split('-');
@@ -308,26 +305,27 @@ function submitKedatanganPdf() {
     openPdfBlob(document.getElementById('kdSubmitBtn'), url);
 }
 
-/* ── Tanda Semua Hadir ── */
 function tandaSemua(classId) {
-    var form = document.getElementById('class-form-' + classId);
-    if (!form) return;
-    form.querySelectorAll('input[type="radio"][value="Hadir"]').forEach(function (r) {
-        r.checked = true;
-    });
+    document.getElementById('class-form-' + classId)
+            .querySelectorAll('input[type="radio"][value="Hadir"]')
+            .forEach(r => r.checked = true);
 }
 
-/* ── Cuti Berjadual Modal ── */
 function openCutiModal(btn) {
-    document.getElementById('cutiStudentId').value       = btn.dataset.studentId;
+    document.getElementById('cutiStudentId').value        = btn.dataset.studentId;
     document.getElementById('cutiStudentName').textContent = btn.dataset.studentName;
-
-    // Default: tarikh semasa
-    var today = new Date().toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10);
     document.getElementById('cutiStart').value = today;
     document.getElementById('cutiEnd').value   = today;
-
-    new bootstrap.Modal(document.getElementById('cutiModal')).show();
+    document.getElementById('cutiModal').classList.remove('hidden');
 }
+
+// Close modals on backdrop click
+['kedatanganModal', 'cutiModal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) {
+        if (e.target === this) this.classList.add('hidden');
+    });
+});
 </script>
 @endpush
+@endsection
