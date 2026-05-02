@@ -1,101 +1,129 @@
-@extends('layout.layout')
-
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
-
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title d-flex justify-content-between align-items-center">
-                            <h4 class="rbt-title-style-3">Pengurusan Kelas</h4>
-                            <a href="{{ route('kafa_classes.create') }}" class="rbt-btn btn-sm hover-icon-reverse">
-                                <span class="icon-reverse-wrapper">
-                                    <span class="btn-text">Tambah Kelas</span>
-                                    <span class="btn-icon"><i class="feather-plus"></i></span>
-                                    <span class="btn-icon"><i class="feather-plus"></i></span>
-                                </span>
-                            </a>
-                        </div>
-
-                        <!-- Professional Notice -->
-                        <div class="rbt-info-notice alert bg-primary-opacity d-flex align-items-center gap-4 p-4 rounded-3 mt--30 mb--30" style="border: 1px solid rgba(110, 65, 255, 0.1); border-left: 5px solid var(--color-primary); background: linear-gradient(90deg, rgba(110, 65, 255, 0.08) 0%, rgba(110, 65, 255, 0.02) 100%) !important;">
-                            <div class="icon-wrapper bg-white rounded-circle d-flex align-items-center justify-content-center" style="min-width: 50px; height: 50px; box-shadow: 0 4px 15px rgba(110, 65, 255, 0.15);">
-                                <i class="feather-bell text-primary" style="font-size: 24px; color: var(--color-primary) !important;"></i>
-                            </div>
-                            <div class="notice-text">
-                                <h6 class="mb-1" style="color: var(--color-primary); font-weight: 700; letter-spacing: 0.5px; font-size: 14px;">MAKLUMAN PENTING (WAJIB BACA)</h6>
-                                <p class="mb-0" style="font-size: 15px; line-height: 1.6; color: var(--color-heading);">
-                                    Bagi memudahkan urusan <strong>IMPORT</strong> data murid, pastikan <strong>Nama Kelas</strong> adalah <strong style="text-transform: uppercase;">TEPAT DAN SAMA</strong> seperti yang didaftarkan dalam <strong>Sistem SIMPENI Jakim</strong>.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive mt--30">
-                            <table class="rbt-table table table-borderless">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama Kelas & Tahun</th>
-                                        <th>Guru Kelas</th>
-                                        <th>Tindakan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($classes as $c)
-                                    <tr>
-                                        <td>{{ ($classes->currentPage() - 1) * $classes->perPage() + $loop->iteration }}</td>
-                                        <td>{{ $c->display_name }}</td>
-                                        <td>
-                                            @if($c->teacher)
-                                                <span class="badge bg-primary-opacity">{{ $c->teacher->name }}</span>
-                                            @else
-                                                <span class="text-muted">Tiada Guru</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <a href="{{ route('kafa_classes.edit', $c) }}" class="rbt-btn btn-xs btn-border-gradient" title="Edit" style="height: 35px; width: 35px; padding: 0; display: flex; align-items: center; justify-content: center; min-width: 35px;">
-                                                    <i class="feather-edit" style="font-size: 14px;"></i>
-                                                </a>
-                                                <form action="{{ route('kafa_classes.destroy', $c) }}" method="POST"
-                                                      data-delete-form data-name="{{ $c->display_name }}" style="margin: 0;">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="rbt-btn btn-xs btn-border-gradient btn-gradient-danger" title="Padam" style="height: 35px; width: 35px; padding: 0; display: flex; align-items: center; justify-content: center; min-width: 35px;">
-                                                        <i class="feather-trash-2" style="font-size: 14px;"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center">Tiada rekod.</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="row mt--20">
-                            <div class="col-lg-12">
-                                {{ $classes->appends(request()->query())->links() }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    {{-- ── Header ── --}}
+    <div class="flex items-center justify-between mb-5">
+        <div>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Pengurusan Kelas</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Senarai kelas KAFA yang didaftarkan dalam sistem</p>
         </div>
+        <a href="{{ route('kafa_classes.create') }}"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Tambah Kelas
+        </a>
+    </div>
+
+    {{-- ── Important Notice ── --}}
+    <div class="flex gap-3 p-4 mb-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+        <div class="shrink-0 w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-0.5">MAKLUMAN PENTING (WAJIB BACA)</p>
+            <p class="text-sm text-blue-700 dark:text-blue-400 leading-relaxed">
+                Bagi memudahkan urusan <strong>IMPORT</strong> data murid, pastikan <strong>Nama Kelas</strong> adalah
+                <strong class="uppercase">TEPAT DAN SAMA</strong> seperti yang didaftarkan dalam
+                <strong>Sistem SIMPENI Jakim</strong>.
+            </p>
+        </div>
+    </div>
+
+    {{-- ── Table Card ── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th class="px-5 py-3 w-12">No</th>
+                        <th class="px-5 py-3">Nama Kelas &amp; Tahun</th>
+                        <th class="px-5 py-3">Guru Kelas</th>
+                        <th class="px-5 py-3 text-center w-24">Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    @forelse($classes as $c)
+                    <tr id="row-{{ $c->id }}" class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
+                        <td class="px-5 py-3 text-gray-400 text-xs">
+                            {{ ($classes->currentPage() - 1) * $classes->perPage() + $loop->iteration }}
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-content-center shrink-0" style="display:flex;align-items:center;justify-content:center;">
+                                    <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">T{{ $c->tahun ?? '?' }}</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">{{ $c->display_name }}</p>
+                                    @if($c->school)
+                                    <p class="text-xs text-gray-400">{{ $c->school->name }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-5 py-3">
+                            @if($c->teacher)
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                    </svg>
+                                    {{ $c->teacher->name }}
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">
+                                    Tiada Guru
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('kafa_classes.edit', $c) }}"
+                                   class="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                   title="Edit">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </a>
+                                <form action="{{ route('kafa_classes.destroy', $c) }}" method="POST"
+                                      onsubmit="return confirm('Padam kelas {{ addslashes($c->display_name) }}? Tindakan ini tidak boleh dibatalkan.')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit"
+                                            class="p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                            title="Padam">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-5 py-12 text-center">
+                            <div class="flex flex-col items-center gap-2 text-gray-400">
+                                <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                                <p class="text-sm">Tiada kelas didaftarkan.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($classes->hasPages())
+        <div class="px-5 py-4 border-t border-gray-200 dark:border-gray-700">
+            {{ $classes->appends(request()->query())->links() }}
+        </div>
+        @endif
     </div>
 </div>
 @endsection
