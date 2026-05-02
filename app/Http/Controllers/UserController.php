@@ -12,39 +12,61 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $authUser = auth()->user();
-        $query = User::with(['roles', 'district', 'school']);
+        $authUser  = auth()->user();
+        $authRole  = $authUser->getRoleNames()->first();
+        $search     = $request->input('search');
+        $filterRole = $request->input('role', 'semua');
 
-        if ($authUser->hasRole('Pentadbir')) {
-            // Sembunyikan Super Admin
-            $query->whereDoesntHave('roles', function($q) {
-                $q->where('name', 'Super Admin');
-            });
-        } elseif ($authUser->hasRole('Penyelia KAFA')) {
-            // Sembunyikan Super Admin & Pentadbir
-            $query->whereDoesntHave('roles', function($q) {
-                $q->whereIn('name', ['Super Admin', 'Pentadbir']);
-            });
-            // Lihat daerah sendiri ATAU Pembekal
-            $query->where(function($q) use ($authUser) {
-                $q->where('district_id', $authUser->district_id)
-                  ->orWhereHas('roles', function($sq) {
-                      $sq->where('name', 'Pembekal');
-                  });
-            });
-        } elseif ($authUser->hasRole('Guru Besar')) {
-            // Sembunyikan Super Admin, Pentadbir, Penyelia KAFA
-            $query->whereDoesntHave('roles', function($q) {
-                $q->whereIn('name', ['Super Admin', 'Pentadbir', 'Penyelia KAFA']);
-            });
-            // Lihat sekolah sendiri sahaja
-            $query->where('school_id', $authUser->school_id);
+        // Base query factory — applies role-based data isolation
+        $makeBase = function () use ($authUser, $authRole) {
+            $q = User::with(['roles', 'district', 'school']);
+            if ($authRole === 'Pentadbir') {
+                $q->whereDoesntHave('roles', fn($sq) => $sq->where('name', 'Super Admin'));
+            } elseif ($authRole === 'Penyelia KAFA') {
+                $q->whereDoesntHave('roles', fn($sq) => $sq->whereIn('name', ['Super Admin', 'Pentadbir']));
+                $q->where(fn($sq) => $sq
+                    ->where('district_id', $authUser->district_id)
+                    ->orWhereHas('roles', fn($sssq) => $sssq->where('name', 'Pembekal')));
+            } elseif ($authRole === 'Guru Besar') {
+                $q->whereDoesntHave('roles', fn($sq) => $sq->whereIn('name', ['Super Admin', 'Pentadbir', 'Penyelia KAFA']));
+                $q->where('school_id', $authUser->school_id);
+            }
+            return $q;
+        };
+
+        // Define tabs per role
+        if (in_array($authRole, ['Super Admin', 'Pentadbir'])) {
+            $tabRoles = ['Pentadbir', 'Penyelia KAFA', 'Guru Besar', 'Guru KAFA', 'Pembekal', 'Ibu Bapa'];
+        } elseif ($authRole === 'Penyelia KAFA') {
+            $tabRoles = ['Guru Besar', 'Guru KAFA', 'Pembekal'];
+        } else {
+            $tabRoles = [];
         }
 
-        $users = $query->paginate(10);
-        return view('users.index', compact('users'));
+        // Count per tab (for badges)
+        $roleCounts = ['semua' => $makeBase()->count()];
+        foreach ($tabRoles as $tabRole) {
+            $roleCounts[$tabRole] = $makeBase()
+                ->whereHas('roles', fn($q) => $q->where('name', $tabRole))
+                ->count();
+        }
+
+        // Apply filters on top of base
+        $query = $makeBase();
+        if ($filterRole !== 'semua') {
+            $query->whereHas('roles', fn($q) => $q->where('name', $filterRole));
+        }
+        if ($search) {
+            $query->where(fn($q) => $q
+                ->where('name', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%'));
+        }
+
+        $users = $query->orderBy('name')->paginate(15)->withQueryString();
+
+        return view('users.index', compact('users', 'roleCounts', 'tabRoles', 'filterRole', 'search', 'authRole'));
     }
 
     public function show(User $user)

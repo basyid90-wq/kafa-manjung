@@ -94,6 +94,8 @@ php artisan view:cache
 | 48 | 2026-05-02 | `app/Http/Controllers/DashboardController.php` | Pisahkan Super Admin dari Pentadbir — Super Admin kini guna stats sistem (sekolah, pengguna, murid, baharu) + panel aduan + health check | ⏳ Belum Push |
 | 49 | 2026-05-02 | `resources/views/dashboard/superadmin.blade.php` | Halaman baharu — Dashboard Super Admin: 4 stat cards + panel aduan terkini + panel kesihatan sistem | ⏳ Belum Push |
 | 50 | 2026-05-02 | `resources/views/dashboard/index.blade.php` | Pisahkan route paparan Super Admin ke `dashboard.superadmin`, Pentadbir tetap `dashboard.admin` | ⏳ Belum Push |
+| 51 | 2026-05-02 | `app/Http/Controllers/UserController.php` | Revamp index() — tambah tab peranan + search nama/emel, kiraan badge per tab, filter role, paginate 15 | ⏳ Belum Push |
+| 52 | 2026-05-02 | `resources/views/users/index.blade.php` | Revamp — tambah tab peranan (SA/Penyelia), search bar, emel dalam baris nama, empty state mesej | ⏳ Belum Push |
 
 ---
 
