@@ -1,322 +1,354 @@
-@extends('layout.layout')
-
-@php $bodyClass = ''; $footer = 'true'; @endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Tambah Rekod Pencapaian Murid</h1>
+        <a href="{{ route('achievements.index') }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Kembali
+        </a>
+    </div>
 
-            <div class="col-lg-9">
-                <style>
-                    .rbt-dashboard-content, .content { overflow: visible !important; }
-                    .grade-radio-group .btn-check:checked + .btn-outline-secondary { background:#6c757d;color:#fff; }
-                    .grade-radio-group .btn-check:checked + .btn-outline-success  { background:#28a745;color:#fff; }
-                    .grade-radio-group .btn-check:checked + .btn-outline-primary  { background:#007bff;color:#fff; }
-                    .grade-radio-group .btn-check:checked + .btn-outline-warning  { background:#ffc107;color:#212529; }
-                    .grade-radio-group .btn-check:checked + .btn-outline-danger   { background:#dc3545;color:#fff; }
-                    .amali-radio-group .btn-check:checked + .btn-outline-success  { background:#28a745;color:#fff; }
-                    .amali-radio-group .btn-check:checked + .btn-outline-danger   { background:#dc3545;color:#fff; }
-                    .amali-radio-group .btn-check:checked + .btn-outline-secondary { background:#6c757d;color:#fff; }
-                </style>
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title d-flex justify-content-between align-items-center mb--20">
-                            <h4 class="rbt-title-style-3">Tambah Rekod Pencapaian Murid</h4>
-                            <a href="{{ route('achievements.index') }}" class="rbt-btn btn-border btn-sm">
-                                <i class="feather-arrow-left me-1"></i> Kembali
-                            </a>
-                        </div>
+    @if($errors->any())
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-5">
+        <ul class="list-disc list-inside text-sm text-red-700 dark:text-red-400 space-y-1">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
-                        @if($errors->any())
-                        <div class="alert alert-danger mb--20">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        @endif
+    {{-- Step 1: Pilih Kelas --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-5">
+        <form method="GET" action="{{ route('achievements.create') }}" class="flex flex-wrap items-end gap-3">
+            <div class="flex-1 min-w-48">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pilih Kelas</label>
+                <select name="kafa_class_id" required
+                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Pilih Kelas --</option>
+                    @foreach($classes as $kelas)
+                        <option value="{{ $kelas->id }}" {{ request('kafa_class_id') == $kelas->id ? 'selected' : '' }}>
+                            {{ $kelas->display_name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                Muat Murid
+            </button>
+        </form>
+    </div>
 
-                        {{-- Step 1: Pilih Kelas --}}
-                        <form method="GET" action="{{ route('achievements.create') }}" class="row g-3 mb--30">
-                            <div class="col-md-5">
-                                <div class="rbt-form-group">
-                                    <label>Pilih Kelas</label>
-                                    <select name="kafa_class_id" class="rbt-big-select" required>
-                                        <option value="">-- Pilih Kelas --</option>
-                                        @foreach($classes as $kelas)
-                                            <option value="{{ $kelas->id }}" {{ request('kafa_class_id') == $kelas->id ? 'selected' : '' }}>
-                                                {{ $kelas->display_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3 d-flex align-items-end">
-                                <button type="submit" class="rbt-btn btn-gradient btn-sm">Muat Murid</button>
-                            </div>
-                        </form>
+    @if($selectedClass)
+    @if(!empty($scrollToStudents))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var el = document.getElementById('student-records-section');
+            if (el) el.scrollIntoView({ block: 'start' });
+        });
+    </script>
+    @endif
 
-                        @if($selectedClass)
-                        {{-- Auto-scroll ke senarai murid apabila kelas dipilih --}}
-                        @if(!empty($scrollToStudents))
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function () {
-                                var el = document.getElementById('student-records-section');
-                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            });
-                        </script>
-                        @endif
+    <div id="student-records-section">
 
-                        <div id="student-records-section">
-                        <div class="alert alert-success mb--20 d-flex align-items-center gap-2">
-                            <i class="feather-check-circle"></i>
-                            <span>Kelas <strong>{{ $selectedClass->name }}</strong> dipilih — {{ $selectedClass->students->count() }} murid dipaparkan di bawah.</span>
-                        </div>
+        {{-- Info bar --}}
+        <div class="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg px-4 py-3 mb-4 text-sm text-green-700 dark:text-green-400">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Kelas <strong class="mx-1">{{ $selectedClass->name }}</strong> dipilih — {{ $selectedClass->students->count() }} murid dipaparkan di bawah.
+        </div>
 
-                        @php
-                            $hasFinalRecords = isset($existingRecords) && $existingRecords->where('status', 'final')->count() > 0;
-                            $isGuruKafa = auth()->user()->hasRole('Guru KAFA');
-                        @endphp
+        @php
+            $hasFinalRecords = isset($existingRecords) && $existingRecords->where('status', 'final')->count() > 0;
+            $isGuruKafa = auth()->user()->hasRole('Guru KAFA');
+        @endphp
 
-                        @if($hasFinalRecords && $isGuruKafa)
-                        <div class="alert alert-warning d-flex align-items-start gap-2 mb--20">
-                            <i class="feather-lock mt-1"></i>
-                            <div>
-                                <strong>Sebahagian rekod telah difinalkan.</strong> Rekod bertanda <span class="badge bg-success" style="font-size:10px;"><i class="feather-lock" style="font-size:9px;"></i> Final</span> tidak boleh diubah oleh Guru KAFA. Hubungi Guru Besar untuk membuka semula.
-                            </div>
-                        </div>
-                        @endif
+        @if($hasFinalRecords && $isGuruKafa)
+        <div class="flex items-start gap-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-3 mb-4 text-sm text-yellow-700 dark:text-yellow-400">
+            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <div>
+                <strong>Sebahagian rekod telah difinalkan.</strong> Rekod bertanda
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium bg-green-600 text-white rounded-full">
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    Final
+                </span>
+                tidak boleh diubah oleh Guru KAFA. Hubungi Guru Besar untuk membuka semula.
+            </div>
+        </div>
+        @endif
 
-                        <form action="{{ route('achievements.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="kafa_class_id" value="{{ $selectedClass->id }}">
-                            <input type="hidden" name="page" value="{{ $page ?? 1 }}">
+        <form action="{{ route('achievements.store') }}" method="POST">
+            @csrf
+            <input type="hidden" name="kafa_class_id" value="{{ $selectedClass->id }}">
+            <input type="hidden" name="page" value="{{ $page ?? 1 }}">
 
-                            <div class="row g-3 mb--20">
-                                <div class="col-md-3">
-                                    <div class="rbt-form-group">
-                                        <label>Tahun Akademik</label>
-                                        <input type="number" name="academic_year" class="form-control"
-                                            value="{{ old('academic_year', $achievement->academic_year ?? date('Y')) }}"
-                                            min="2020" max="2099" required>
-                                    </div>
-                                </div>
-                                @php
-                                    $termLabel = ['pertengahan_tahun' => 'PT', 'akhir_tahun' => 'AT', 'lain' => ''];
-                                @endphp
-                                <div class="col-md-4">
-                                    <div class="rbt-form-group">
-                                        <label>Peperiksaan Pertengahan Tahun</label>
-                                        <select name="midyear_exam_id" class="rbt-big-select">
-                                            <option value="">-- Tiada --</option>
-                                            @foreach($exams as $exam)
-                                                @php $tl = $termLabel[$exam->term] ?? ''; @endphp
-                                                <option value="{{ $exam->id }}"
-                                                    {{ old('midyear_exam_id', $achievement->midyear_exam_id ?? '') == $exam->id ? 'selected' : '' }}>
-                                                    {{ $exam->name }} ({{ $exam->year }}){{ $tl ? ' — '.$tl : '' }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="rbt-form-group">
-                                        <label>Peperiksaan Akhir Tahun</label>
-                                        <select name="endyear_exam_id" class="rbt-big-select">
-                                            <option value="">-- Tiada --</option>
-                                            @foreach($exams as $exam)
-                                                @php $tl = $termLabel[$exam->term] ?? ''; @endphp
-                                                <option value="{{ $exam->id }}"
-                                                    {{ old('endyear_exam_id', $achievement->endyear_exam_id ?? '') == $exam->id ? 'selected' : '' }}>
-                                                    {{ $exam->name }} ({{ $exam->year }}){{ $tl ? ' — '.$tl : '' }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="student-records-list">
-                                @foreach($selectedClass->students->sortBy('name') as $i => $student)
-                                @php
-                                    $existing = isset($existingRecords) ? ($existingRecords[$student->id] ?? null) : null;
-                                    $isLocked  = $existing && $existing->status === 'final' && $isGuruKafa;
-                                    $preKelakuan   = old("kelakuan.{$student->id}",   $existing->kelakuan   ?? '');
-                                    $preKebersihan = old("kebersihan.{$student->id}", $existing->kebersihan ?? '');
-                                    $preAmaliSolat = old("amali_solat.{$student->id}", $existing->amali_solat ?? '');
-                                    $prePhciMid    = old("phci_midyear.{$student->id}", $existing->phci_midyear ?? '');
-                                    $prePhciEnd    = old("phci_endyear.{$student->id}", $existing->phci_endyear ?? '');
-                                    $preComments   = old("teacher_comments.{$student->id}", $existing->teacher_comments ?? '');
-
-                                    // Load existing exam marks for preview
-                                    $midTotal    = 0; $endTotal = 0;
-                                    $midCount    = 0; $endCount = 0;
-                                    $expectedSlots = 9; // EXPECTED_SLOTS count in ExamResultController
-                                    if ($existing && $existing->midyear_exam_id) {
-                                        $midResults = \App\Models\ExamResult::where('student_id', $student->id)
-                                            ->where('exam_id', $existing->midyear_exam_id)
-                                            ->where('is_absent', false)->get();
-                                        $midTotal = $midResults->sum('marks');
-                                        $midCount = $midResults->count();
-                                    }
-                                    if ($existing && $existing->endyear_exam_id) {
-                                        $endResults = \App\Models\ExamResult::where('student_id', $student->id)
-                                            ->where('exam_id', $existing->endyear_exam_id)
-                                            ->where('is_absent', false)->get();
-                                        $endTotal = $endResults->sum('marks');
-                                        $endCount = $endResults->count();
-                                    }
-                                    $marksIncomplete = $existing &&
-                                        (($existing->midyear_exam_id && $midCount < $expectedSlots) ||
-                                         ($existing->endyear_exam_id && $endCount < $expectedSlots));
-                                @endphp
-
-                                <div class="rbt-shadow-box mb--20 p-4 bg-color-white" style="border:1px solid {{ $isLocked ? '#28a745' : '#e6e6e6' }};border-radius:8px;">
-                                    <div class="d-flex justify-content-between align-items-start mb--15">
-                                        <h5 class="mb-0" style="font-size:15px;">
-                                            <span class="rbt-badge-5 bg-color-primary color-white me-2">{{ $i + 1 }}</span>
-                                            {{ $student->name }}
-                                            @if($existing)
-                                                @if($existing->status === 'final')
-                                                    <span class="badge bg-success ms-2" style="font-size:10px;"><i class="feather-lock" style="font-size:9px;"></i> Final</span>
-                                                @else
-                                                    <span class="badge bg-warning text-dark ms-2" style="font-size:10px;">Draf</span>
-                                                @endif
-                                            @endif
-                                        </h5>
-                                        {{-- Markah Peperiksaan Preview + completeness --}}
-                                        @if($existing && ($existing->midyear_exam_id || $existing->endyear_exam_id))
-                                        <div style="font-size:11px;" class="d-flex flex-wrap gap-1 align-items-center">
-                                            @if($existing->midyear_exam_id)
-                                                <span class="badge bg-light text-dark border">PT: {{ $midTotal }}</span>
-                                                <span class="badge {{ $midCount >= $expectedSlots ? 'bg-success' : 'bg-warning text-dark' }}">{{ $midCount }}/{{ $expectedSlots }} subj</span>
-                                            @endif
-                                            @if($existing->endyear_exam_id)
-                                                <span class="badge bg-light text-dark border">AT: {{ $endTotal }}</span>
-                                                <span class="badge {{ $endCount >= $expectedSlots ? 'bg-success' : 'bg-warning text-dark' }}">{{ $endCount }}/{{ $expectedSlots }} subj</span>
-                                            @endif
-                                            <span class="badge bg-primary">Jumlah: {{ $midTotal + $endTotal }}</span>
-                                        </div>
-                                        @endif
-                                    </div>
-
-                                    @if($isLocked)
-                                    <div class="alert alert-success py-2 mb--15" style="font-size:12px;">
-                                        <i class="feather-lock me-1"></i> Rekod ini telah difinalkan — tidak boleh diubah.
-                                    </div>
-                                    @endif
-
-                                    @if($marksIncomplete)
-                                    <div class="alert alert-warning py-2 mb--15 d-flex align-items-center gap-2" style="font-size:12px;">
-                                        <i class="feather-alert-triangle flex-shrink-0"></i>
-                                        <span>Markah belum lengkap —
-                                            @if($existing->midyear_exam_id && $midCount < $expectedSlots) PT: {{ $midCount }}/{{ $expectedSlots }} subjek @endif
-                                            @if($existing->endyear_exam_id && $endCount < $expectedSlots) AT: {{ $endCount }}/{{ $expectedSlots }} subjek @endif
-                                            . Rekod Pencapaian mungkin tidak lengkap.
-                                        </span>
-                                    </div>
-                                    @endif
-
-                                    <div class="row g-3 align-items-start {{ $isLocked ? 'opacity-50' : '' }}">
-                                        <div class="col-6 col-md-2">
-                                            <label class="form-label mb-1" style="font-size:12px;font-weight:600;">PHCI (PT)</label>
-                                            <input type="number" name="phci_midyear[{{ $student->id }}]"
-                                                class="form-control form-control-sm" min="0" max="100" placeholder="0–100"
-                                                value="{{ $prePhciMid }}" {{ $isLocked ? 'disabled' : '' }}>
-                                        </div>
-                                        <div class="col-6 col-md-2">
-                                            <label class="form-label mb-1" style="font-size:12px;font-weight:600;">PHCI (AT)</label>
-                                            <input type="number" name="phci_endyear[{{ $student->id }}]"
-                                                class="form-control form-control-sm" min="0" max="100" placeholder="0–100"
-                                                value="{{ $prePhciEnd }}" {{ $isLocked ? 'disabled' : '' }}>
-                                        </div>
-                                        <div class="col-6 col-md-2">
-                                            <label class="form-label mb-1" style="font-size:12px;font-weight:600;">Amali Solat</label>
-                                            <div class="btn-group amali-radio-group d-flex" role="group">
-                                                <input type="radio" class="btn-check" name="amali_solat[{{ $student->id }}]" id="am_{{ $student->id }}_x" value="" {{ $preAmaliSolat === '' ? 'checked' : '' }} autocomplete="off" {{ $isLocked ? 'disabled' : '' }}>
-                                                <label class="btn btn-outline-secondary btn-sm flex-fill" for="am_{{ $student->id }}_x">—</label>
-
-                                                <input type="radio" class="btn-check" name="amali_solat[{{ $student->id }}]" id="am_{{ $student->id }}_L" value="Lulus" {{ $preAmaliSolat === 'Lulus' ? 'checked' : '' }} autocomplete="off" {{ $isLocked ? 'disabled' : '' }}>
-                                                <label class="btn btn-outline-success btn-sm flex-fill" for="am_{{ $student->id }}_L">L</label>
-
-                                                <input type="radio" class="btn-check" name="amali_solat[{{ $student->id }}]" id="am_{{ $student->id }}_TL" value="Tidak Lulus" {{ $preAmaliSolat === 'Tidak Lulus' ? 'checked' : '' }} autocomplete="off" {{ $isLocked ? 'disabled' : '' }}>
-                                                <label class="btn btn-outline-danger btn-sm flex-fill" for="am_{{ $student->id }}_TL">TL</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-3">
-                                            <label class="form-label mb-1" style="font-size:12px;font-weight:600;">Kelakuan</label>
-                                            <div class="btn-group grade-radio-group d-flex" role="group">
-                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_x" value="" {{ $preKelakuan === '' ? 'checked' : '' }} autocomplete="off" {{ $isLocked ? 'disabled' : '' }}>
-                                                <label class="btn btn-outline-secondary btn-sm flex-fill" for="kel_{{ $student->id }}_x">-</label>
-
-                                                @foreach(['A','B','C','D'] as $grade)
-                                                <input type="radio" class="btn-check" name="kelakuan[{{ $student->id }}]" id="kel_{{ $student->id }}_{{ $grade }}" value="{{ $grade }}" {{ $preKelakuan === $grade ? 'checked' : '' }} autocomplete="off" {{ $isLocked ? 'disabled' : '' }}>
-                                                <label class="btn btn-outline-{{ ['A'=>'success','B'=>'primary','C'=>'warning','D'=>'danger'][$grade] }} btn-sm flex-fill" for="kel_{{ $student->id }}_{{ $grade }}">{{ $grade }}</label>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-3">
-                                            <label class="form-label mb-1" style="font-size:12px;font-weight:600;">Kebersihan</label>
-                                            <div class="btn-group grade-radio-group d-flex" role="group">
-                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_x" value="" {{ $preKebersihan === '' ? 'checked' : '' }} autocomplete="off" {{ $isLocked ? 'disabled' : '' }}>
-                                                <label class="btn btn-outline-secondary btn-sm flex-fill" for="keb_{{ $student->id }}_x">-</label>
-
-                                                @foreach(['A','B','C','D'] as $grade)
-                                                <input type="radio" class="btn-check" name="kebersihan[{{ $student->id }}]" id="keb_{{ $student->id }}_{{ $grade }}" value="{{ $grade }}" {{ $preKebersihan === $grade ? 'checked' : '' }} autocomplete="off" {{ $isLocked ? 'disabled' : '' }}>
-                                                <label class="btn btn-outline-{{ ['A'=>'success','B'=>'primary','C'=>'warning','D'=>'danger'][$grade] }} btn-sm flex-fill" for="keb_{{ $student->id }}_{{ $grade }}">{{ $grade }}</label>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label mb-1" style="font-size:12px;font-weight:600;">Ulasan Guru</label>
-                                            <textarea name="teacher_comments[{{ $student->id }}]" class="form-control form-control-sm" rows="2"
-                                                placeholder="Ulasan ringkas prestasi murid..." {{ $isLocked ? 'disabled' : '' }}>{{ $preComments }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-
-                            <div class="row mt--20">
-                                <div class="col-md-3">
-                                    <div class="rbt-form-group">
-                                        <label>Status</label>
-                                        <select name="status" class="rbt-big-select">
-                                            @php $currentStatus = old('status', $achievement->status ?? 'draft'); @endphp
-                                            <option value="draft" {{ $currentStatus === 'draft' ? 'selected' : '' }}>Draf</option>
-                                            @hasanyrole('Guru Besar|Super Admin')
-                                            <option value="final" {{ $currentStatus === 'final' ? 'selected' : '' }}>Final</option>
-                                            @endhasanyrole
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt--20 d-flex gap-3">
-                                <button type="submit" class="rbt-btn btn-gradient hover-icon-reverse">
-                                    <span class="icon-reverse-wrapper">
-                                        <span class="btn-text">Simpan Rekod</span>
-                                        <span class="btn-icon"><i class="feather-save"></i></span>
-                                        <span class="btn-icon"><i class="feather-save"></i></span>
-                                    </span>
-                                </button>
-                                <a href="{{ route('achievements.index') }}" class="rbt-btn btn-border">Kembali</a>
-                            </div>
-                        </form>
-                        </div>{{-- end #student-records-section --}}
-                        @else
-                        <div class="alert alert-info">Pilih kelas di atas untuk memaparkan senarai murid.</div>
-                        @endif
+            {{-- Exam selectors --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tahun Akademik <span class="text-red-500">*</span></label>
+                        <input type="number" name="academic_year"
+                               value="{{ old('academic_year', $achievement->academic_year ?? date('Y')) }}"
+                               min="2020" max="2099" required
+                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    @php $termLabel = ['pertengahan_tahun' => 'PT', 'akhir_tahun' => 'AT', 'lain' => '']; @endphp
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peperiksaan Pertengahan Tahun</label>
+                        <select name="midyear_exam_id"
+                                class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Tiada --</option>
+                            @foreach($exams as $exam)
+                                @php $tl = $termLabel[$exam->term] ?? ''; @endphp
+                                <option value="{{ $exam->id }}"
+                                    {{ old('midyear_exam_id', $achievement->midyear_exam_id ?? '') == $exam->id ? 'selected' : '' }}>
+                                    {{ $exam->name }} ({{ $exam->year }}){{ $tl ? ' — '.$tl : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peperiksaan Akhir Tahun</label>
+                        <select name="endyear_exam_id"
+                                class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Tiada --</option>
+                            @foreach($exams as $exam)
+                                @php $tl = $termLabel[$exam->term] ?? ''; @endphp
+                                <option value="{{ $exam->id }}"
+                                    {{ old('endyear_exam_id', $achievement->endyear_exam_id ?? '') == $exam->id ? 'selected' : '' }}>
+                                    {{ $exam->name }} ({{ $exam->year }}){{ $tl ? ' — '.$tl : '' }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
-        </div>
+
+            {{-- Per-student cards --}}
+            @foreach($selectedClass->students->sortBy('name') as $i => $student)
+            @php
+                $existing = isset($existingRecords) ? ($existingRecords[$student->id] ?? null) : null;
+                $isLocked  = $existing && $existing->status === 'final' && $isGuruKafa;
+                $preKelakuan   = old("kelakuan.{$student->id}",   $existing->kelakuan   ?? '');
+                $preKebersihan = old("kebersihan.{$student->id}", $existing->kebersihan ?? '');
+                $preAmaliSolat = old("amali_solat.{$student->id}", $existing->amali_solat ?? '');
+                $prePhciMid    = old("phci_midyear.{$student->id}", $existing->phci_midyear ?? '');
+                $prePhciEnd    = old("phci_endyear.{$student->id}", $existing->phci_endyear ?? '');
+                $preComments   = old("teacher_comments.{$student->id}", $existing->teacher_comments ?? '');
+
+                $midTotal = 0; $endTotal = 0; $midCount = 0; $endCount = 0;
+                $expectedSlots = 9;
+                if ($existing && $existing->midyear_exam_id) {
+                    $midResults = \App\Models\ExamResult::where('student_id', $student->id)
+                        ->where('exam_id', $existing->midyear_exam_id)
+                        ->where('is_absent', false)->get();
+                    $midTotal = $midResults->sum('marks');
+                    $midCount = $midResults->count();
+                }
+                if ($existing && $existing->endyear_exam_id) {
+                    $endResults = \App\Models\ExamResult::where('student_id', $student->id)
+                        ->where('exam_id', $existing->endyear_exam_id)
+                        ->where('is_absent', false)->get();
+                    $endTotal = $endResults->sum('marks');
+                    $endCount = $endResults->count();
+                }
+                $marksIncomplete = $existing &&
+                    (($existing->midyear_exam_id && $midCount < $expectedSlots) ||
+                     ($existing->endyear_exam_id && $endCount < $expectedSlots));
+            @endphp
+
+            <div class="bg-white dark:bg-gray-800 rounded-xl border {{ $isLocked ? 'border-green-400 dark:border-green-600' : 'border-gray-200 dark:border-gray-700' }} overflow-hidden mb-3">
+                {{-- Card header --}}
+                <div class="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold bg-blue-600 text-white rounded-full">{{ $i + 1 }}</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $student->name }}</span>
+                        @if($existing)
+                            @if($existing->status === 'final')
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                    Final
+                                </span>
+                            @else
+                                <span class="px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-full">Draf</span>
+                            @endif
+                        @endif
+                    </div>
+                    {{-- Marks preview --}}
+                    @if($existing && ($existing->midyear_exam_id || $existing->endyear_exam_id))
+                    <div class="flex flex-wrap gap-1 items-center">
+                        @if($existing->midyear_exam_id)
+                            <span class="px-1.5 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded">PT: {{ $midTotal }}</span>
+                            <span class="px-1.5 py-0.5 text-xs rounded {{ $midCount >= $expectedSlots ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">{{ $midCount }}/{{ $expectedSlots }}</span>
+                        @endif
+                        @if($existing->endyear_exam_id)
+                            <span class="px-1.5 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded">AT: {{ $endTotal }}</span>
+                            <span class="px-1.5 py-0.5 text-xs rounded {{ $endCount >= $expectedSlots ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">{{ $endCount }}/{{ $expectedSlots }}</span>
+                        @endif
+                        <span class="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded">Jumlah: {{ $midTotal + $endTotal }}</span>
+                    </div>
+                    @endif
+                </div>
+
+                <div class="p-4 {{ $isLocked ? 'opacity-60' : '' }}">
+                    @if($isLocked)
+                    <div class="flex items-center gap-2 text-xs text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 mb-3">
+                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Rekod ini telah difinalkan — tidak boleh diubah.
+                    </div>
+                    @endif
+
+                    @if($marksIncomplete)
+                    <div class="flex items-center gap-2 text-xs text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-3 py-2 mb-3">
+                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <span>Markah belum lengkap —
+                            @if($existing->midyear_exam_id && $midCount < $expectedSlots) PT: {{ $midCount }}/{{ $expectedSlots }} subjek @endif
+                            @if($existing->endyear_exam_id && $endCount < $expectedSlots) AT: {{ $endCount }}/{{ $expectedSlots }} subjek @endif
+                        </span>
+                    </div>
+                    @endif
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                        {{-- PHCI PT --}}
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">PHCI (PT)</label>
+                            <input type="number" name="phci_midyear[{{ $student->id }}]"
+                                   min="0" max="100" placeholder="0–100"
+                                   value="{{ $prePhciMid }}" {{ $isLocked ? 'disabled' : '' }}
+                                   class="w-full px-2.5 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        </div>
+
+                        {{-- PHCI AT --}}
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">PHCI (AT)</label>
+                            <input type="number" name="phci_endyear[{{ $student->id }}]"
+                                   min="0" max="100" placeholder="0–100"
+                                   value="{{ $prePhciEnd }}" {{ $isLocked ? 'disabled' : '' }}
+                                   class="w-full px-2.5 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        </div>
+
+                        {{-- Amali Solat --}}
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Amali Solat</label>
+                            <div class="flex gap-1">
+                                @foreach(['' => '—', 'Lulus' => 'L', 'Tidak Lulus' => 'TL'] as $val => $lbl)
+                                @php
+                                    $amId = 'am_'.$student->id.'_'.Str::slug($val ?: 'x');
+                                    $checked = $preAmaliSolat === $val;
+                                    $color = match($val) { 'Lulus' => 'peer-checked:bg-green-600 peer-checked:border-green-600 peer-checked:text-white', 'Tidak Lulus' => 'peer-checked:bg-red-500 peer-checked:border-red-500 peer-checked:text-white', default => 'peer-checked:bg-gray-500 peer-checked:border-gray-500 peer-checked:text-white' };
+                                @endphp
+                                <label class="flex-1 cursor-pointer {{ $isLocked ? 'pointer-events-none' : '' }}">
+                                    <input type="radio" class="peer sr-only" name="amali_solat[{{ $student->id }}]"
+                                           id="{{ $amId }}" value="{{ $val }}"
+                                           {{ $checked ? 'checked' : '' }} {{ $isLocked ? 'disabled' : '' }}>
+                                    <span class="flex items-center justify-center px-2 py-1 text-xs font-medium border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 {{ $color }} transition-colors">{{ $lbl }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        {{-- Placeholder --}}
+                        <div class="hidden md:block"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                        {{-- Kelakuan --}}
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Kelakuan</label>
+                            <div class="flex gap-1">
+                                @php $kelColors = ['' => 'peer-checked:bg-gray-500 peer-checked:border-gray-500 peer-checked:text-white', 'A' => 'peer-checked:bg-green-600 peer-checked:border-green-600 peer-checked:text-white', 'B' => 'peer-checked:bg-blue-600 peer-checked:border-blue-600 peer-checked:text-white', 'C' => 'peer-checked:bg-yellow-500 peer-checked:border-yellow-500 peer-checked:text-white', 'D' => 'peer-checked:bg-red-500 peer-checked:border-red-500 peer-checked:text-white']; @endphp
+                                @foreach(['' => '-', 'A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D'] as $val => $lbl)
+                                @php
+                                    $kelId = 'kel_'.$student->id.'_'.($val ?: 'x');
+                                    $checked = $preKelakuan === $val;
+                                @endphp
+                                <label class="flex-1 cursor-pointer {{ $isLocked ? 'pointer-events-none' : '' }}">
+                                    <input type="radio" class="peer sr-only" name="kelakuan[{{ $student->id }}]"
+                                           id="{{ $kelId }}" value="{{ $val }}"
+                                           {{ $checked ? 'checked' : '' }} {{ $isLocked ? 'disabled' : '' }}>
+                                    <span class="flex items-center justify-center px-2 py-1 text-xs font-medium border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 {{ $kelColors[$val] }} transition-colors">{{ $lbl }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        {{-- Kebersihan --}}
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Kebersihan</label>
+                            <div class="flex gap-1">
+                                @foreach(['' => '-', 'A' => 'A', 'B' => 'B', 'C' => 'C', 'D' => 'D'] as $val => $lbl)
+                                @php
+                                    $kebId = 'keb_'.$student->id.'_'.($val ?: 'x');
+                                    $checked = $preKebersihan === $val;
+                                @endphp
+                                <label class="flex-1 cursor-pointer {{ $isLocked ? 'pointer-events-none' : '' }}">
+                                    <input type="radio" class="peer sr-only" name="kebersihan[{{ $student->id }}]"
+                                           id="{{ $kebId }}" value="{{ $val }}"
+                                           {{ $checked ? 'checked' : '' }} {{ $isLocked ? 'disabled' : '' }}>
+                                    <span class="flex items-center justify-center px-2 py-1 text-xs font-medium border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 {{ $kelColors[$val] }} transition-colors">{{ $lbl }}</span>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Ulasan Guru --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Ulasan Guru</label>
+                        <textarea name="teacher_comments[{{ $student->id }}]" rows="2"
+                                  placeholder="Ulasan ringkas prestasi murid..." {{ $isLocked ? 'disabled' : '' }}
+                                  class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">{{ $preComments }}</textarea>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+
+            {{-- Status + Submit --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mt-4">
+                <div class="flex flex-wrap items-end gap-4">
+                    <div class="w-40">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                        <select name="status"
+                                class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            @php $currentStatus = old('status', $achievement->status ?? 'draft'); @endphp
+                            <option value="draft" {{ $currentStatus === 'draft' ? 'selected' : '' }}>Draf</option>
+                            @hasanyrole('Guru Besar|Super Admin')
+                            <option value="final" {{ $currentStatus === 'final' ? 'selected' : '' }}>Final</option>
+                            @endhasanyrole
+                        </select>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                            Simpan Rekod
+                        </button>
+                        <a href="{{ route('achievements.index') }}"
+                           class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                            Batal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
+    @else
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 text-sm text-blue-700 dark:text-blue-400">
+        Pilih kelas di atas untuk memaparkan senarai murid.
+    </div>
+    @endif
 </div>
 @endsection

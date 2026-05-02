@@ -103,6 +103,9 @@ php artisan view:cache
 | 57 | 2026-05-02 | `resources/views/dashboard/gurubesar.blade.php` | Fix: buang odometer span — angka dashboard Guru Besar kini papar dengan betul | ⏳ Belum Push |
 | 58 | 2026-05-02 | `resources/views/dashboard/guru.blade.php` | Fix: buang odometer span — angka dashboard Guru KAFA kini papar dengan betul | ⏳ Belum Push |
 | 59 | 2026-05-02 | `resources/views/students/index.blade.php` | Fix UI: guna rbt-form-group untuk dropdown filter, guna changed.bs.select event (bootstrap-select) ganti onchange | ⏳ Belum Push |
+| 60 | 2026-05-03 | `resources/views/activities/attendance.blade.php` | Migrate ke Flowbite UI — per-group select-all checkbox, Tailwind table | ⏳ Belum Push |
+| 61 | 2026-05-03 | `resources/views/achievements/create.blade.php` | Migrate ke Flowbite UI — Tailwind radio pills ganti Bootstrap btn-group, per-student cards | ⏳ Belum Push |
+| 62 | 2026-05-03 | `resources/views/achievements/show.blade.php` | Migrate ke Flowbite UI — maklumat murid, markah table, penilaian lain | ⏳ Belum Push |
 
 ---
 
