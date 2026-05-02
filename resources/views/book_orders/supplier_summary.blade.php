@@ -1,126 +1,110 @@
-@extends('layout.layout')
-
-@php
-    $bodyClass = '';
-    $footer = 'true';
-    $monthNames = [
-        1 => 'Januari', 2 => 'Februari', 3 => 'Mac', 4 => 'April',
-        5 => 'Mei', 6 => 'Jun', 7 => 'Julai', 8 => 'Ogos',
-        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Disember',
-    ];
-@endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+@php
+$monthNames = [
+    1 => 'Januari', 2 => 'Februari', 3 => 'Mac', 4 => 'April',
+    5 => 'Mei', 6 => 'Jun', 7 => 'Julai', 8 => 'Ogos',
+    9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Disember',
+];
+@endphp
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container text-start">
-        <div class="row mt--0">
-            @include('partials.sidebar')
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
+<div class="p-4 md:p-6">
 
-                        <div class="section-title d-flex justify-content-between align-items-center mb--20">
-                            <h4 class="rbt-title-style-3">Rumusan Tempahan untuk Pembekal</h4>
-                        </div>
+    <div class="mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Rumusan Tempahan untuk Pembekal</h1>
+    </div>
 
-                        {{-- Filter --}}
-                        <form action="{{ route('book_orders.supplier_summary') }}" method="GET"
-                              class="row g-3 mb--30">
-                            <div class="col-lg-3 col-md-4 col-12">
-                                <div class="rbt-form-group">
-                                    <label class="form-label">Bulan</label>
-                                    <select name="month" class="rbt-big-select">
-                                        <option value="">-- Semua Bulan --</option>
-                                        @foreach(range(1, 12) as $m)
-                                            <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>
-                                                {{ $monthNames[$m] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-4 col-12">
-                                <div class="rbt-form-group">
-                                    <label class="form-label">Tahun</label>
-                                    <select name="year" class="rbt-big-select">
-                                        <option value="">-- Semua Tahun --</option>
-                                        @foreach(range(date('Y') - 2, date('Y')) as $y)
-                                            <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-4 col-12 d-flex align-items-end">
-                                <button type="submit" class="rbt-btn btn-gradient w-100">Tapis</button>
-                            </div>
-                            <div class="col-lg-3 col-md-4 col-12 d-flex align-items-end">
-                                @php
-                                    $pdfUrl = route('book_orders.supplier_summary.pdf', array_filter(['month' => $month, 'year' => $year]));
-                                @endphp
-                                <button type="button" class="rbt-btn btn-border-gradient w-100"
-                                        onclick="openPdfBlob(this, '{{ $pdfUrl }}')">
-                                    <i class="feather-file-text me-1"></i> Cetak PDF
-                                </button>
-                            </div>
-                        </form>
-
-                        @if($month || $year)
-                        <p class="mb--20 text-muted">
-                            Menunjukkan data bagi:
-                            <strong>{{ $month ? $monthNames[(int)$month] : 'Semua Bulan' }} {{ $year ?: '' }}</strong>
-                        </p>
-                        @else
-                        <p class="mb--20 text-muted">Ringkasan kuantiti keseluruhan bagi semua tempahan yang telah diluluskan/selesai.</p>
-                        @endif
-
-                        <div class="rbt-dashboard-table table-responsive mt--20">
-                            <table class="rbt-table table table-borderless">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama Buku</th>
-                                        <th class="text-center">Kuantiti Keseluruhan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php $grandTotal = 0; @endphp
-                                    @forelse($summary as $i => $row)
-                                    <tr>
-                                        <td>{{ $i + 1 }}</td>
-                                        <td>{{ $row->book->name }}</td>
-                                        <td class="text-center"><strong>{{ $row->total_quantity }} unit</strong></td>
-                                    </tr>
-                                    @php $grandTotal += $row->total_quantity; @endphp
-                                    @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center py-4">Tiada data untuk tempoh yang dipilih.</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                                @if($summary->isNotEmpty())
-                                <tfoot>
-                                    <tr style="border-top: 2px solid #eee;">
-                                        <td colspan="2" class="text-end"><strong>Jumlah Keseluruhan Unit</strong></td>
-                                        <td class="text-center"><strong>{{ $grandTotal }} unit</strong></td>
-                                    </tr>
-                                </tfoot>
-                                @endif
-                            </table>
-                        </div>
-
-                        <div class="mt--30">
-                            <a href="{{ route('book_orders.index') }}" class="rbt-btn btn-link">
-                                <i class="feather-arrow-left me-1"></i> Kembali
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
+    {{-- Filter --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-5">
+        <form action="{{ route('book_orders.supplier_summary') }}" method="GET"
+              class="flex flex-wrap items-end gap-3">
+            <div class="w-40">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bulan</label>
+                <select name="month"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Semua Bulan --</option>
+                    @foreach(range(1, 12) as $m)
+                        <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>{{ $monthNames[$m] }}</option>
+                    @endforeach
+                </select>
             </div>
+            <div class="w-32">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tahun</label>
+                <select name="year"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Semua Tahun --</option>
+                    @foreach(range(date('Y') - 2, date('Y')) as $y)
+                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                Tapis
+            </button>
+            @php $pdfUrl = route('book_orders.supplier_summary.pdf', array_filter(['month' => $month, 'year' => $year])); @endphp
+            <button type="button" onclick="openPdfBlob(this, '{{ $pdfUrl }}')"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                </svg>
+                Cetak PDF
+            </button>
+        </form>
+    </div>
+
+    @if($month || $year)
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        Menunjukkan data bagi: <strong class="text-gray-900 dark:text-white">{{ $month ? $monthNames[(int)$month] : 'Semua Bulan' }} {{ $year ?: '' }}</strong>
+    </p>
+    @else
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Ringkasan kuantiti keseluruhan bagi semua tempahan yang telah diluluskan/selesai.</p>
+    @endif
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-5">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+                    <tr>
+                        <th class="px-4 py-3 text-left">No</th>
+                        <th class="px-4 py-3 text-left">Nama Buku</th>
+                        <th class="px-4 py-3 text-center">Kuantiti Keseluruhan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    @php $grandTotal = 0; @endphp
+                    @forelse($summary as $i => $row)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                        <td class="px-4 py-2.5 text-gray-500 dark:text-gray-400">{{ $i + 1 }}</td>
+                        <td class="px-4 py-2.5 font-medium text-gray-900 dark:text-white">{{ $row->book->name }}</td>
+                        <td class="px-4 py-2.5 text-center font-semibold text-gray-900 dark:text-white">{{ $row->total_quantity }} unit</td>
+                    </tr>
+                    @php $grandTotal += $row->total_quantity; @endphp
+                    @empty
+                    <tr>
+                        <td colspan="3" class="px-4 py-8 text-center text-gray-400 text-sm">Tiada data untuk tempoh yang dipilih.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+                @if($summary->isNotEmpty())
+                <tfoot>
+                    <tr class="border-t-2 border-gray-200 dark:border-gray-600">
+                        <td colspan="2" class="px-4 py-3 text-right font-semibold text-gray-900 dark:text-white">Jumlah Keseluruhan Unit</td>
+                        <td class="px-4 py-3 text-center font-bold text-gray-900 dark:text-white">{{ $grandTotal }} unit</td>
+                    </tr>
+                </tfoot>
+                @endif
+            </table>
         </div>
     </div>
+
+    <a href="{{ route('book_orders.index') }}"
+       class="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:underline">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Kembali
+    </a>
 </div>
 @endsection
