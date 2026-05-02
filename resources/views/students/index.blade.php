@@ -42,90 +42,84 @@
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
-                        {{-- ── Filter Form: District + School + Search ── --}}
-                        <form method="GET" id="filterForm" action="{{ route('students.index') }}" class="mb--10">
-                            {{-- Preserve tahun tab state across form submits --}}
+                        {{-- ── Filter Panel ── --}}
+                        <form method="GET" id="filterForm" action="{{ route('students.index') }}" class="rbt-search-filter mb--20">
                             @if($filterTahun)
                                 <input type="hidden" name="tahun" value="{{ $filterTahun }}">
                             @endif
 
-                            <div class="row g-2 mb-2">
-                                {{-- Daerah (SA & Pentadbir only) --}}
+                            <div class="row g-3">
+                                {{-- Daerah (SA/Pentadbir) --}}
                                 @if(in_array($authRole, ['Super Admin', 'Pentadbir']) && $districts->isNotEmpty())
-                                <div class="col-lg-3 col-md-6 col-12">
-                                    <select name="district_id" class="form-select form-select-sm" style="height:40px;"
-                                            onchange="this.form.submit()">
-                                        <option value="">-- Semua Daerah --</option>
-                                        @foreach($districts as $d)
-                                            <option value="{{ $d->id }}" {{ $filterDistrict == $d->id ? 'selected' : '' }}>
-                                                {{ $d->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                <div class="col-lg-2 col-md-3 col-6">
+                                    <div class="rbt-form-group">
+                                        <select name="district_id" title="Semua Daerah" id="filterDaerah">
+                                            <option value="">Semua Daerah</option>
+                                            @foreach($districts as $d)
+                                                <option value="{{ $d->id }}" {{ $filterDistrict == $d->id ? 'selected' : '' }}>{{ $d->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                                 @endif
 
-                                {{-- Sekolah (SA, Pentadbir, Penyelia KAFA) --}}
+                                {{-- Sekolah (SA/Pentadbir/Penyelia) --}}
                                 @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']) && $schools->isNotEmpty())
-                                <div class="col-lg-3 col-md-6 col-12">
-                                    <select name="school_id" class="form-select form-select-sm" style="height:40px;"
-                                            onchange="this.form.submit()">
-                                        <option value="">-- Semua Sekolah --</option>
-                                        @foreach($schools as $s)
-                                            <option value="{{ $s->id }}" {{ $filterSchool == $s->id ? 'selected' : '' }}>
-                                                {{ $s->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                <div class="col-lg-3 col-md-4 col-6">
+                                    <div class="rbt-form-group">
+                                        <select name="school_id" title="Semua Sekolah" id="filterSekolah">
+                                            <option value="">Semua Sekolah</option>
+                                            @foreach($schools as $s)
+                                                <option value="{{ $s->id }}" {{ $filterSchool == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                                 @endif
 
                                 {{-- Kelas --}}
-                                @if($classes->isNotEmpty())
-                                <div class="col-lg-2 col-md-4 col-12">
-                                    <select name="class_id" class="form-select form-select-sm" style="height:40px;"
-                                            onchange="this.form.submit()">
-                                        <option value="">-- Semua Kelas --</option>
-                                        <option value="none" {{ request('class_id') === 'none' ? 'selected' : '' }}>Tiada Kelas</option>
-                                        @foreach($classes as $c)
-                                            <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>
-                                                {{ $c->display_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @endif
-
-                                {{-- Search --}}
-                                <div class="col-lg col-md col-12">
-                                    <input type="text" name="search" value="{{ $search }}"
-                                           class="form-control form-control-sm" style="height:40px;"
-                                           placeholder="Cari nama / MyKid...">
+                                <div class="col-lg-2 col-md-3 col-sm-6 col-6">
+                                    <div class="rbt-form-group">
+                                        <select name="class_id" title="Semua Kelas" id="filterKelas">
+                                            <option value="">Semua Kelas</option>
+                                            <option value="none" {{ request('class_id') === 'none' ? 'selected' : '' }}>— Tiada Kelas</option>
+                                            @foreach($classes as $c)
+                                                <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->display_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
 
-                                {{-- Buttons --}}
-                                <div class="col-auto">
-                                    <button type="submit" class="rbt-btn btn-sm btn-gradient" style="height:40px;padding:0 16px;">
-                                        <i class="feather-search"></i>
-                                    </button>
+                                {{-- Search + Buttons --}}
+                                <div class="col">
+                                    <div class="rbt-form-group d-flex gap-2 mb--0">
+                                        <input type="text" name="search" value="{{ $search }}"
+                                               placeholder="Cari nama / MyKid / No. Pendaftaran...">
+                                        <button type="submit" class="rbt-btn btn-gradient"
+                                                style="height:50px;min-width:50px;padding:0 16px;flex-shrink:0;">
+                                            <i class="feather-search"></i>
+                                        </button>
+                                        @if($search || $filterDistrict || $filterSchool || request('class_id') || request('show_archive') || $filterTahun)
+                                        <a href="{{ route('students.index') }}" title="Reset penapis"
+                                           class="rbt-btn btn-border"
+                                           style="height:50px;min-width:50px;padding:0 14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                                            <i class="feather-x"></i>
+                                        </a>
+                                        @endif
+                                    </div>
                                 </div>
-                                @if($search || $filterDistrict || $filterSchool || request('class_id') || request('show_archive') || $filterTahun)
-                                <div class="col-auto">
-                                    <a href="{{ route('students.index') }}" class="rbt-btn btn-sm" style="height:40px;padding:0 12px;background:#f0f0f0;color:#555;">
-                                        <i class="feather-x"></i>
-                                    </a>
-                                </div>
-                                @endif
                             </div>
 
                             {{-- Archive toggle --}}
-                            <div class="form-check form-switch mt-1 mb-1">
-                                <input class="form-check-input" type="checkbox" name="show_archive" value="1"
-                                       id="showArchive" {{ request('show_archive') ? 'checked' : '' }}
-                                       onchange="this.form.submit()">
-                                <label class="form-check-label small text-muted" for="showArchive">
-                                    Papar Arkib (Berhenti / Pindah / Umur &gt; 13 Tahun)
-                                </label>
+                            <div class="mt--10">
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" name="show_archive" value="1"
+                                           id="showArchive" {{ request('show_archive') ? 'checked' : '' }}
+                                           onchange="this.form.submit()">
+                                    <label class="form-check-label small text-muted" for="showArchive" style="cursor:pointer;">
+                                        <i class="feather-archive me-1"></i>Papar Arkib (Berhenti / Pindah / Umur &gt; 13 Tahun)
+                                    </label>
+                                </div>
                             </div>
                         </form>
 
@@ -314,6 +308,13 @@
 
 @push('scripts')
 <script>
+// Auto-submit filter form bila dropdown berubah (bootstrap-select event)
+$(document).ready(function () {
+    $('#filterDaerah, #filterSekolah, #filterKelas').on('changed.bs.select', function () {
+        $('#filterForm').submit();
+    });
+});
+
 @if($errors->has('file') || $errors->has('school_id'))
 document.addEventListener('DOMContentLoaded', function () {
     var importModal = new bootstrap.Modal(document.getElementById('importModal'));

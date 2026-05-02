@@ -16,7 +16,7 @@
                     <i class="{{ $stat['icon'] }}"></i>
                 </div>
                 <div class="content">
-                    <h3 class="counter without-icon {{ $stat['color'] }}"><span class="odometer" data-count="{{ $stat['count'] }}">{{ $stat['count'] }}</span></h3>
+                    <h3 class="counter without-icon {{ $stat['color'] }}" style="font-size:2rem;font-weight:700;">{{ $stat['count'] }}</h3>
                     <span class="rbt-title-style-2 d-block">{{ $stat['title'] }}</span>
                 </div>
             </div>

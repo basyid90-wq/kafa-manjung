@@ -98,6 +98,11 @@ php artisan view:cache
 | 52 | 2026-05-02 | `resources/views/users/index.blade.php` | Revamp — tambah tab peranan (SA/Penyelia), search bar, emel dalam baris nama, empty state mesej | ⏳ Belum Push |
 | 53 | 2026-05-02 | `app/Http/Controllers/StudentController.php` | Revamp index() — tambah filter daerah/sekolah/tahun/kelas/search, tahunCounts, $applyScope closure, buang kod lama bertindih | ⏳ Belum Push |
 | 54 | 2026-05-02 | `resources/views/students/index.blade.php` | Revamp — tambah dropdown Daerah (SA), Sekolah (SA/Penyelia), Kelas, search bar, tab Tahun 1-6 dengan badge kiraan, kolum Sekolah untuk SA/Penyelia | ⏳ Belum Push |
+| 55 | 2026-05-02 | `resources/views/dashboard/admin.blade.php` | Fix: buang odometer span — angka dashboard Pentadbir kini papar dengan betul | ⏳ Belum Push |
+| 56 | 2026-05-02 | `resources/views/dashboard/penyelia.blade.php` | Fix: buang odometer span — angka dashboard Penyelia KAFA kini papar dengan betul | ⏳ Belum Push |
+| 57 | 2026-05-02 | `resources/views/dashboard/gurubesar.blade.php` | Fix: buang odometer span — angka dashboard Guru Besar kini papar dengan betul | ⏳ Belum Push |
+| 58 | 2026-05-02 | `resources/views/dashboard/guru.blade.php` | Fix: buang odometer span — angka dashboard Guru KAFA kini papar dengan betul | ⏳ Belum Push |
+| 59 | 2026-05-02 | `resources/views/students/index.blade.php` | Fix UI: guna rbt-form-group untuk dropdown filter, guna changed.bs.select event (bootstrap-select) ganti onchange | ⏳ Belum Push |
 
 ---
 
