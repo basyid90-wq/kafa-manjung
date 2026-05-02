@@ -22,6 +22,10 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('home');
 
+// Public route — boleh akses tanpa login (dari login page)
+Route::post('announcements/{announcement}/increment-view', [AnnouncementController::class, 'incrementView'])
+    ->name('announcements.increment-view');
+
 Route::middleware('auth')->group(function () {
     // 1. Dashboard & Profile
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
