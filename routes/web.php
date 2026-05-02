@@ -274,6 +274,20 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:Super Admin'])->group(function () {
         Route::get('/admin/manual-logs', [\App\Http\Controllers\ManualController::class, 'logs'])->name('admin.manual.logs');
     });
+
+    // 17. Aduan / Laporkan Masalah
+    // Semua role kecuali Super Admin boleh hantar aduan
+    Route::middleware(['role:Pentadbir|Penyelia KAFA|Guru Besar|Guru KAFA|Pembekal|Bendahari Sekolah|Ibu Bapa'])->group(function () {
+        Route::get('feedback/create', [\App\Http\Controllers\FeedbackController::class, 'create'])->name('feedback.create');
+        Route::post('feedback', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
+    });
+    // Super Admin: lihat & urus semua aduan
+    Route::middleware(['role:Super Admin'])->group(function () {
+        Route::get('feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('feedback.index');
+        Route::get('feedback/{feedback}', [\App\Http\Controllers\FeedbackController::class, 'show'])->name('feedback.show');
+        Route::patch('feedback/{feedback}', [\App\Http\Controllers\FeedbackController::class, 'update'])->name('feedback.update');
+        Route::get('admin/system-log', [\App\Http\Controllers\FeedbackController::class, 'systemLog'])->name('admin.system_log');
+    });
 });
 
 // Public certificate verification (no auth required)

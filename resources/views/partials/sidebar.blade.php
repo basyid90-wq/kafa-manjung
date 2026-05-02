@@ -73,6 +73,18 @@
                                     <i class="feather-book-open"></i><span>Log Panduan Pengguna</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('feedback.index') }}"
+                                   class="{{ request()->routeIs('feedback.*') ? 'active' : '' }}">
+                                    <i class="feather-message-circle"></i><span>Aduan Masalah</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.system_log') }}"
+                                   class="{{ request()->routeIs('admin.system_log') ? 'active' : '' }}">
+                                    <i class="feather-terminal"></i><span>Log Sistem</span>
+                                </a>
+                            </li>
                         </ul>
                     </nav>
                     @endrole
@@ -83,6 +95,12 @@
                     </div>
                     <nav class="mainmenu-nav">
                         <ul class="dashboard-mainmenu rbt-default-sidebar-list">
+                            <li>
+                                <a href="{{ route('feedback.create') }}"
+                                   class="{{ request()->routeIs('feedback.create') ? 'active' : '' }}">
+                                    <i class="feather-alert-circle"></i><span>Laporkan Masalah</span>
+                                </a>
+                            </li>
                             <li>
                                 <a href="javascript:void(0);"
                                    onclick="openPdfBlob(this, '{{ route('manual.download') }}')">

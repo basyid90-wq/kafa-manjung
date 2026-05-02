@@ -8,8 +8,10 @@ use App\Models\ExamResult;
 use App\Models\Exam;
 use App\Models\Banner;
 use App\Models\Announcement;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -21,8 +23,45 @@ class DashboardController extends Controller
         // Data according to role
         $data = [];
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            // 1. Admin Logic
+        if ($user->hasRole('Super Admin')) {
+            // ── Super Admin: System-level stats ──
+            $data['stats'] = [
+                'schools'      => \App\Models\School::count(),
+                'active_users' => \App\Models\User::where('created_at', '>=', now()->subDays(90))->count(),
+                'students'     => \App\Models\Student::count(),
+                'new_users_30' => \App\Models\User::where('created_at', '>=', now()->subDays(30))->count(),
+            ];
+
+            // Recent feedback (latest 5)
+            $data['recent_feedback'] = Feedback::with('user')->latest()->take(5)->get();
+
+            // Feedback counts by status
+            $data['feedback_counts'] = [
+                'baru'          => Feedback::where('status', 'baru')->count(),
+                'dalam_semakan' => Feedback::where('status', 'dalam_semakan')->count(),
+                'selesai'       => Feedback::where('status', 'selesai')->count(),
+            ];
+
+            // System health: last error from log
+            $data['last_error_time'] = null;
+            $logPath = storage_path('logs/laravel.log');
+            if (file_exists($logPath)) {
+                $lines = array_reverse(array_slice(file($logPath), -200));
+                foreach ($lines as $line) {
+                    if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] \w+\.(error|critical|emergency|alert):/i', $line, $m)) {
+                        $data['last_error_time'] = $m[1];
+                        break;
+                    }
+                }
+            }
+
+            // DB + storage health
+            $data['db_ok']      = true;
+            $data['storage_ok'] = is_writable(storage_path('app/public'));
+            try { DB::connection()->getPdo(); } catch (\Exception $e) { $data['db_ok'] = false; }
+
+        } elseif ($user->hasRole('Pentadbir')) {
+            // ── Pentadbir ──
             $data['user_counts'] = [
                 'Admin' => \App\Models\User::role(['Super Admin', 'Pentadbir'])->count(),
                 'Penyelia' => \App\Models\User::role('Penyelia KAFA')->count(),

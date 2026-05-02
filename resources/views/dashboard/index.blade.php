@@ -39,9 +39,13 @@
                             <h4 class="rbt-title-style-3">Dashboard ({{ $role }})</h4>
                         </div>
 
-                        @hasanyrole('Super Admin|Pentadbir')
+                        @role('Super Admin')
+                            @include('dashboard.superadmin')
+                        @endrole
+
+                        @role('Pentadbir')
                             @include('dashboard.admin')
-                        @endhasanyrole
+                        @endrole
 
                         @role('Penyelia KAFA')
                             @include('dashboard.penyelia')
