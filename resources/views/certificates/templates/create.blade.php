@@ -1,126 +1,132 @@
-@extends('layout.layout')
-
-@php $bodyClass = ''; $footer = 'true'; @endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title mb--30">
-                            <h4 class="rbt-title-style-3">Tambah Templat Sijil</h4>
-                        </div>
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Tambah Templat Sijil</h1>
+        <a href="{{ route('certificates.templates.index') }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Kembali
+        </a>
+    </div>
 
-                        <form method="POST" action="{{ route('certificates.templates.store') }}" enctype="multipart/form-data">
-                            @csrf
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+        <form method="POST" action="{{ route('certificates.templates.store') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 
-                            <div class="row g-4">
-                                <div class="col-md-8">
-                                    <label class="form-label fw-bold">Nama Templat <span class="text-danger">*</span></label>
-                                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                           value="{{ old('name') }}" placeholder="cth: Sijil Penyertaan Sukaneka 2025">
-                                    @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Templat <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" value="{{ old('name') }}"
+                           placeholder="cth: Sijil Penyertaan Sukaneka 2025"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 @error('name') border-red-500 @enderror">
+                    @error('name')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
 
-                                @hasanyrole('Super Admin|Pentadbir|Penyelia KAFA')
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">Peringkat <span class="text-danger">*</span></label>
-                                    <select name="level" id="selectLevel" class="form-select selectpicker" data-style="btn-default" style="height:50px;">
-                                        <option value="sekolah" {{ old('level','sekolah')==='sekolah' ? 'selected':'' }}>Sekolah</option>
-                                        <option value="daerah"  {{ old('level')==='daerah'  ? 'selected':'' }}>Daerah</option>
-                                    </select>
-                                </div>
-                                @endhasanyrole
+                @hasanyrole('Super Admin|Pentadbir|Penyelia KAFA')
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peringkat <span class="text-red-500">*</span></label>
+                    <select name="level" id="selectLevel"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="sekolah" {{ old('level','sekolah')==='sekolah' ? 'selected':'' }}>Sekolah</option>
+                        <option value="daerah"  {{ old('level')==='daerah'  ? 'selected':'' }}>Daerah</option>
+                    </select>
+                </div>
+                @endhasanyrole
 
-                                @if($districts->isNotEmpty())
-                                <div class="col-md-6" id="wrapDistrict">
-                                    <label class="form-label fw-bold">Daerah</label>
-                                    <select name="district_id" class="form-select selectpicker" data-style="btn-default" data-live-search="true" style="height:50px;">
-                                        <option value="">-- Pilih Daerah --</option>
-                                        @foreach($districts as $d)
-                                        <option value="{{ $d->id }}" {{ old('district_id')==$d->id ? 'selected':'' }}>{{ $d->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @endif
+                @if($districts->isNotEmpty())
+                <div id="wrapDistrict">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Daerah</label>
+                    <select name="district_id"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Pilih Daerah --</option>
+                        @foreach($districts as $d)
+                        <option value="{{ $d->id }}" {{ old('district_id')==$d->id ? 'selected':'' }}>{{ $d->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
 
-                                @if($schools->isNotEmpty())
-                                <div class="col-md-6" id="wrapSchool">
-                                    <label class="form-label fw-bold">Sekolah</label>
-                                    <select name="school_id" class="form-select selectpicker" data-style="btn-default" data-live-search="true" style="height:50px;">
-                                        <option value="">-- Pilih Sekolah --</option>
-                                        @foreach($schools as $s)
-                                        <option value="{{ $s->id }}" {{ old('school_id')==$s->id ? 'selected':'' }}>{{ $s->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @endif
+                @if($schools->isNotEmpty())
+                <div id="wrapSchool">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sekolah</label>
+                    <select name="school_id"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Pilih Sekolah --</option>
+                        @foreach($schools as $s)
+                        <option value="{{ $s->id }}" {{ old('school_id')==$s->id ? 'selected':'' }}>{{ $s->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
 
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">Susun Atur Teks <span class="text-danger">*</span></label>
-                                    <select name="layout_style" class="form-select selectpicker" data-style="btn-default" style="height:50px;">
-                                        @foreach(['center'=>'Tengah','bottom'=>'Bawah','left'=>'Kiri','right'=>'Kanan'] as $val => $label)
-                                        <option value="{{ $val }}" {{ old('layout_style','center')===$val ? 'selected':'' }}>{{ $label }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Susun Atur Teks <span class="text-red-500">*</span></label>
+                    <select name="layout_style"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        @foreach(['center'=>'Tengah','bottom'=>'Bawah','left'=>'Kiri','right'=>'Kanan'] as $val => $label)
+                        <option value="{{ $val }}" {{ old('layout_style','center')===$val ? 'selected':'' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                                <div class="col-12">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="include_signature" id="chkSig" value="1"
-                                               {{ old('include_signature') ? 'checked':'' }} onchange="toggleSig(this)">
-                                        <label class="form-check-label" for="chkSig">Sertakan Tandatangan</label>
-                                    </div>
-                                </div>
+                <div class="md:col-span-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="include_signature" id="chkSig" value="1"
+                               {{ old('include_signature') ? 'checked':'' }}
+                               class="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Sertakan Tandatangan</span>
+                    </label>
+                </div>
 
-                                <div class="col-md-6" id="wrapSig" style="{{ old('include_signature') ? '' : 'display:none' }}">
-                                    <label class="form-label fw-bold">Imej Tandatangan (PNG)</label>
-                                    <input type="file" name="signature" class="form-control @error('signature') is-invalid @enderror" accept=".png,.jpg,.jpeg">
-                                    @error('signature')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
+                <div id="wrapSig" class="{{ old('include_signature') ? '' : 'hidden' }}">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imej Tandatangan (PNG)</label>
+                    <input type="file" name="signature" accept=".png,.jpg,.jpeg"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 @error('signature') border-red-500 @enderror">
+                    @error('signature')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Imej Latar Belakang (JPEG/PNG, maks 5MB)</label>
-                                    <input type="file" name="background" class="form-control @error('background') is-invalid @enderror" accept=".jpg,.jpeg,.png">
-                                    <small class="text-muted">Dimensi optimum: 2480 × 1754 px (A4 Landskap)</small>
-                                    @error('background')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-3 mt--30">
-                                <button type="submit" class="rbt-btn btn-gradient btn-sm">Simpan Templat</button>
-                                <a href="{{ route('certificates.templates.index') }}" class="rbt-btn btn-border-gradient btn-sm">Batal</a>
-                            </div>
-                        </form>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imej Latar Belakang (JPEG/PNG, maks 5MB)</label>
+                    <input type="file" name="background" accept=".jpg,.jpeg,.png"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 @error('background') border-red-500 @enderror">
+                    <p class="text-xs text-gray-400 mt-1">Dimensi optimum: 2480 × 1754 px (A4 Landskap).</p>
+                    @error('background')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
-        </div>
+
+            <div class="flex gap-3">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Simpan Templat
+                </button>
+                <a href="{{ route('certificates.templates.index') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                    Batal
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 
-@push('scripts')
 <script>
-function toggleSig(cb) {
-    document.getElementById('wrapSig').style.display = cb.checked ? '' : 'none';
-}
+document.getElementById('chkSig').addEventListener('change', function() {
+    document.getElementById('wrapSig').classList.toggle('hidden', !this.checked);
+});
 document.addEventListener('DOMContentLoaded', function () {
     var sel = document.getElementById('selectLevel');
     var wrapSchool = document.getElementById('wrapSchool');
     if (sel && wrapSchool) {
-        sel.addEventListener('change', function () {
-            wrapSchool.style.display = this.value === 'sekolah' ? '' : 'none';
-        });
-        // initial state
-        wrapSchool.style.display = sel.value === 'sekolah' ? '' : 'none';
+        function toggleSchool() {
+            wrapSchool.classList.toggle('hidden', sel.value !== 'sekolah');
+        }
+        sel.addEventListener('change', toggleSchool);
+        toggleSchool();
     }
 });
 </script>
-@endpush
 @endsection

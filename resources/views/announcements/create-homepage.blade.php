@@ -1,90 +1,78 @@
-@extends('layout.layout')
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container text-start">
-        <div class="row mt--0">
-            @include('partials.sidebar')
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title">
-                            <h4 class="rbt-title-style-3">Cipta Hebahan Homepage</h4>
-                            <p class="text-muted small">Hebahan ini akan dipaparkan di halaman login untuk maklumkan update sistem</p>
-                        </div>
+    <div class="mb-6">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Cipta Hebahan Homepage</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Hebahan ini akan dipaparkan di halaman login untuk maklumkan update sistem.</p>
+    </div>
 
-                        <form action="{{ route('announcements.store-homepage') }}" method="POST" class="rbt-profile-row rbt-default-form row row--15">
-                            @csrf
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+        <form action="{{ route('announcements.store-homepage') }}" method="POST">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
 
-                            <div class="col-lg-8 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="title">Tajuk Hebahan</label>
-                                    <input type="text" name="title" id="title" placeholder="Contoh: Modul Sijil Digital Kini Tersedia" value="{{ old('title') }}" required>
-                                </div>
-                            </div>
+                <div class="md:col-span-3">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tajuk Hebahan <span class="text-red-500">*</span></label>
+                    <input type="text" name="title" placeholder="Contoh: Modul Sijil Digital Kini Tersedia"
+                           value="{{ old('title') }}" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                            <div class="col-lg-4 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="homepage_label">Label</label>
-                                    <select name="homepage_label" id="homepage_label" class="rbt-big-select" required>
-                                        <option value="Ciri Baharu">🆕 Ciri Baharu</option>
-                                        <option value="Pembaikan">🔧 Pembaikan</option>
-                                        <option value="Penyelenggaraan">⚠️ Penyelenggaraan</option>
-                                        <option value="Kritikal">🚨 Kritikal</option>
-                                        <option value="Pengumuman">📢 Pengumuman</option>
-                                    </select>
-                                </div>
-                            </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Label <span class="text-red-500">*</span></label>
+                    <select name="homepage_label" required
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="Ciri Baharu">🆕 Ciri Baharu</option>
+                        <option value="Pembaikan">🔧 Pembaikan</option>
+                        <option value="Penyelenggaraan">⚠️ Penyelenggaraan</option>
+                        <option value="Kritikal">🚨 Kritikal</option>
+                        <option value="Pengumuman">📢 Pengumuman</option>
+                    </select>
+                </div>
 
-                            <div class="col-lg-12 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="content_field">Isi Kandungan</label>
-                                    <div id="content_field" style="height: 300px; background: white;"></div>
-                                    <input type="hidden" name="content" id="content_hidden" required>
-                                </div>
-                            </div>
+                <div class="md:col-span-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Isi Kandungan <span class="text-red-500">*</span></label>
+                    <div id="content_field" class="bg-white" style="height:300px;"></div>
+                    <input type="hidden" name="content" id="content_hidden" required>
+                </div>
 
-                            <div class="col-lg-6 col-12">
-                                <div class="rbt-form-group">
-                                    <label for="expires_at">Tarikh Luput</label>
-                                    <input type="datetime-local" name="expires_at" id="expires_at" value="{{ old('expires_at') }}" required>
-                                    <small class="text-muted">Hebahan akan auto-hide selepas tarikh ini</small>
-                                </div>
-                            </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tarikh Luput <span class="text-red-500">*</span></label>
+                    <input type="datetime-local" name="expires_at" id="expires_at" value="{{ old('expires_at') }}" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <p class="text-xs text-gray-400 mt-1">Hebahan akan auto-hide selepas tarikh ini.</p>
+                </div>
 
-                            <div class="col-12 mt--20">
-                                <div class="alert alert-info">
-                                    <i class="feather-info"></i>
-                                    <strong>Nota:</strong> Hebahan homepage hanya akan dipaparkan di halaman login dan tidak menghantar notifikasi kepada pengguna.
-                                </div>
-                            </div>
-
-                            <div class="col-12 mt--20">
-                                <div class="rbt-button-group justify-content-start">
-                                    <button type="submit" class="rbt-btn btn-gradient">Terbitkan Hebahan Homepage</button>
-                                    <a href="{{ route('announcements.index') }}" class="rbt-btn btn-border btn-sm">Batal</a>
-                                </div>
-                            </div>
-                        </form>
+                <div class="md:col-span-4">
+                    <div class="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 text-sm text-blue-700 dark:text-blue-400">
+                        <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span><strong>Nota:</strong> Hebahan homepage hanya akan dipaparkan di halaman login dan tidak menghantar notifikasi kepada pengguna.</span>
                     </div>
                 </div>
             </div>
-        </div>
+
+            <div class="flex gap-3">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Terbitkan Hebahan Homepage
+                </button>
+                <a href="{{ route('announcements.index') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                    Batal
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- Quill Editor CSS -->
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
-
-<!-- Quill Editor JS -->
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Quill Editor
     const quill = new Quill('#content_field', {
         theme: 'snow',
         placeholder: 'Tuliskan maklumat update sistem di sini...',
@@ -101,26 +89,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Sync Quill content to hidden input on every change
     const hiddenInput = document.getElementById('content_hidden');
     quill.on('text-change', function() {
         hiddenInput.value = quill.root.innerHTML;
     });
 
-    // Set old value if exists
     const oldContent = `{{ old('content') }}`;
     if (oldContent) {
         quill.root.innerHTML = oldContent;
         hiddenInput.value = oldContent;
     }
 
-    // Set minimum datetime to now
     const expiresAt = document.getElementById('expires_at');
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     expiresAt.min = now.toISOString().slice(0, 16);
 
-    // Set default to 7 days from now
     const defaultExpiry = new Date();
     defaultExpiry.setDate(defaultExpiry.getDate() + 7);
     defaultExpiry.setMinutes(defaultExpiry.getMinutes() - defaultExpiry.getTimezoneOffset());
