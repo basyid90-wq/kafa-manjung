@@ -1,215 +1,195 @@
-@extends('layout.layout')
-
-@php $bodyClass = ''; $footer = 'true'; @endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<div class="p-4 md:p-6">
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+    {{-- ── Header ── --}}
+    <div class="flex items-center justify-between mb-5">
+        <div>
+            @role('Guru Besar')
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Semakan RPH Guru KAFA</h1>
+            @elserole('Penyelia KAFA')
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Semakan RPH Guru Besar</h1>
+            @else
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Kelulusan RPH</h1>
+            @endrole
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">RPH menunggu tindakan semakan / kelulusan</p>
+        </div>
+        <a href="{{ route('rph_approvals.history') }}"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Sejarah Kelulusan
+        </a>
+    </div>
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title">
-                            @role('Guru Besar')
-                            <h4 class="rbt-title-style-3">Semakan RPH Guru KAFA</h4>
-                            @elserole('Penyelia KAFA')
-                            <h4 class="rbt-title-style-3">Semakan RPH Guru Besar</h4>
-                            @else
-                            <h4 class="rbt-title-style-3">Kelulusan RPH</h4>
-                            @endrole
-                        </div>
-
-                        <div class="mb--20">
-                            <a href="{{ route('rph_approvals.history') }}" class="rbt-btn btn-sm btn-outline-primary">
-                                <i class="feather-clock"></i> Lihat Sejarah Kelulusan
-                            </a>
-                        </div>
-
-                        @if($records->isEmpty())
-                        <div class="text-center py-5">
-                            <i class="feather-check-circle" style="font-size:3rem; color:#2e7d32;"></i>
-                            <h5 class="mt--15">Tiada RPH Menunggu Semakan</h5>
-                            @role('Guru Besar')
-                            <p class="color-body">Tiada RPH dari Guru KAFA yang perlu disemak.</p>
-                            <p class="color-body mt-2"><small><i class="feather-info"></i> RPH yang anda hantar sendiri akan disemak oleh Penyelia KAFA.</small></p>
-                            @else
-                            <p class="color-body">Semua RPH guru telah disemak.</p>
-                            @endrole
-                        </div>
-                        @else
-                        <div class="row g-4 mt--10">
-                            @foreach($records as $rph)
-                            @php $p1 = $rph->periods->firstWhere('period_no', 1); @endphp
-                            <div class="col-12">
-                                <div style="border:1px solid #e8e8f0; border-radius:12px; overflow:hidden;">
-
-                                    {{-- Card Header --}}
-                                    <div style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); padding:16px 20px; color:white;">
-
-                                        {{-- Baris 1: Status badge + bilangan waktu --}}
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="rbt-badge-5 bg-color-warning color-white">
-                                                <i class="feather-clock" style="font-size:0.75em; vertical-align:middle;"></i>
-                                                Menunggu Semakan
-                                            </span>
-                                            <small style="opacity:0.6; font-size:0.78em;">
-                                                <i class="feather-layers" style="font-size:0.85em;"></i>
-                                                {{ $rph->periods->count() }} waktu
-                                            </small>
-                                        </div>
-
-                                        {{-- Tajuk & Mata Pelajaran (Jawi) --}}
-                                        @if($p1?->topic_jawi)
-                                        <p class="mb-1" style="font-family:'Lateef',serif; font-size:1.4em; direction:rtl; text-align:right; line-height:1.5;">{{ $p1->topic_jawi }}</p>
-                                        @else
-                                        <p class="mb-1" style="opacity:0.6; font-size:0.88em;">— tiada tajuk —</p>
-                                        @endif
-                                        @if($p1?->mata_pelajaran_jawi)
-                                        <p class="mb-2" style="font-family:'Lateef',serif; font-size:1em; opacity:0.8; direction:rtl; text-align:right;">{{ $p1->mata_pelajaran_jawi }}</p>
-                                        @endif
-
-                                        {{-- Baris 2: Guru + Sekolah --}}
-                                        <div class="row g-2 mt-1">
-                                            <div class="{{ auth()->user()->hasAnyRole(['Penyelia KAFA','Super Admin','Pentadbir']) ? 'col-md-6' : 'col-12' }}">
-                                                <div style="background:rgba(255,255,255,0.1); border-radius:8px; padding:8px 12px;">
-                                                    <div style="font-size:0.68em; opacity:0.65; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">Guru</div>
-                                                    <div style="font-weight:700; font-size:1em;">
-                                                        <i class="feather-user" style="font-size:0.85em;"></i>
-                                                        {{ $rph->user->name ?? '-' }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @hasanyrole('Penyelia KAFA|Super Admin|Pentadbir|Guru Besar')
-                                            <div class="col-md-6">
-                                                <div style="background:rgba(255,255,255,0.1); border-radius:8px; padding:8px 12px;">
-                                                    <div style="font-size:0.68em; opacity:0.65; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">Sekolah</div>
-                                                    <div style="font-weight:600; font-size:0.9em; line-height:1.3;">
-                                                        <i class="feather-home" style="font-size:0.85em;"></i>
-                                                        {{ $rph->school->name ?? '-' }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endhasanyrole
-                                        </div>
-
-                                        {{-- Baris 3: Kelas | Tarikh & Hari | Minggu | Masa --}}
-                                        <div class="d-flex flex-wrap gap-2 mt-2" style="font-size:0.82em;">
-                                            <span style="background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px;">
-                                                <i class="feather-book" style="font-size:0.85em;"></i>
-                                                {{ $p1?->kafaClass?->name ?? $rph->kafaClass?->name ?? '-' }}
-                                            </span>
-                                            <span style="background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px;">
-                                                <i class="feather-calendar" style="font-size:0.85em;"></i>
-                                                {{ $rph->hari ?? '' }} {{ \Carbon\Carbon::parse($rph->date)->format('d/m/Y') }}
-                                            </span>
-                                            <span style="background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px;">
-                                                <i class="feather-hash" style="font-size:0.85em;"></i>
-                                                Minggu {{ $rph->week }}
-                                            </span>
-                                            @if($p1?->masa)
-                                            <span style="background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px;">
-                                                <i class="feather-clock" style="font-size:0.85em;"></i>
-                                                {{ $p1->masa }}
-                                            </span>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    {{-- Kandungan Ringkas (Waktu 1) --}}
-                                    <div style="padding:16px 20px;">
-                                        @if($p1)
-                                        <p style="font-size:0.8em; font-weight:700; text-transform:uppercase; color:var(--color-primary); margin-bottom:10px;">Waktu 1 — Pratonton</p>
-                                        <div class="row g-3">
-                                            @foreach([
-                                                ['كماهيرن', $p1->kemahiran_jawi],
-                                                ['اوبجيكتيف', $p1->objective_jawi],
-                                                ['اكتيۏيتي', $p1->aktiviti_jawi],
-                                                ['ايمڤک', $p1->reflection_jawi],
-                                            ] as [$lbl, $val])
-                                            @if($val)
-                                            <div class="col-md-6">
-                                                <p class="mb--3" style="font-family:'Lateef',serif; font-size:1em; direction:rtl; text-align:right; color:var(--color-primary);">{{ $lbl }}</p>
-                                                <p class="mb--0" style="background:#f0f4ff; padding:8px 12px; border-radius:8px; font-family:'Lateef',serif; font-size:1.1em; text-align:right; direction:rtl; white-space:pre-wrap;">{{ $val }}</p>
-                                            </div>
-                                            @endif
-                                            @endforeach
-                                        </div>
-                                        @endif
-
-                                        {{-- Lihat butiran --}}
-                                        <div class="mt--15">
-                                            <a href="{{ route('rph.show', $rph) }}" class="rbt-btn btn-sm btn-border-gradient" style="font-size:0.82em;">
-                                                <i class="feather-eye"></i> Lihat Semua Waktu
-                                            </a>
-                                        </div>
-
-                                        {{-- Form Keputusan --}}
-                                        @hasanyrole('Penyelia KAFA|Super Admin|Pentadbir|Guru Besar')
-                                        <hr class="mt--20 mb--20">
-                                        <form action="{{ route('rph_approvals.update', $rph) }}" method="POST">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="row g-3 align-items-end">
-                                                <div class="col-md-4">
-                                                    <div class="rbt-form-group">
-                                                        <label style="font-size:0.88em; font-weight:700;">Keputusan <span class="text-danger">*</span></label>
-                                                        <select name="status" class="rbt-big-select" required>
-                                                            <option value="">-- Pilih --</option>
-                                                            <option value="approved">✅ Luluskan</option>
-                                                            <option value="revision_needed">🔄 Perlu Pembaikan</option>
-                                                            <option value="rejected">❌ Tolak</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="rbt-form-group">
-                                                        <label style="font-size:0.88em; font-weight:700;">Ulasan (jika ada)</label>
-                                                        <textarea name="review_comment" rows="2"
-                                                            style="border:1px solid #ddd; border-radius:8px; padding:10px 14px; width:100%; font-size:0.88em; resize:vertical;"></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <button type="submit" class="rbt-btn btn-gradient btn-sm w-100">
-                                                        <i class="feather-send"></i> Hantar
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        @else
-                                        <div class="mt--15 p-3" style="background:#f0f4ff; border-radius:8px; border-left:3px solid #6c63ff; font-size:0.85em; color:#555;">
-                                            <i class="feather-info"></i> Anda dalam mod <strong>baca sahaja</strong>. Kelulusan RPH dilakukan oleh Penyelia KAFA.
-                                        </div>
-                                        @endhasanyrole
-                                    </div>
-
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        {{-- Pagination --}}
-                        @if($records->hasPages())
-                        <div class="row mt--30">
-                            <div class="col-12">
-                                {{ $records->links() }}
-                            </div>
-                        </div>
-                        @endif
-
-                    </div>
-                </div>
+    @if($records->isEmpty())
+    {{-- ── Empty State ── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <div class="flex flex-col items-center gap-3 text-gray-400">
+            <div class="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
             </div>
+            <h3 class="text-base font-semibold text-gray-700 dark:text-gray-300">Tiada RPH Menunggu Semakan</h3>
+            @role('Guru Besar')
+            <p class="text-sm text-gray-500">Tiada RPH dari Guru KAFA yang perlu disemak.</p>
+            <p class="text-xs text-gray-400 mt-1">RPH yang anda hantar sendiri akan disemak oleh Penyelia KAFA.</p>
+            @else
+            <p class="text-sm text-gray-500">Semua RPH guru telah disemak.</p>
+            @endrole
         </div>
     </div>
+
+    @else
+    {{-- ── RPH Cards ── --}}
+    <div class="space-y-4">
+        @foreach($records as $rph)
+        @php $p1 = $rph->periods->firstWhere('period_no', 1); @endphp
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+
+            {{-- Card Header (dark) --}}
+            <div class="bg-gradient-to-r from-gray-900 to-gray-800 px-5 py-4">
+                {{-- Status + period count --}}
+                <div class="flex items-center justify-between mb-3">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-400/20 text-yellow-300 border border-yellow-400/30">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Menunggu Semakan
+                    </span>
+                    <span class="text-xs text-gray-400">{{ $rph->periods->count() }} waktu</span>
+                </div>
+
+                {{-- Tajuk & Mata Pelajaran (Jawi) --}}
+                @if($p1?->topic_jawi)
+                <p class="text-white mb-1" style="font-family:'Lateef',serif; font-size:1.4em; direction:rtl; text-align:right; line-height:1.5;">{{ $p1->topic_jawi }}</p>
+                @else
+                <p class="text-gray-500 text-sm mb-1">— tiada tajuk —</p>
+                @endif
+                @if($p1?->mata_pelajaran_jawi)
+                <p class="text-gray-300 mb-3" style="font-family:'Lateef',serif; font-size:1em; direction:rtl; text-align:right;">{{ $p1->mata_pelajaran_jawi }}</p>
+                @endif
+
+                {{-- Info chips ── --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                    <div class="bg-white/10 rounded-lg px-3 py-2">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Guru</p>
+                        <p class="text-white font-semibold text-sm">{{ $rph->user->name ?? '—' }}</p>
+                    </div>
+                    @hasanyrole('Penyelia KAFA|Super Admin|Pentadbir|Guru Besar')
+                    <div class="bg-white/10 rounded-lg px-3 py-2">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Sekolah</p>
+                        <p class="text-white font-medium text-sm leading-tight">{{ $rph->school->name ?? '—' }}</p>
+                    </div>
+                    @endhasanyrole
+                </div>
+
+                {{-- Meta tags --}}
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="bg-white/15 text-white px-2.5 py-1 rounded-full">
+                        {{ $p1?->kafaClass?->name ?? $rph->kafaClass?->name ?? '—' }}
+                    </span>
+                    <span class="bg-white/15 text-white px-2.5 py-1 rounded-full">
+                        {{ $rph->hari ?? '' }} {{ \Carbon\Carbon::parse($rph->date)->format('d/m/Y') }}
+                    </span>
+                    <span class="bg-white/15 text-white px-2.5 py-1 rounded-full">
+                        Minggu {{ $rph->week }}
+                    </span>
+                    @if($p1?->masa)
+                    <span class="bg-white/15 text-white px-2.5 py-1 rounded-full">{{ $p1->masa }}</span>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Preview Body --}}
+            <div class="px-5 py-4">
+                @if($p1)
+                <p class="text-xs font-bold uppercase tracking-wide text-blue-600 dark:text-blue-400 mb-3">Waktu 1 — Pratonton</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    @foreach([
+                        ['كماهيرن', $p1->kemahiran_jawi],
+                        ['اوبجيكتيف', $p1->objective_jawi],
+                        ['اكتيۏيتي', $p1->aktiviti_jawi],
+                        ['ايمڤک', $p1->reflection_jawi],
+                    ] as [$lbl, $val])
+                    @if($val)
+                    <div>
+                        <p class="text-xs text-blue-600 dark:text-blue-400 mb-1" style="font-family:'Lateef',serif; direction:rtl; text-align:right;">{{ $lbl }}</p>
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3" style="font-family:'Lateef',serif; font-size:1.05em; direction:rtl; text-align:right; white-space:pre-wrap;">{{ $val }}</div>
+                    </div>
+                    @endif
+                    @endforeach
+                </div>
+                @endif
+
+                <a href="{{ route('rph.show', $rph) }}"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    Lihat Semua Waktu
+                </a>
+
+                {{-- Approval Form --}}
+                @hasanyrole('Penyelia KAFA|Super Admin|Pentadbir|Guru Besar')
+                <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <form action="{{ route('rph_approvals.update', $rph) }}" method="POST">
+                        @csrf @method('PUT')
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                                    Keputusan <span class="text-red-500">*</span>
+                                </label>
+                                <select name="status" required
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                    <option value="">— Pilih —</option>
+                                    <option value="approved">✅ Luluskan</option>
+                                    <option value="revision_needed">🔄 Perlu Pembaikan</option>
+                                    <option value="rejected">❌ Tolak</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Ulasan (jika ada)</label>
+                                <textarea name="review_comment" rows="2"
+                                          class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"></textarea>
+                            </div>
+                            <div>
+                                <button type="submit"
+                                        class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                    Hantar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                @else
+                <div class="mt-4 flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 text-sm text-blue-700 dark:text-blue-400">
+                    <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Anda dalam mod <strong class="ml-1">baca sahaja</strong>. Kelulusan RPH dilakukan oleh Penyelia KAFA.
+                </div>
+                @endhasanyrole
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    @if($records->hasPages())
+    <div class="mt-4">{{ $records->links() }}</div>
+    @endif
+    @endif
+
 </div>
 
 <style>
-    @font-face { font-family:'Lateef'; src:url('/fonts/Lateef-Regular.ttf') format('truetype'); }
+    @font-face { font-family: 'Lateef'; src: url('/fonts/Lateef-Regular.ttf') format('truetype'); }
 </style>
 @endsection
