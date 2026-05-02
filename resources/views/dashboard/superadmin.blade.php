@@ -1,11 +1,3 @@
-{{-- DEBUG SEMENTARA --}}
-<div class="alert alert-warning mb--20" style="font-size:12px; font-family:monospace;">
-    role={{ $role }} |
-    stats_set={{ isset($data['stats']) ? 'YES' : 'NO' }} |
-    schools={{ $data['stats']['schools'] ?? 'UNSET' }} |
-    users={{ $data['stats']['total_users'] ?? 'UNSET' }}
-</div>
-
 {{-- Super Admin Dashboard --}}
 @php
     $cards = [
@@ -52,13 +44,9 @@
                     <i class="{{ $card['icon'] }}"></i>
                 </div>
                 <div class="content">
-                    <h3 class="counter without-icon {{ $card['color'] }}">
-                        <span class="odometer" data-count="{{ $card['count'] }}">{{ $card['count'] }}</span>
-                    </h3>
+                    <h3 class="counter without-icon {{ $card['color'] }}"><span class="odometer" data-count="{{ $card['count'] }}">{{ $card['count'] }}</span></h3>
                     <span class="rbt-title-style-2 d-block">{{ $card['title'] }}</span>
-                    @isset($card['note'])
-                    <small class="text-muted" style="font-size:10px;">{{ $card['note'] }}</small>
-                    @endisset
+                    @isset($card['note'])<small class="text-muted" style="font-size:10px;">{{ $card['note'] }}</small>@endisset
                 </div>
             </div>
         </div>
