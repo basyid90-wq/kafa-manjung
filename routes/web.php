@@ -22,9 +22,21 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('home');
 
-// Public route — boleh akses tanpa login (dari login page)
+// Public routes — boleh akses tanpa login (dari login page)
 Route::post('announcements/{announcement}/increment-view', [AnnouncementController::class, 'incrementView'])
     ->name('announcements.increment-view');
+
+Route::get('/waktu-solat', function (\Illuminate\Http\Request $req) {
+    $zone = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $req->query('zone', 'PRK09')));
+    if (!preg_match('/^[A-Z]{2,3}\d{2}$/', $zone)) $zone = 'PRK09';
+    try {
+        $res = \Illuminate\Support\Facades\Http::timeout(10)
+            ->get("https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&period=today&zone={$zone}");
+        return response()->json($res->json());
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Gagal mendapatkan waktu solat'], 503);
+    }
+})->name('waktu.solat');
 
 Route::middleware('auth')->group(function () {
     // 1. Dashboard & Profile

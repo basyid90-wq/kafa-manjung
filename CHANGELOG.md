@@ -150,6 +150,10 @@ php artisan view:cache
 | 104 | 2026-05-03 | `resources/views/students/create.blade.php` | Kemaskini file input ke Flowbite File Input dengan helper text | ⏳ Belum Push |
 | 105 | 2026-05-03 | `resources/views/students/edit.blade.php` | Kemaskini file input ke Flowbite File Input dengan helper text | ⏳ Belum Push |
 | 106 | 2026-05-03 | `resources/views/certificates/templates/create.blade.php` | Kemaskini 2 file input (tandatangan + latar) ke Flowbite File Input dengan helper text | ⏳ Belum Push |
+| 107 | 2026-05-03 | `routes/web.php` | Tambah route awam `/waktu-solat` — proxy JAKIM API untuk widget waktu solat (tanpa CORS) | ⏳ Belum Push |
+| 108 | 2026-05-03 | `resources/views/components/prayer-times-widget.blade.php` | Cipta Blade component widget Waktu Solat — flip clock, dropdown negeri/zon JAKIM, waktu solat grid aktif | ⏳ Belum Push |
+| 109 | 2026-05-03 | `resources/views/auth/login.blade.php` | Reka bentuk semula — hero heading-mark, login card Flowbite, horizontal card hebahan, prayer widget | ⏳ Belum Push |
+| 110 | 2026-05-03 | `resources/views/dashboard/index.blade.php` | Tambah `<x-prayer-times-widget />` di bawah semua dashboard role | ⏳ Belum Push |
 
 ---
 

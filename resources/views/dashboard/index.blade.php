@@ -25,4 +25,9 @@
     @include('dashboard.fb.guru')
 @endif
 
+{{-- ── Waktu Solat Widget ── --}}
+<div class="mt-6">
+    <x-prayer-times-widget />
+</div>
+
 @endsection
