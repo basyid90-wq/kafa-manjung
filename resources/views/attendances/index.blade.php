@@ -170,49 +170,51 @@
 
 </div>
 
-{{-- ── Modal: Buku Kedatangan ── --}}
-<div id="kedatanganModal" tabindex="-1" aria-hidden="true"
-     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
-        <div class="flex items-center justify-between mb-5">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Jana Buku Kedatangan (PDF Jawi)</h3>
-            <button onclick="document.getElementById('kedatanganModal').classList.add('hidden')"
-                    class="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-        <p id="kdClassName" class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4"></p>
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    Bulan &amp; Tahun <span class="text-red-500">*</span>
-                </label>
-                <input type="month" id="kdMonthYear"
-                       class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" required>
+{{-- ── Modal: Buku Kedatangan (Flowbite CRUD Modal) ── --}}
+<div id="kedatanganModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Jana Buku Kedatangan (PDF Jawi)
+                </h3>
+                <button type="button" onclick="closeKedatanganModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Tutup modal</span>
+                </button>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    Jumlah Hari Persekolahan <span class="text-red-500">*</span>
-                </label>
-                <input type="number" id="kdTotalDays" min="1" max="31" placeholder="Contoh: 20"
-                       class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" required>
-                <p class="text-xs text-gray-400 mt-1">Masukkan bilangan hari sekolah aktif (tidak termasuk cuti).</p>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5">
+                <p id="kdClassName" class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4"></p>
+                <div class="grid gap-4 mb-4 grid-cols-1">
+                    <div>
+                        <label for="kdMonthYear" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Bulan &amp; Tahun <span class="text-red-500">*</span>
+                        </label>
+                        <input type="month" id="kdMonthYear" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                    </div>
+                    <div>
+                        <label for="kdTotalDays" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Jumlah Hari Persekolahan <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="kdTotalDays" min="1" max="31" placeholder="Contoh: 20" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Masukkan bilangan hari sekolah aktif (tidak termasuk cuti).</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeKedatanganModal()" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                        Batal
+                    </button>
+                    <button id="kdSubmitBtn" type="button" onclick="submitKedatanganPdf()" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                        Jana PDF (Jawi)
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="flex justify-end gap-2 mt-6">
-            <button onclick="document.getElementById('kedatanganModal').classList.add('hidden')"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
-                Batal
-            </button>
-            <button id="kdSubmitBtn" type="button" onclick="submitKedatanganPdf()"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Jana PDF (Jawi)
-            </button>
         </div>
     </div>
 </div>
@@ -278,7 +280,6 @@
     </div>
 </div>
 
-@push('scripts')
 <script>
 let kdClassId = null;
 const kdBaseUrl = '{{ url("attendances") }}';
@@ -290,7 +291,15 @@ function openKedatanganModal(btn) {
     const mm  = String(now.getMonth() + 1).padStart(2, '0');
     document.getElementById('kdMonthYear').value  = now.getFullYear() + '-' + mm;
     document.getElementById('kdTotalDays').value   = '';
-    document.getElementById('kedatanganModal').classList.remove('hidden');
+    const modal = document.getElementById('kedatanganModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeKedatanganModal() {
+    const modal = document.getElementById('kedatanganModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
 function submitKedatanganPdf() {
@@ -321,11 +330,12 @@ function openCutiModal(btn) {
 }
 
 // Close modals on backdrop click
-['kedatanganModal', 'cutiModal'].forEach(id => {
-    document.getElementById(id).addEventListener('click', function(e) {
-        if (e.target === this) this.classList.add('hidden');
-    });
+document.getElementById('kedatanganModal').addEventListener('click', function(e) {
+    if (e.target === this) closeKedatanganModal();
+});
+
+document.getElementById('cutiModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.add('hidden');
 });
 </script>
-@endpush
 @endsection
