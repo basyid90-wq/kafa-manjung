@@ -7,6 +7,7 @@
     <title>@yield('title', 'APKM') | Sistem KAFA Perak</title>
     <link rel="shortcut icon" href="{{ asset('template/perak.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('styles')
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 h-full" x-data="{ sidebarOpen: false }">
@@ -177,6 +178,55 @@
             @yield('content')
         </main>
     </div>
+
+    {{-- ── SweetAlert2 Global Handlers ── --}}
+    <script>
+        // Flash: Berjaya
+        @if(session('success'))
+        Swal.fire({
+            title: 'Berjaya!',
+            text: "{{ addslashes(session('success')) }}",
+            icon: 'success',
+            confirmButtonColor: '#2563eb',
+            confirmButtonText: 'Tutup',
+            timer: 4000,
+            timerProgressBar: true
+        });
+        @endif
+
+        // Flash: Ralat
+        @if(session('error'))
+        Swal.fire({
+            title: 'Ralat!',
+            text: "{{ addslashes(session('error')) }}",
+            icon: 'error',
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Tutup'
+        });
+        @endif
+
+        // Global: data-delete-form confirmation
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('[data-delete-form]').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var itemName = form.getAttribute('data-name') || 'rekod ini';
+                    Swal.fire({
+                        title: 'Pengesahan',
+                        html: 'Adakah anda pasti mahu memadam <strong>' + itemName + '</strong>?<br><small style="color:#999;">Tindakan ini tidak boleh dikembalikan.</small>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc2626',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Ya, Teruskan!',
+                        cancelButtonText: 'Batal'
+                    }).then(function(result) {
+                        if (result.isConfirmed) form.submit();
+                    });
+                });
+            });
+        });
+    </script>
 
     {{-- ── PDF Viewer Overlay (PDF.js) ── --}}
     <div id="rph-pdf-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:99998; background:#333;">
