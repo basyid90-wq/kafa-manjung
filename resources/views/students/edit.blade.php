@@ -52,10 +52,11 @@
                     <img src="{{ asset('storage/' . $student->profile_picture) }}" alt="Gambar"
                          class="w-24 h-24 rounded-xl border-2 border-gray-200 object-cover">
                     @endif
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Tukar Gambar Pelajar</label>
-                    <input type="file" name="profile_picture" accept="image/*"
-                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPEG, PNG, JPG. Maks: 2MB. Kosongkan jika tiada perubahan.</p>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="profile_picture_edit">Tukar Gambar Pelajar</label>
+                    <input type="file" name="profile_picture" id="profile_picture_edit" accept="image/*"
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                           aria-describedby="profile_picture_edit_help">
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="profile_picture_edit_help">JPEG, PNG atau JPG (MAX. 2MB). Kosongkan jika tiada perubahan.</p>
                 </div>
 
                 <div class="md:col-span-2">

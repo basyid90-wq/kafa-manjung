@@ -48,15 +48,16 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tukar Gambar Dokumentasi <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="photo_edit">Tukar Gambar Dokumentasi <span class="text-gray-400 font-normal">(Opsional)</span></label>
                     @if($activity->photo_path)
                     <div class="mb-2">
                         <img src="{{ asset('storage/' . $activity->photo_path) }}" alt="Foto Semasa" class="h-24 rounded-lg border border-gray-200 dark:border-gray-700">
                     </div>
                     @endif
-                    <input type="file" name="photo" accept="image/*"
-                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, JPEG. Maks: 2MB. Kosongkan jika tiada perubahan.</p>
+                    <input type="file" name="photo" id="photo_edit" accept="image/*"
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                           aria-describedby="photo_edit_help">
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="photo_edit_help">JPG, PNG atau JPEG (MAX. 2MB). Kosongkan jika tiada perubahan.</p>
                 </div>
             </div>
 

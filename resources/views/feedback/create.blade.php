@@ -96,10 +96,11 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tangkapan Skrin <span class="text-gray-400 font-normal">(Pilihan)</span></label>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="image">Tangkapan Skrin <span class="text-gray-400 font-normal">(Pilihan)</span></label>
                     <input type="file" name="image" id="image" accept="image/*"
-                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, GIF, WEBP. Saiz maksimum: 4MB.</p>
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                           aria-describedby="image_help">
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="image_help">JPG, PNG, GIF atau WEBP (MAX. 4MB).</p>
                     <div id="imagePreview" class="hidden mt-2">
                         <img id="previewImg" src="#" alt="Preview"
                              class="max-w-xs max-h-48 rounded-lg border border-gray-200 dark:border-gray-700">

@@ -48,10 +48,11 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gambar Dokumentasi <span class="text-gray-400 font-normal">(Opsional)</span></label>
-                    <input type="file" name="photo" accept="image/*"
-                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, JPEG. Maks: 2MB.</p>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="photo">Gambar Dokumentasi <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                    <input type="file" name="photo" id="photo" accept="image/*"
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                           aria-describedby="photo_help">
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="photo_help">JPG, PNG atau JPEG (MAX. 2MB).</p>
                 </div>
             </div>
 

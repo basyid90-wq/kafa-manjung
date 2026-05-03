@@ -90,8 +90,17 @@ php artisan view:cache
 | 44 | 2026-05-03 | `resources/views/attendances/index.blade.php` | Tukar modal "Buku Kedatangan" kepada Flowbite Modal with CRUD pattern — ganti custom modal | ✅ Sudah Push |
 | 45 | 2026-05-02 | `resources/views/feedback/index.blade.php` | Halaman baharu — senarai aduan untuk Super Admin (filter status/modul) | ⏳ Belum Push |
 | 46 | 2026-05-02 | `resources/views/feedback/show.blade.php` | Halaman baharu — butiran aduan + kemaskini status/balasan | ⏳ Belum Push |
-| 47 | 2026-05-03 | `resources/views/feedback/create.blade.php` | Tukar textarea kepada Flowbite WYSIWYG Editor (bold, italic, underline, lists) | ⏳ Belum Push |
-| 48 | 2026-05-03 | `resources/views/feedback/show.blade.php` | Update display penerangan — render HTML dari WYSIWYG editor | ⏳ Belum Push |
+| 47 | 2026-05-03 | `resources/views/feedback/create.blade.php` | Tukar textarea kepada Flowbite WYSIWYG Editor (bold, italic, underline, lists) | ✅ Sudah Push |
+| 48 | 2026-05-03 | `resources/views/feedback/show.blade.php` | Update display penerangan — render HTML dari WYSIWYG editor | ✅ Sudah Push |
+| 49 | 2026-05-03 | `resources/views/feedback/create.blade.php` | Tukar file input ke Flowbite File Input pattern (tangkapan skrin) | ⏳ Belum Push |
+| 50 | 2026-05-03 | `resources/views/students/index.blade.php` | Tukar file input ke Flowbite File Input pattern (import Excel SIMPENI) | ⏳ Belum Push |
+| 51 | 2026-05-03 | `resources/views/students/create.blade.php` | Tukar file input ke Flowbite File Input pattern (gambar pelajar) | ⏳ Belum Push |
+| 52 | 2026-05-03 | `resources/views/students/edit.blade.php` | Tukar file input ke Flowbite File Input pattern (gambar pelajar) | ⏳ Belum Push |
+| 53 | 2026-05-03 | `resources/views/activities/create.blade.php` | Tukar file input ke Flowbite File Input pattern (gambar dokumentasi) | ⏳ Belum Push |
+| 54 | 2026-05-03 | `resources/views/activities/edit.blade.php` | Tukar file input ke Flowbite File Input pattern (gambar dokumentasi) | ⏳ Belum Push |
+| 55 | 2026-05-03 | `resources/views/schools/create.blade.php` | Tukar file input ke Flowbite File Input pattern (logo sekolah) | ⏳ Belum Push |
+| 56 | 2026-05-03 | `resources/views/schools/edit.blade.php` | Tukar file input ke Flowbite File Input pattern (logo sekolah) | ⏳ Belum Push |
+| 57 | 2026-05-03 | `resources/views/certificates/templates/create.blade.php` | Tukar file input ke Flowbite File Input pattern (tandatangan & background) | ⏳ Belum Push |
 | 46 | 2026-05-02 | `resources/views/admin/system_log.blade.php` | Halaman baharu — Log Viewer (baca laravel.log, tapis ikut paras error/warning/info/all) | ⏳ Belum Push |
 | 47 | 2026-05-02 | `resources/views/partials/sidebar.blade.php` | Tambah "Laporkan Masalah" (non-Super Admin, atas Panduan Pengguna) + "Aduan Masalah" & "Log Sistem" (Super Admin Pemantauan) | ⏳ Belum Push |
 | 48 | 2026-05-02 | `app/Http/Controllers/DashboardController.php` | Pisahkan Super Admin dari Pentadbir — Super Admin kini guna stats sistem (sekolah, pengguna, murid, baharu) + panel aduan + health check | ⏳ Belum Push |
