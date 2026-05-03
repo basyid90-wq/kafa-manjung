@@ -16,6 +16,7 @@ This project is maintained using the following AI coding tools. All agents MUST 
 |------|------|------|
 | **Claude Code** | Anthropic CLI (`claude`) | Primary agent — architecture, full-file rewrites, backend logic |
 | **OpenAI Codex** | OpenAI CLI (`codex`) | Secondary agent — targeted edits, code generation, refactoring |
+| **Google Gemini** | Google CLI (`gemini`) | Secondary agent — code review, analysis, debugging assistance |
 
 ### Rules for ALL agents (Claude + Codex)
 - Read `CLAUDE.md` + `AGENTS.md` before any edit.
