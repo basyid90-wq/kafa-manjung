@@ -178,6 +178,148 @@
         </main>
     </div>
 
+    {{-- ── PDF Viewer Overlay (PDF.js) ── --}}
+    <div id="rph-pdf-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:99998; background:#333;">
+        <div style="position:absolute; top:0; left:0; right:0; height:48px; background:#1a1a2e; color:white; display:flex; justify-content:space-between; align-items:center; padding:0 18px; gap:10px; z-index:2;">
+            <span style="font-weight:600; font-size:0.95em;">📄 Paparan PDF</span>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <a id="rph-pdf-download-link" href="#" download style="color:#aaa; font-size:0.82em; text-decoration:none; padding:4px 12px; border:1px solid #555; border-radius:4px; white-space:nowrap;">⬇ Simpan</a>
+                <button onclick="closePdfViewer()" style="background:#dc3545; color:white; border:none; padding:5px 16px; border-radius:4px; cursor:pointer; font-size:0.88em;">✕ Tutup</button>
+            </div>
+        </div>
+        <div id="rph-pdf-container" style="position:absolute; top:48px; left:0; right:0; bottom:0; overflow-y:auto; background:#525659; display:flex; flex-direction:column; align-items:center; padding:20px 0; gap:12px;"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+
+        var _pdfBlobUrl = null;
+
+        function openPdfBlob(btn, url) {
+            var overlay   = document.getElementById('rph-pdf-overlay');
+            var container = document.getElementById('rph-pdf-container');
+            var dlLink    = document.getElementById('rph-pdf-download-link');
+
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            container.innerHTML = '<div style="color:#ccc; margin-top:60px; font-size:1em; font-family:Arial,sans-serif;">Memuatkan PDF...</div>';
+
+            fetch(url, {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(function(res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(function(json) {
+                var binary = atob(json.data);
+                var bytes  = new Uint8Array(binary.length);
+                for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                var buffer = bytes.buffer;
+
+                var blob = new Blob([buffer], { type: 'application/pdf' });
+                if (_pdfBlobUrl) URL.revokeObjectURL(_pdfBlobUrl);
+                _pdfBlobUrl = URL.createObjectURL(blob);
+                dlLink.href = _pdfBlobUrl;
+                dlLink.download = json.filename || 'dokumen.pdf';
+
+                return pdfjsLib.getDocument({ data: buffer }).promise;
+            })
+            .then(function(pdfDoc) {
+                container.innerHTML = '';
+                var renderPage = function(pageNum) {
+                    return pdfDoc.getPage(pageNum).then(function(page) {
+                        var desiredWidth = Math.min(container.clientWidth - 40, 860);
+                        var viewport0    = page.getViewport({ scale: 1 });
+                        var scale        = desiredWidth / viewport0.width;
+                        var viewport     = page.getViewport({ scale: scale });
+                        var canvas       = document.createElement('canvas');
+                        canvas.width     = viewport.width;
+                        canvas.height    = viewport.height;
+                        canvas.style.cssText = 'display:block; box-shadow:0 2px 10px rgba(0,0,0,0.6); background:#fff; flex-shrink:0;';
+                        container.appendChild(canvas);
+                        return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                    });
+                };
+                var chain = Promise.resolve();
+                for (var i = 1; i <= pdfDoc.numPages; i++) chain = chain.then(renderPage.bind(null, i));
+                return chain;
+            })
+            .catch(function(err) {
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: 'Ralat', text: 'Gagal memuatkan PDF: ' + err.message, icon: 'error', confirmButtonColor: '#dc3545' });
+                } else {
+                    alert('Gagal memuatkan PDF: ' + err.message);
+                }
+            });
+        }
+
+        function renderPdfBase64(base64) {
+            var overlay   = document.getElementById('rph-pdf-overlay');
+            var container = document.getElementById('rph-pdf-container');
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            container.innerHTML = '<div style="color:#ccc;margin-top:60px;font-size:1em;font-family:Arial,sans-serif;">Memuatkan PDF...</div>';
+
+            var binary = atob(base64);
+            var bytes  = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+            pdfjsLib.getDocument({ data: bytes.buffer }).promise
+            .then(function(pdfDoc) {
+                container.innerHTML = '';
+                var renderPage = function(pageNum) {
+                    return pdfDoc.getPage(pageNum).then(function(page) {
+                        var desiredWidth = Math.min(container.clientWidth - 40, 860);
+                        var viewport0    = page.getViewport({ scale: 1 });
+                        var scale        = desiredWidth / viewport0.width;
+                        var viewport     = page.getViewport({ scale: scale });
+                        var canvas       = document.createElement('canvas');
+                        canvas.width     = viewport.width;
+                        canvas.height    = viewport.height;
+                        canvas.style.cssText = 'display:block;box-shadow:0 2px 10px rgba(0,0,0,.6);background:#fff;flex-shrink:0;';
+                        container.appendChild(canvas);
+                        return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                    });
+                };
+                var chain = Promise.resolve();
+                for (var i = 1; i <= pdfDoc.numPages; i++) chain = chain.then(renderPage.bind(null, i));
+                return chain;
+            })
+            .catch(function(err) {
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: 'Ralat', text: 'Gagal memuatkan PDF: ' + err.message, icon: 'error', confirmButtonColor: '#dc3545' });
+                }
+            });
+        }
+
+        function closePdfViewer() {
+            var overlay   = document.getElementById('rph-pdf-overlay');
+            var container = document.getElementById('rph-pdf-container');
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+            container.innerHTML = '';
+            if (_pdfBlobUrl) {
+                setTimeout(function() { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }, 500);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var overlay = document.getElementById('rph-pdf-overlay');
+                if (overlay && overlay.style.display === 'block') closePdfViewer();
+            }
+        });
+    </script>
+
     @stack('scripts')
 </body>
 </html>
