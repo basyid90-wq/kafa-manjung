@@ -1,397 +1,337 @@
-@section('title', 'Homepage')
-@extends('layout.layout')
-
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@section('title', 'Log Masuk')
+@extends('layout-fb.auth')
 
 @section('content')
-<div class="rbt-elements-area bg-color-white pt--20 pb--50">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section-title text-center mb--50">
-                    <h2 class="title" style="font-size: 48px; color: #2d3748; font-weight: 700;">Selamat Datang ke APKM</h2>
-                    <p class="description" style="font-size: 1.5rem; color: #718096; font-weight: 500;">Aplikasi Pengurusan KAFA Daerah Manjung</p>
-                </div>
-            </div>
-        </div>
-        <div class="row gy-5 row--30">
-            <!-- Bahagian Kiri: Log Masuk -->
-            <div class="col-lg-5 col-md-12 col-12 order-2 order-lg-1">
-                <div class="rbt-contact-form contact-form-style-1 max-width-auto">
-                    <div class="text-center mb--30">
-                        <img src="{{ asset('template/perak.png') }}" alt="Logo Perak" style="max-height: 120px;">
-                        <h4 class="title mt--20">Log Masuk Sistem</h4>
-                    </div>
+<div class="min-h-screen flex flex-col">
 
-                    <!-- Session Status -->
-                    <x-auth-session-status class="mb-4" :status="session('status')" />
+    {{-- Header --}}
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4 px-6 text-center">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Selamat Datang ke APKM</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Aplikasi Pengurusan KAFA Daerah Manjung</p>
+    </div>
 
-                    <ul class="nav nav-pills nav-justified mb-4" id="loginTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="tab-staff" data-bs-toggle="pill" type="button" role="tab" aria-selected="true" style="font-size: 16px; font-weight: 600; border-radius: 50px;">
+    <div class="flex-1 flex items-start justify-center py-8 px-4">
+        <div class="w-full max-w-5xl">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+                {{-- Login Form --}}
+                <div class="lg:col-span-2">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+
+                        <div class="text-center mb-5">
+                            <img src="{{ asset('template/perak.png') }}" alt="Logo Perak" class="h-20 mx-auto mb-3">
+                            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Log Masuk Sistem</h2>
+                        </div>
+
+                        {{-- Session Status --}}
+                        <x-auth-session-status class="mb-4" :status="session('status')" />
+
+                        {{-- Login Type Tabs --}}
+                        <div class="flex gap-2 mb-5 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <button type="button" id="tab-staff"
+                                    onclick="switchLoginType('staff')"
+                                    class="flex-1 py-2 text-sm font-semibold rounded-md bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm transition-all">
                                 🏢 Kakitangan
                             </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab-parent" data-bs-toggle="pill" type="button" role="tab" aria-selected="false" style="font-size: 16px; font-weight: 600; border-radius: 50px;">
+                            <button type="button" id="tab-parent"
+                                    onclick="switchLoginType('parent')"
+                                    class="flex-1 py-2 text-sm font-semibold rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-all">
                                 👨‍👩‍👧‍👦 Ibu Bapa
                             </button>
-                        </li>
-                    </ul>
-
-                    <form method="POST" action="{{ route('login') }}" class="max-width-auto">
-                        @csrf
-                        <input type="hidden" name="login_type" id="login_type" value="{{ old('login_type', 'staff') }}">
-                        
-                        <div class="form-group">
-                            <input id="login_id" name="login_id" type="email" value="{{ old('login_id') }}" required autofocus placeholder=" ">
-                            <label id="login_label">Alamat Emel</label>
-                            <span class="focus-border"></span>
-                            <x-input-error :messages="$errors->get('login_id')" class="mt-2 text-danger" />
-                        </div>
-                        <div class="form-group" style="position: relative;">
-                            <input id="password-field" name="password" type="password" required placeholder=" ">
-                            <label>Kata Laluan</label>
-                            <span class="focus-border"></span>
-                            <span class="password-toggle" onclick="togglePassword()">
-                                <i id="toggle-icon" class="feather-eye"></i>
-                            </span>
-                            <x-input-error :messages="$errors->get('password')" class="mt-2 text-danger" />
                         </div>
 
-                        <div class="row mb--30 align-items-center">
-                            <div class="col-lg-6 col-md-6 col-6">
-                                <div class="rbt-checkbox">
-                                    <input type="checkbox" id="remember_me" name="remember">
-                                    <label for="remember_me">Ingat Saya</label>
-                                </div>
+                        <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                            @csrf
+                            <input type="hidden" name="login_type" id="login_type" value="{{ old('login_type', 'staff') }}">
+
+                            <div>
+                                <label for="login_id" id="login_label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                                    Alamat Emel
+                                </label>
+                                <input id="login_id" name="login_id"
+                                       type="{{ old('login_type') === 'parent' ? 'text' : 'email' }}"
+                                       value="{{ old('login_id') }}"
+                                       required autofocus
+                                       class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('login_id') border-red-500 @enderror">
+                                @error('login_id')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
-                            <div class="col-lg-6 col-md-6 col-6">
-                                <div class="rbt-lost-password text-end">
-                                    @if (Route::has('password.request'))
-                                        <a class="rbt-btn-link" href="{{ route('password.request') }}">Lupa Kata Laluan?</a>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="form-submit-group">
-                            <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
-                                <span class="icon-reverse-wrapper">
-                                    <span class="btn-text">Masuk Sekarang</span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                </span>
+                            <div class="relative">
+                                <label for="password-field" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                                    Kata Laluan
+                                </label>
+                                <input id="password-field" name="password" type="password" required
+                                       class="w-full px-3 py-2 pr-10 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('password') border-red-500 @enderror">
+                                <button type="button" onclick="togglePassword()"
+                                        class="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <svg id="icon-eye" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    <svg id="icon-eye-off" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                                    </svg>
+                                </button>
+                                @error('password')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" name="remember" id="remember_me"
+                                           class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <span class="text-sm text-gray-600 dark:text-gray-300">Ingat Saya</span>
+                                </label>
+                                @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}"
+                                   class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                    Lupa Kata Laluan?
+                                </a>
+                                @endif
+                            </div>
+
+                            <button type="submit"
+                                    class="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                </svg>
+                                Masuk Sekarang
                             </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Bahagian Kanan: Papan Makluman Utama -->
-            <div class="col-lg-7 col-md-12 col-12 order-1 order-lg-2">
-                <div class="rbt-shadow-box bg-color-white p-5 border-radius-10 h-100">
-                    <div class="section-title mb--30">
-                        <span class="subtitle bg-primary-opacity">Info Terkini</span>
-                        <h4 class="title mt--10">Papan Makluman Utama</h4>
+                        </form>
                     </div>
+                </div>
 
-                    <div class="rbt-announcement-list">
-                        @forelse($announcements as $announcement)
-                            <div class="rbt-card variation-01 rbt-hover mb--20 border-bottom pb--20" style="border: none !important; border-bottom: 1px solid #eee !important; border-radius: 0;">
-                                <div class="rbt-card-body p-0">
-                                    <div class="rbt-category mb--10">
-                                        @if($announcement->homepage_label)
-                                            @php
-                                                $labelColors = [
-                                                    'Ciri Baharu' => 'bg-success',
-                                                    'Pembaikan' => 'bg-info',
-                                                    'Penyelenggaraan' => 'bg-warning',
-                                                    'Kritikal' => 'bg-danger',
-                                                    'Pengumuman' => 'bg-primary'
-                                                ];
-                                                $labelIcons = [
-                                                    'Ciri Baharu' => '🆕',
-                                                    'Pembaikan' => '🔧',
-                                                    'Penyelenggaraan' => '⚠️',
-                                                    'Kritikal' => '🚨',
-                                                    'Pengumuman' => '📢'
-                                                ];
-                                                $colorClass = $labelColors[$announcement->homepage_label] ?? 'bg-secondary';
-                                                $icon = $labelIcons[$announcement->homepage_label] ?? '';
-                                            @endphp
-                                            <span class="rbt-badge-card px-3 py-1 {{ $colorClass }}" style="font-size: 12px; font-weight: 600; color: white;">
-                                                {{ $icon }} {{ $announcement->homepage_label }}
-                                            </span>
-                                        @else
-                                            <span class="rbt-badge-card px-3 py-1 bg-secondary-opacity color-secondary" style="font-size: 12px; font-weight: 600;">
-                                                Hebahan Umum
-                                            </span>
-                                        @endif
-                                        <span class="ms-3 text-muted" style="font-size: 13px;">
-                                            <i class="feather-calendar me-1"></i> {{ $announcement->created_at->format('d/m/Y') }}
-                                        </span>
-                                    </div>
-                                    <h5 class="rbt-card-title mb--10">
-                                        <a href="javascript:void(0);" onclick="showAnnouncementModal({{ $announcement->id }})" style="cursor: pointer;">{{ $announcement->title }}</a>
-                                    </h5>
-                                    <p class="description" style="font-size: 14px; line-height: 1.6; color: #666;">
-                                        {{ \Illuminate\Support\Str::limit(strip_tags($announcement->content), 120) }}
-                                    </p>
-                                    @if(strlen(strip_tags($announcement->content)) > 120)
-                                    <a href="javascript:void(0);" onclick="showAnnouncementModal({{ $announcement->id }})" class="rbt-btn-link">Baca Selanjutnya <i class="feather-arrow-right"></i></a>
-                                    @endif
+                {{-- Announcements Panel --}}
+                <div class="lg:col-span-3">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 h-full">
+                        <div class="mb-4">
+                            <span class="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 rounded-full">Info Terkini</span>
+                            <h2 class="text-base font-bold text-gray-900 dark:text-white mt-2">Papan Makluman Utama</h2>
+                        </div>
 
-                                    <!-- Hidden data for modal -->
-                                    <div id="announcement-data-{{ $announcement->id }}" style="display: none;"
-                                         data-title="{{ $announcement->title }}"
-                                         data-author="{{ $announcement->user->name }}"
-                                         data-is-admin="{{ $announcement->user->hasRole('Super Admin') ? '1' : '0' }}"
-                                         data-date="{{ $announcement->created_at->format('d/m/Y') }}"
-                                         data-label="{{ $announcement->homepage_label }}"
-                                         data-view-count="{{ $announcement->view_count }}"
-                                         data-readers-count="{{ $announcement->authenticated_readers_count }}"
-                                         data-announcement-id="{{ $announcement->id }}">
-                                        {!! $announcement->content !!}
-                                    </div>
+                        <div class="space-y-4">
+                            @forelse($announcements as $announcement)
+                            @php
+                                $labelColors = [
+                                    'Ciri Baharu'     => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                                    'Pembaikan'       => 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400',
+                                    'Penyelenggaraan' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                    'Kritikal'        => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+                                    'Pengumuman'      => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                                ];
+                                $labelIcons = [
+                                    'Ciri Baharu' => '🆕', 'Pembaikan' => '🔧',
+                                    'Penyelenggaraan' => '⚠️', 'Kritikal' => '🚨', 'Pengumuman' => '📢'
+                                ];
+                                $lblClass = $labelColors[$announcement->homepage_label] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
+                                $lblIcon = $labelIcons[$announcement->homepage_label] ?? '📢';
+                            @endphp
+                            <div class="pb-4 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $lblClass }}">
+                                        {{ $lblIcon }} {{ $announcement->homepage_label ?? 'Hebahan Umum' }}
+                                    </span>
+                                    <span class="text-xs text-gray-400">{{ $announcement->created_at->format('d/m/Y') }}</span>
+                                </div>
+                                <button type="button" onclick="showAnnouncementModal({{ $announcement->id }})"
+                                        class="text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 text-left w-full">
+                                    {{ $announcement->title }}
+                                </button>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                                    {{ \Illuminate\Support\Str::limit(strip_tags($announcement->content), 120) }}
+                                </p>
+                                @if(strlen(strip_tags($announcement->content)) > 120)
+                                <button type="button" onclick="showAnnouncementModal({{ $announcement->id }})"
+                                        class="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1">
+                                    Baca Selanjutnya →
+                                </button>
+                                @endif
+                                {{-- Hidden data for modal --}}
+                                <div id="announcement-data-{{ $announcement->id }}" class="hidden"
+                                     data-title="{{ $announcement->title }}"
+                                     data-author="{{ $announcement->user->name }}"
+                                     data-is-admin="{{ $announcement->user->hasRole('Super Admin') ? '1' : '0' }}"
+                                     data-date="{{ $announcement->created_at->format('d/m/Y') }}"
+                                     data-label="{{ $announcement->homepage_label }}"
+                                     data-view-count="{{ $announcement->view_count }}"
+                                     data-readers-count="{{ $announcement->authenticated_readers_count }}"
+                                     data-announcement-id="{{ $announcement->id }}">
+                                    {!! $announcement->content !!}
                                 </div>
                             </div>
-                        @empty
-                            <div class="text-center py-5">
-                                <div class="rbt-round-icon bg-primary-opacity mx-auto mb--20" style="width: 80px; height: 80px; line-height: 80px; font-size: 30px;">
-                                    <i class="feather-bell"></i>
-                                </div>
-                                <h5>Tiada Hebahan Baharu</h5>
-                                <p>Sila semak semula kemudian untuk maklumat terkini.</p>
+                            @empty
+                            <div class="text-center py-10">
+                                <svg class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Tiada Hebahan Baharu</p>
+                                <p class="text-xs text-gray-400 mt-1">Sila semak semula kemudian.</p>
                             </div>
-                        @endforelse
-                    </div>
-
-                    @if($announcements->count() > 0)
-                        <div class="view-all-btn mt--30 text-center">
-                            <p class="text-muted small">* Sila log masuk untuk melihat butiran penuh hebahan.</p>
+                            @endforelse
                         </div>
-                    @endif
+
+                        @if($announcements->count() > 0)
+                        <p class="text-xs text-gray-400 mt-4 text-center">* Sila log masuk untuk melihat butiran penuh hebahan.</p>
+                        @endif
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal untuk Baca Penuh Hebahan -->
-<div class="modal fade" id="announcementModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
-            <div class="modal-header" style="border-bottom: 2px solid #f0f0f0; padding: 25px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px 16px 0 0;">
-                <div class="w-100">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span id="announcementModalLabel" class="badge px-3 py-2" style="font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.25); color: white; border-radius: 8px;">
-                            📢 Pengumuman
-                        </span>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <h4 class="modal-title text-white mb-2" id="announcementModalTitle" style="font-weight: 700; font-size: 24px; line-height: 1.3;"></h4>
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="announcementModalAuthor" class="text-white" style="font-size: 14px; opacity: 0.95;">
-                            <i class="feather-user" style="font-size: 13px;"></i> <span id="authorName"></span>
-                        </span>
-                        <span id="adminBadge" style="display: none;">
-                            <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1" style="background: rgba(255,255,255,0.3); color: white; font-size: 11px; font-weight: 600; border-radius: 6px;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                </svg>
-                                Pentadbir Sistem
-                            </span>
-                        </span>
-                        <span class="text-white" style="font-size: 13px; opacity: 0.9;">
-                            <i class="feather-calendar" style="font-size: 12px;"></i> <span id="announcementDate"></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-body" style="padding: 35px 30px; background: #fafbfc;">
-                <div id="announcementModalBody" style="white-space: pre-line; line-height: 1.9; font-size: 15px; color: #2d3748; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);"></div>
-
-                <!-- View Count Stats -->
-                <div id="viewCountStats" class="mt-3 p-3" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: none;">
-                    <div class="d-flex align-items-center justify-content-center gap-4">
-                        <div class="text-center">
-                            <i class="feather-eye" style="font-size: 20px; color: #667eea;"></i>
-                            <div class="mt-1">
-                                <strong id="viewCountNumber" style="font-size: 18px; color: #2d3748;">0</strong>
-                                <div style="font-size: 12px; color: #718096;">Total Views</div>
-                            </div>
-                        </div>
-                        <div style="width: 1px; height: 40px; background: #e2e8f0;"></div>
-                        <div class="text-center">
-                            <i class="feather-users" style="font-size: 20px; color: #48bb78;"></i>
-                            <div class="mt-1">
-                                <strong id="readersCountNumber" style="font-size: 18px; color: #2d3748;">0</strong>
-                                <div style="font-size: 12px; color: #718096;">Staff Membaca</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer" style="border-top: 1px solid #e8e8e8; padding: 20px 30px; background: #fafbfc; border-radius: 0 0 16px 16px;">
-                <button type="button" class="rbt-btn btn-gradient btn-sm" data-bs-dismiss="modal" style="padding: 10px 24px; border-radius: 8px;">
-                    <i class="feather-check"></i> Faham
+{{-- Announcement Modal --}}
+<div id="announcementModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        {{-- Modal Header --}}
+        <div class="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex-shrink-0">
+            <div class="flex items-start justify-between mb-2">
+                <span id="modalLabel" class="px-3 py-1 text-xs font-bold bg-white/20 rounded-full">📢 Pengumuman</span>
+                <button type="button" onclick="closeAnnouncementModal()"
+                        class="text-white/80 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                 </button>
             </div>
+            <h3 id="modalTitle" class="text-lg font-bold leading-snug"></h3>
+            <div class="flex items-center gap-3 mt-2 text-sm text-white/90">
+                <span id="modalAuthor"></span>
+                <span id="modalAdminBadge" class="hidden px-2 py-0.5 text-xs font-semibold bg-white/25 rounded-full">✓ Pentadbir Sistem</span>
+                <span id="modalDate" class="text-white/75 text-xs"></span>
+            </div>
+        </div>
+        {{-- Modal Body --}}
+        <div class="overflow-y-auto flex-1 p-6">
+            <div id="modalBody" class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line"></div>
+            {{-- Stats --}}
+            <div id="modalStats" class="hidden mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-center gap-8 text-center">
+                <div>
+                    <p id="modalViewCount" class="text-2xl font-bold text-blue-600">0</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Total Tontonan</p>
+                </div>
+                <div>
+                    <p id="modalReadersCount" class="text-2xl font-bold text-green-600">0</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Staff Membaca</p>
+                </div>
+            </div>
+        </div>
+        {{-- Modal Footer --}}
+        <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex justify-end flex-shrink-0">
+            <button type="button" onclick="closeAnnouncementModal()"
+                    class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Faham
+            </button>
         </div>
     </div>
 </div>
 
-<style>
-    .bg-primary-opacity { background: rgba(110, 65, 255, 0.1); color: #6e41ff; }
-    .bg-secondary-opacity { background: rgba(23, 162, 184, 0.1); color: #17a2b8; }
-    .subtitle {
-        display: inline-block;
-        padding: 5px 15px;
-        border-radius: 50px;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    .rbt-contact-form.contact-form-style-1 .form-group input:placeholder-shown + label {
-        top: 25px;
-        font-size: 16px;
-    }
-    .rbt-contact-form.contact-form-style-1 .form-group input:focus + label,
-    .rbt-contact-form.contact-form-style-1 .form-group input:not(:placeholder-shown) + label {
-        top: 5px;
-        font-size: 12px;
-        color: var(--color-primary);
-    }
-    .password-toggle {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        color: #718096;
-        z-index: 10;
-        transition: 0.3s;
-        padding: 5px;
-    }
-    .password-toggle:hover {
-        color: var(--color-primary);
-    }
-</style>
-
 <script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('password-field');
-        const toggleIcon = document.getElementById('toggle-icon');
+function switchLoginType(type) {
+    var loginType = document.getElementById('login_type');
+    var loginId = document.getElementById('login_id');
+    var loginLabel = document.getElementById('login_label');
+    var tabStaff = document.getElementById('tab-staff');
+    var tabParent = document.getElementById('tab-parent');
 
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.classList.remove('feather-eye');
-            toggleIcon.classList.add('feather-eye-off');
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.classList.remove('feather-eye-off');
-            toggleIcon.classList.add('feather-eye');
-        }
+    loginType.value = type;
+
+    var activeClass = ['bg-white', 'dark:bg-gray-600', 'text-blue-600', 'dark:text-blue-400', 'shadow-sm'];
+    var inactiveClass = ['text-gray-500', 'dark:text-gray-400'];
+
+    if (type === 'staff') {
+        loginLabel.textContent = 'Alamat Emel';
+        loginId.type = 'email';
+        activeClass.forEach(c => tabStaff.classList.add(c));
+        inactiveClass.forEach(c => tabStaff.classList.remove(c));
+        inactiveClass.forEach(c => tabParent.classList.add(c));
+        activeClass.forEach(c => tabParent.classList.remove(c));
+    } else {
+        loginLabel.textContent = 'No. Kad Pengenalan Ibu/Bapa';
+        loginId.type = 'text';
+        activeClass.forEach(c => tabParent.classList.add(c));
+        inactiveClass.forEach(c => tabParent.classList.remove(c));
+        inactiveClass.forEach(c => tabStaff.classList.add(c));
+        activeClass.forEach(c => tabStaff.classList.remove(c));
     }
+}
 
-    function showAnnouncementModal(announcementId) {
-        const dataDiv = document.getElementById('announcement-data-' + announcementId);
-
-        // Extract data attributes
-        const title = dataDiv.getAttribute('data-title');
-        const author = dataDiv.getAttribute('data-author');
-        const isAdmin = dataDiv.getAttribute('data-is-admin') === '1';
-        const date = dataDiv.getAttribute('data-date');
-        const label = dataDiv.getAttribute('data-label');
-        const viewCount = dataDiv.getAttribute('data-view-count');
-        const readersCount = dataDiv.getAttribute('data-readers-count');
-        const announcementIdForTracking = dataDiv.getAttribute('data-announcement-id');
-        const content = dataDiv.innerHTML;
-
-        // Set modal content
-        document.getElementById('announcementModalTitle').textContent = title;
-        document.getElementById('announcementModalBody').innerHTML = content;
-        document.getElementById('authorName').textContent = author;
-        document.getElementById('announcementDate').textContent = date;
-
-        // Set view count stats
-        document.getElementById('viewCountNumber').textContent = viewCount;
-        document.getElementById('readersCountNumber').textContent = readersCount;
-        document.getElementById('viewCountStats').style.display = 'block';
-
-        // Set label badge
-        const labelBadge = document.getElementById('announcementModalLabel');
-        const labelIcons = {
-            'Ciri Baharu': '🆕',
-            'Pembaikan': '🔧',
-            'Penyelenggaraan': '⚠️',
-            'Kritikal': '🚨',
-            'Pengumuman': '📢'
-        };
-        labelBadge.textContent = (labelIcons[label] || '📢') + ' ' + label;
-
-        // Show admin badge if author is Super Admin
-        const adminBadge = document.getElementById('adminBadge');
-        if (isAdmin) {
-            adminBadge.style.display = 'inline-block';
-        } else {
-            adminBadge.style.display = 'none';
-        }
-
-        // Increment view count via AJAX
-        fetch('/announcements/' + announcementIdForTracking + '/increment-view', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        }).then(response => {
-            if (response.ok) {
-                // Update view count in modal
-                const currentCount = parseInt(viewCount);
-                document.getElementById('viewCountNumber').textContent = currentCount + 1;
-            }
-        });
-
-        const modal = new bootstrap.Modal(document.getElementById('announcementModal'));
-        modal.show();
+function togglePassword() {
+    var field = document.getElementById('password-field');
+    var iconEye = document.getElementById('icon-eye');
+    var iconOff = document.getElementById('icon-eye-off');
+    if (field.type === 'password') {
+        field.type = 'text';
+        iconEye.classList.add('hidden');
+        iconOff.classList.remove('hidden');
+    } else {
+        field.type = 'password';
+        iconEye.classList.remove('hidden');
+        iconOff.classList.add('hidden');
     }
+}
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabStaff = document.getElementById('tab-staff');
-        const tabParent = document.getElementById('tab-parent');
-        const loginType = document.getElementById('login_type');
-        const loginId = document.getElementById('login_id');
-        const loginLabel = document.getElementById('login_label');
+function showAnnouncementModal(announcementId) {
+    var dataDiv = document.getElementById('announcement-data-' + announcementId);
+    var title = dataDiv.getAttribute('data-title');
+    var author = dataDiv.getAttribute('data-author');
+    var isAdmin = dataDiv.getAttribute('data-is-admin') === '1';
+    var date = dataDiv.getAttribute('data-date');
+    var label = dataDiv.getAttribute('data-label');
+    var viewCount = parseInt(dataDiv.getAttribute('data-view-count')) || 0;
+    var readersCount = dataDiv.getAttribute('data-readers-count');
+    var annId = dataDiv.getAttribute('data-announcement-id');
+    var content = dataDiv.innerHTML;
 
-        tabStaff.addEventListener('click', function() {
-            loginType.value = 'staff';
-            loginLabel.textContent = 'Alamat Emel';
-            loginId.type = 'email';
-        });
+    var labelIcons = { 'Ciri Baharu': '🆕', 'Pembaikan': '🔧', 'Penyelenggaraan': '⚠️', 'Kritikal': '🚨', 'Pengumuman': '📢' };
 
-        tabParent.addEventListener('click', function() {
-            loginType.value = 'parent';
-            loginLabel.textContent = 'No. Kad Pengenalan Ibu/Bapa';
-            loginId.type = 'text';
-        });
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = content;
+    document.getElementById('modalAuthor').textContent = '👤 ' + author;
+    document.getElementById('modalDate').textContent = '📅 ' + date;
+    document.getElementById('modalLabel').textContent = (labelIcons[label] || '📢') + ' ' + (label || 'Hebahan Umum');
+    document.getElementById('modalViewCount').textContent = viewCount;
+    document.getElementById('modalReadersCount').textContent = readersCount;
+    document.getElementById('modalStats').classList.remove('hidden');
 
-        // Initialize state based on validation old() input
-        if (loginType.value === 'parent') {
-            tabStaff.classList.remove('active');
-            tabStaff.setAttribute('aria-selected', 'false');
-            tabParent.classList.add('active');
-            tabParent.setAttribute('aria-selected', 'true');
-            
-            loginLabel.textContent = 'No. Kad Pengenalan Ibu/Bapa';
-            loginId.type = 'text';
-        }
+    var adminBadge = document.getElementById('modalAdminBadge');
+    if (isAdmin) { adminBadge.classList.remove('hidden'); } else { adminBadge.classList.add('hidden'); }
+
+    document.getElementById('announcementModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+
+    // Increment view count
+    fetch('/announcements/' + annId + '/increment-view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+    }).then(function(res) {
+        if (res.ok) { document.getElementById('modalViewCount').textContent = viewCount + 1; }
     });
+}
+
+function closeAnnouncementModal() {
+    document.getElementById('announcementModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+}
+
+// Close modal on backdrop click
+document.getElementById('announcementModal').addEventListener('click', function(e) {
+    if (e.target === this) closeAnnouncementModal();
+});
+
+// Restore login type on validation failure
+document.addEventListener('DOMContentLoaded', function() {
+    var loginType = document.getElementById('login_type').value;
+    if (loginType === 'parent') {
+        switchLoginType('parent');
+    }
+});
 </script>
 @endsection

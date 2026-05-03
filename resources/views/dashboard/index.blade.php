@@ -1,62 +1,28 @@
-@extends('layout.layout')
+@extends('layout-fb.layout')
 
-@php
-    $bodyClass = '';
-    $footer = 'true';
-@endphp
+@section('title', 'Dashboard')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
 
-<style>
-    .bg-primary-opacity { background: rgba(110, 65, 255, 0.1) !important; color: #6e41ff !important; }
-    .bg-secondary-opacity { background: rgba(23, 162, 184, 0.1) !important; color: #17a2b8 !important; }
-    .bg-pink-opacity { background: rgba(232, 62, 140, 0.1) !important; color: #e83e8c !important; }
-    .bg-warning-opacity { background: rgba(255, 193, 7, 0.1) !important; color: #ffc107 !important; }
-    .bg-info-opacity { background: rgba(0, 123, 255, 0.1) !important; color: #007bff !important; }
-    .bg-success-opacity { background: rgba(40, 167, 69, 0.1) !important; color: #28a745 !important; }
-    .bg-danger-opacity { background: rgba(220, 53, 69, 0.1) !important; color: #dc3545 !important; }
-    
-    .color-primary { color: #6e41ff !important; }
-    .color-secondary { color: #17a2b8 !important; }
-    .color-pink { color: #e83e8c !important; }
-    .color-warning { color: #ffc107 !important; }
-    .color-info { color: #007bff !important; }
-    .color-success { color: #28a745 !important; }
-    .color-danger { color: #dc3545 !important; }
-</style>
+@php $authRole = auth()->user()->getRoleNames()->first(); @endphp
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
-
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
-                        <div class="section-title">
-                            <h4 class="rbt-title-style-3">Dashboard ({{ $role }})</h4>
-                        </div>
-
-                        @php $authRole = auth()->user()->getRoleNames()->first(); @endphp
-
-                        @if($authRole === 'Super Admin')
-                            @include('dashboard.superadmin')
-                        @elseif($authRole === 'Pentadbir')
-                            @include('dashboard.admin')
-                        @elseif($authRole === 'Penyelia KAFA')
-                            @include('dashboard.penyelia')
-                        @elseif($authRole === 'Guru Besar')
-                            @include('dashboard.gurubesar')
-                        @elseif($authRole === 'Guru KAFA')
-                            @include('dashboard.guru')
-                        @endif
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        Selamat datang, <strong>{{ auth()->user()->name }}</strong> — {{ $authRole }}
+    </p>
 </div>
+
+@if($authRole === 'Super Admin')
+    @include('dashboard.fb.superadmin')
+@elseif($authRole === 'Pentadbir')
+    @include('dashboard.fb.admin')
+@elseif($authRole === 'Penyelia KAFA')
+    @include('dashboard.fb.penyelia')
+@elseif($authRole === 'Guru Besar')
+    @include('dashboard.fb.gurubesar')
+@elseif($authRole === 'Guru KAFA')
+    @include('dashboard.fb.guru')
+@endif
+
 @endsection
