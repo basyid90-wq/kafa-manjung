@@ -183,6 +183,7 @@ php artisan view:cache
 | 122 | 2026-05-03 | `resources/views/schools/edit.blade.php` | Kemaskini file input logo ke Flowbite File Input inline style (VPS-safe) | ⏳ Belum Push |
 | 123 | 2026-05-03 | `resources/views/attendances/index.blade.php` | Tukar semula modal Buku Kedatangan ke inline style; ganti `type="month"` dengan dua select Bulan+Tahun (VPS-safe) | ⏳ Belum Push |
 | 124 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Fix datepicker calendar z-index (z-9999) + tukar wrapper ke inline style supaya tidak bertindih dengan elemen lain | ⏳ Belum Push |
+| 125 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Buang Flowbite datepicker global (overlay bertindih) — guna native type="date" browser semula, tambah ikon kalendar sahaja | ⏳ Belum Push |
 
 ---
 
