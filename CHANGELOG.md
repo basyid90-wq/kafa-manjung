@@ -155,6 +155,11 @@ php artisan view:cache
 | 109 | 2026-05-03 | `resources/views/auth/login.blade.php` | Reka bentuk semula — hero heading-mark, login card Flowbite, horizontal card hebahan, prayer widget | ⏳ Belum Push |
 | 110 | 2026-05-03 | `resources/views/dashboard/index.blade.php` | Tambah `<x-prayer-times-widget />` di bawah semua dashboard role | ⏳ Belum Push |
 | 111 | 2026-05-03 | `resources/views/auth/login.blade.php` | Reka bentuk semula hero — tajuk lebih besar (`clamp` VPS-safe), semua inline style, dekorasi bulatan, teks dua baris dengan warna aksen biru cerah | ⏳ Belum Push |
+| 112 | 2026-05-03 | `resources/views/auth/login.blade.php` | Fix: buang margin-top overlap, tab login visible, inline CSS grid, buang waktu solat | ⏳ Belum Push |
+| 113 | 2026-05-03 | `resources/views/auth/login.blade.php` | Susun semula: login atas centred, pengumuman full-width bawah, buang widget solat | ⏳ Belum Push |
+| 114 | 2026-05-03 | `resources/views/auth/login.blade.php` | Tab Flowbite icons, Lupa Kata Laluan → WhatsApp 0194920559, semua inline style | ⏳ Belum Push |
+| 115 | 2026-05-03 | `resources/views/auth/login.blade.php` | 6 kemaskini: logo asal, teks pengumuman besar, badge "Sistem KAFA", tab full-width, Ada masalah → WA, footer v1.0 | ⏳ Belum Push |
+| 116 | 2026-05-03 | `CLAUDE.md` | Tambah Codex sebagai AI agent kedua, peraturan UI wajib Flowbite docs, VPS-safe CSS rule, kemaskini Do Not list | ⏳ Belum Push |
 
 ---
 

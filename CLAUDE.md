@@ -8,6 +8,25 @@
 
 ---
 
+## 🤖 AI Agents & CLI Tools
+
+This project is maintained using the following AI coding tools. All agents MUST follow the same rules in this file and `AGENTS.md`.
+
+| Tool | Type | Role |
+|------|------|------|
+| **Claude Code** | Anthropic CLI (`claude`) | Primary agent — architecture, full-file rewrites, backend logic |
+| **OpenAI Codex** | OpenAI CLI (`codex`) | Secondary agent — targeted edits, code generation, refactoring |
+
+### Rules for ALL agents (Claude + Codex)
+- Read `CLAUDE.md` + `AGENTS.md` before any edit.
+- Update `CHANGELOG.md` after every change session.
+- Commit + push after every session (see git rules below).
+- NEVER break the Flowbite/Tailwind UI pattern.
+- NEVER introduce new packages without user approval.
+- NEVER use Bootstrap, jQuery, Vue, React, or DomPDF.
+
+---
+
 ## 📝 CHANGELOG + GIT — Auto-Commit Rule (MANDATORY)
 
 After EVERY file change session, Claude MUST complete ALL of the following steps — no exceptions:
@@ -89,9 +108,29 @@ php artisan view:clear && php artisan cache:clear
 
 ---
 
-## 🎨 UI & Styling (STRICT — Flowbite/Tailwind)
+## 🎨 UI & Styling (STRICT — Flowbite Only)
+
+> 🚨 **ONE SOURCE OF TRUTH FOR UI COMPONENTS:**
+> **https://flowbite.com/docs/components**
+>
+> Every UI component (buttons, modals, tabs, badges, cards, tables, forms, alerts, dropdowns, pagination, file inputs, datepickers) MUST be taken from this URL.
+> Do NOT invent custom component patterns. Do NOT use Daisy UI, Shadcn, Headless UI, or any other library.
 
 > ⚠️ UI has been **fully migrated to Flowbite + Tailwind CSS**. Do NOT use Bootstrap or HiStudy classes.
+
+### 🔒 VPS-Safe CSS Rule (CRITICAL)
+`public/build/` is gitignored — Tailwind CSS is NOT rebuilt on VPS automatically.
+
+**Rule: Any NEW Tailwind utility class that is not already used in the codebase WILL NOT render on VPS.**
+
+| Situation | Correct approach |
+|-----------|-----------------|
+| New gradient / shadow / custom colour | Use **inline `style="..."`** — always works |
+| New spacing (`py-10`, `mb-14`, etc.) that hasn't been used before | Use inline `style="padding:..."` |
+| Standard classes already in codebase (`flex`, `grid`, `text-sm`, `bg-white`, `rounded-lg`, etc.) | Safe to use as Tailwind class |
+| Responsive prefix on NEW class (`lg:grid-cols-5`) | Use `<style>@media(...){...}</style>` block instead |
+
+**Bottom line: when in doubt → inline style. Never assume a class is compiled.**
 
 ### Layouts
 - **Authenticated pages:** `@extends('layout-fb.layout')` with `@section('content')`
@@ -303,3 +342,7 @@ php artisan view:clear && php artisan cache:clear
 - Do NOT use jQuery (`$()`, `$.ajax()`, `.selectpicker()`) — use vanilla JS only.
 - Do NOT add `@push('scripts')` / `@endpush` — use direct `<script>` before `@endsection`.
 - Do NOT call `window.open()` or use `<iframe>` for PDF — use `openPdfBlob()` only.
+- Do NOT use any UI component that is NOT from **https://flowbite.com/docs/components**.
+- Do NOT use Daisy UI, Shadcn, Headless UI, Radix, Flowbite React/Vue, or any other component library.
+- Do NOT use new Tailwind utility classes without checking if they are VPS-safe (already compiled). Use inline style if unsure.
+- Do NOT introduce any CSS framework other than Tailwind CSS v3.
