@@ -1,306 +1,236 @@
-@extends('layout.layout')
-
-@php $bodyClass = ''; $footer = 'true'; @endphp
+@extends('layout-fb.layout')
 
 @section('content')
-<a class="close_side_menu" href="javascript:void(0);"></a>
-<x-background/>
+<style>
+    @font-face { font-family:'Lateef'; src:url('/fonts/Lateef-Regular.ttf') format('truetype'); }
+</style>
 
-<div class="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
-    <div class="container">
-        <div class="row mt--0">
-            @include('partials.sidebar')
+<div class="p-4 md:p-6">
 
-            <div class="col-lg-9">
-                <div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
-                    <div class="content">
+    {{-- Header Profil --}}
+    <div class="flex items-start gap-4 mb-6 flex-wrap">
+        {{-- Avatar --}}
+        @if($student->profile_picture)
+            <img src="{{ asset('storage/' . $student->profile_picture) }}" alt="{{ $student->name }}"
+                 class="w-20 h-20 rounded-full object-cover border-2 border-gray-100 dark:border-gray-700 flex-shrink-0">
+        @else
+            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gray-800 to-blue-600 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
+                {{ strtoupper(mb_substr($student->name, 0, 1)) }}
+            </div>
+        @endif
 
-                        {{-- Header Profil --}}
-                        <div class="d-flex align-items-center gap-4 mb--30 flex-wrap">
-                            {{-- Avatar --}}
-                            @if($student->profile_picture)
-                                <img src="{{ asset('storage/' . $student->profile_picture) }}"
-                                     alt="{{ $student->name }}"
-                                     style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:3px solid #eef0f8;flex-shrink:0;">
-                            @else
-                                <div style="width:80px;height:80px;border-radius:50%;
-                                            background:linear-gradient(135deg,#1a1a2e,#6c63ff);
-                                            display:flex;align-items:center;justify-content:center;
-                                            font-size:2rem;color:white;font-weight:700;flex-shrink:0;">
-                                    {{ strtoupper(mb_substr($student->name, 0, 1)) }}
-                                </div>
-                            @endif
-
-                            <div class="flex-grow-1">
-                                <h4 class="rbt-title-style-3 mb-0">{{ $student->name }}</h4>
-                                @if($student->jawi_name)
-                                <div dir="rtl" style="font-family:'Lateef',serif;font-size:1.15em;color:#555;line-height:1.4;">
-                                    {{ $student->jawi_name }}
-                                </div>
-                                @endif
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    <span class="rbt-badge-5 bg-primary-opacity color-primary" style="font-size:0.78em;">
-                                        <i class="feather-home me-1"></i>{{ $student->school->name ?? '—' }}
-                                    </span>
-                                    <span class="rbt-badge-5 bg-secondary-opacity color-secondary" style="font-size:0.78em;">
-                                        <i class="feather-book me-1"></i>{{ $student->kafaClass->display_name ?? '—' }}
-                                    </span>
-                                    @php $statusColor = $student->status === 'Aktif' ? 'success' : 'warning'; @endphp
-                                    <span class="rbt-badge-5 bg-{{ $statusColor }}-opacity color-{{ $statusColor }}" style="font-size:0.78em;">
-                                        {{ $student->status ?? 'Aktif' }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <a href="{{ route('parent.dashboard') }}"
-                               class="rbt-btn btn-border-gradient btn-sm align-self-start">
-                                <i class="feather-arrow-left me-1"></i>Kembali
-                            </a>
-                        </div>
-
-                        {{-- Nav Tabs --}}
-                        <ul class="nav nav-tabs rbt-default-tab mb--25" id="profileTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="tab-info" data-bs-toggle="tab"
-                                        data-bs-target="#pane-info" type="button" role="tab">
-                                    <i class="feather-user me-1"></i>Maklumat & Kehadiran
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tab-exam" data-bs-toggle="tab"
-                                        data-bs-target="#pane-exam" type="button" role="tab">
-                                    <i class="feather-bar-chart-2 me-1"></i>Prestasi Akademik
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tab-cert" data-bs-toggle="tab"
-                                        data-bs-target="#pane-cert" type="button" role="tab">
-                                    <i class="feather-award me-1"></i>Sijil Pencapaian
-                                    @if($certificates->isNotEmpty())
-                                    <span class="badge bg-primary ms-1" style="font-size:0.7em;">{{ $certificates->count() }}</span>
-                                    @endif
-                                </button>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content" id="profileTabContent">
-
-                            {{-- ══ TAB 1: MAKLUMAT ASAS & KEHADIRAN ══ --}}
-                            <div class="tab-pane fade show active" id="pane-info" role="tabpanel">
-
-                                <div class="row g-4 mb--25">
-                                    <div class="col-md-6">
-                                        <h6 class="rbt-title-style-2 mb--15">Maklumat Peribadi</h6>
-                                        <table class="table table-sm table-borderless" style="font-size:0.88em;">
-                                            <tbody>
-                                                <tr><td class="color-body" width="140">No. MyKid</td><td><strong>{{ $student->mykid }}</strong></td></tr>
-                                                <tr><td class="color-body">Tarikh Lahir</td><td>{{ $student->dob ? \Carbon\Carbon::parse($student->dob)->format('d/m/Y') : '—' }}</td></tr>
-                                                <tr><td class="color-body">Jantina</td><td>{{ $student->gender ?? '—' }}</td></tr>
-                                                <tr><td class="color-body">Bangsa</td><td>{{ $student->race ?? '—' }}</td></tr>
-                                                <tr><td class="color-body">Sekolah</td><td>{{ $student->school->name ?? '—' }}</td></tr>
-                                                <tr><td class="color-body">Kelas</td><td>{{ $student->kafaClass->display_name ?? '—' }}</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6 class="rbt-title-style-2 mb--15">Ringkasan Kehadiran {{ $year }}</h6>
-                                        @if($attendanceTotals['total'] === 0)
-                                            <p class="color-body" style="font-size:0.88em;">Tiada rekod kehadiran untuk tahun ini.</p>
-                                        @else
-                                        <div class="row g-2 text-center">
-                                            @foreach([
-                                                ['label'=>'Hadir',       'val'=>$attendanceTotals['hadir'],       'color'=>'success'],
-                                                ['label'=>'Lewat',       'val'=>$attendanceTotals['lewat'],       'color'=>'warning'],
-                                                ['label'=>'Tidak Hadir', 'val'=>$attendanceTotals['tidak_hadir'], 'color'=>'danger'],
-                                                ['label'=>'Cuti Sakit',  'val'=>$attendanceTotals['cuti_sakit'],  'color'=>'secondary'],
-                                            ] as $item)
-                                            <div class="col-6">
-                                                <div class="rbt-shadow-box p--15" style="border-radius:10px;">
-                                                    <div style="font-size:1.6rem;font-weight:700;color:var(--color-{{ $item['color'] }},#555);">
-                                                        {{ $item['val'] }}
-                                                    </div>
-                                                    <div class="color-body" style="font-size:0.78em;">{{ $item['label'] }}</div>
-                                                </div>
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                @if(count($months) > 0)
-                                <h6 class="rbt-title-style-2 mb--15">Pecahan Kehadiran Bulanan</h6>
-                                <div class="table-responsive">
-                                    <table class="rbt-table table table-borderless" style="font-size:0.85em;">
-                                        <thead>
-                                            <tr>
-                                                <th>Bulan</th>
-                                                <th class="text-center">Hadir</th>
-                                                <th class="text-center">Lewat</th>
-                                                <th class="text-center">Tidak Hadir</th>
-                                                <th class="text-center">Cuti Sakit</th>
-                                                <th class="text-center">Jumlah Hari</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($months as $row)
-                                            <tr>
-                                                <td>{{ $row['label'] }}</td>
-                                                <td class="text-center"><span class="rbt-badge-5 bg-success-opacity color-success">{{ $row['hadir'] }}</span></td>
-                                                <td class="text-center"><span class="rbt-badge-5 bg-warning-opacity color-warning">{{ $row['lewat'] }}</span></td>
-                                                <td class="text-center"><span class="rbt-badge-5 bg-danger-opacity color-danger">{{ $row['tidak_hadir'] }}</span></td>
-                                                <td class="text-center"><span class="rbt-badge-5 bg-secondary-opacity color-secondary">{{ $row['cuti_sakit'] }}</span></td>
-                                                <td class="text-center">{{ $row['total'] }}</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                @endif
-                            </div>
-
-                            {{-- ══ TAB 2: PRESTASI AKADEMIK ══ --}}
-                            <div class="tab-pane fade" id="pane-exam" role="tabpanel">
-                                @if($examResultGroups->isEmpty())
-                                    <div class="text-center py-4">
-                                        <i class="feather-bar-chart-2" style="font-size:2.5rem;color:#ccc;"></i>
-                                        <p class="color-body mt-2">Tiada rekod keputusan peperiksaan.</p>
-                                    </div>
-                                @else
-                                    @foreach($examResultGroups as $examId => $results)
-                                    @php $exam = $examsById[$examId] ?? null; @endphp
-                                    <div class="mb--30">
-                                        <div class="d-flex justify-content-between align-items-center mb--15 flex-wrap gap-2">
-                                            <h6 class="rbt-title-style-2 mb-0">
-                                                {{ $exam?->name ?? 'Peperiksaan' }}
-                                                <span class="color-body" style="font-size:0.82em;font-weight:400;">
-                                                    ({{ $exam?->year ?? '' }})
-                                                </span>
-                                            </h6>
-                                            @php
-                                                $avg = round($results->avg('marks'), 1);
-                                                $avgGrade = $avg >= 80 ? 'A' : ($avg >= 60 ? 'B' : ($avg >= 50 ? 'C' : ($avg >= 40 ? 'D' : 'E')));
-                                                $gradeColor = match($avgGrade) {
-                                                    'A' => 'success', 'B' => 'primary',
-                                                    'C' => 'warning', 'D' => 'secondary', default => 'danger'
-                                                };
-                                            @endphp
-                                            <span class="rbt-badge-5 bg-{{ $gradeColor }}-opacity color-{{ $gradeColor }}" style="font-size:0.8em;">
-                                                Purata: {{ $avg }} ({{ $avgGrade }})
-                                            </span>
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="rbt-table table table-borderless" style="font-size:0.85em;">
-                                                <thead>
-                                                    <tr>
-                                                        <th>No</th>
-                                                        <th>Mata Pelajaran</th>
-                                                        <th class="text-center">Markah</th>
-                                                        <th class="text-center">Gred</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($results as $i => $r)
-                                                    <tr>
-                                                        <td>{{ $i + 1 }}</td>
-                                                        <td>{{ $r->subject->name ?? '—' }}</td>
-                                                        <td class="text-center"><strong>{{ $r->marks ?? '—' }}</strong></td>
-                                                        <td class="text-center">
-                                                            @php
-                                                                $gc = match($r->grade) {
-                                                                    'A' => 'success', 'B' => 'primary',
-                                                                    'C' => 'warning', 'D' => 'secondary', default => 'danger'
-                                                                };
-                                                            @endphp
-                                                            <span class="rbt-badge-5 bg-{{ $gc }}-opacity color-{{ $gc }}">
-                                                                {{ $r->grade ?? '—' }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                @endif
-                            </div>
-
-                            {{-- ══ TAB 3: SIJIL PENCAPAIAN ══ --}}
-                            <div class="tab-pane fade" id="pane-cert" role="tabpanel">
-                                @if($certificates->isEmpty())
-                                    <div class="text-center py-4">
-                                        <i class="feather-award" style="font-size:2.5rem;color:#ccc;"></i>
-                                        <p class="color-body mt-2">Tiada sijil digital dikeluarkan buat masa ini.</p>
-                                    </div>
-                                @else
-                                <div class="table-responsive">
-                                    <table class="rbt-table table table-borderless" style="font-size:0.85em;">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Nama Sijil</th>
-                                                <th>Program / Peperiksaan</th>
-                                                <th>Tarikh Dikeluarkan</th>
-                                                <th>No. Rujukan</th>
-                                                <th>Tindakan</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($certificates as $i => $cert)
-                                            <tr id="cert-row-{{ $cert->id }}">
-                                                <td>{{ $i + 1 }}</td>
-                                                <td><strong>{{ $cert->template->name ?? '—' }}</strong></td>
-                                                <td class="color-body">
-                                                    {{ $cert->activity->name ?? $cert->exam->name ?? '—' }}
-                                                </td>
-                                                <td>{{ $cert->issue_date?->format('d/m/Y') ?? '—' }}</td>
-                                                <td style="font-size:0.78em;letter-spacing:.04em;">
-                                                    {{ $cert->reference_no }}
-                                                </td>
-                                                <td>
-                                                    <button type="button"
-                                                            class="rbt-btn btn-xs btn-border-gradient p-0 d-flex align-items-center justify-content-center"
-                                                            style="width:35px;height:35px;"
-                                                            title="Muat Turun / Pratonton PDF"
-                                                            onclick="downloadCert(this, {{ $cert->id }})">
-                                                        <i class="feather-download" style="font-size:14px;"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                @endif
-                            </div>
-
-                        </div>{{-- /tab-content --}}
-                    </div>
-                </div>
+        <div class="flex-grow">
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ $student->name }}</h1>
+            @if($student->jawi_name)
+            <div dir="rtl" class="text-gray-500 dark:text-gray-400 mt-0.5" style="font-family:'Lateef',serif;font-size:1.1em;">
+                {{ $student->jawi_name }}
+            </div>
+            @endif
+            <div class="flex flex-wrap gap-2 mt-2">
+                <span class="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">{{ $student->school->name ?? '—' }}</span>
+                <span class="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-full">{{ $student->kafaClass->display_name ?? '—' }}</span>
+                @php $statusActive = ($student->status ?? 'Aktif') === 'Aktif'; @endphp
+                <span class="px-2 py-0.5 text-xs font-medium rounded-full {{ $statusActive ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">{{ $student->status ?? 'Aktif' }}</span>
             </div>
         </div>
+
+        <a href="{{ route('parent.dashboard') }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Kembali
+        </a>
+    </div>
+
+    {{-- Tab Nav --}}
+    <div class="flex gap-1 mb-5 border-b border-gray-200 dark:border-gray-700">
+        @foreach([
+            ['id' => 'info',  'label' => 'Maklumat & Kehadiran'],
+            ['id' => 'exam',  'label' => 'Prestasi Akademik'],
+            ['id' => 'cert',  'label' => 'Sijil Pencapaian' . ($certificates->isNotEmpty() ? ' (' . $certificates->count() . ')' : '')],
+        ] as $tab)
+        <button id="tab-{{ $tab['id'] }}" type="button"
+                onclick="switchTab('{{ $tab['id'] }}')"
+                class="px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors border-b-2 -mb-px">
+            {{ $tab['label'] }}
+        </button>
+        @endforeach
+    </div>
+
+    {{-- TAB 1: Maklumat & Kehadiran --}}
+    <div id="panel-info">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+            {{-- Maklumat Peribadi --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Maklumat Peribadi</h2>
+                <div class="space-y-2 text-sm">
+                    @foreach([
+                        ['label'=>'No. MyKid',   'val'=>$student->mykid],
+                        ['label'=>'Tarikh Lahir','val'=>$student->dob ? \Carbon\Carbon::parse($student->dob)->format('d/m/Y') : '—'],
+                        ['label'=>'Jantina',     'val'=>$student->gender ?? '—'],
+                        ['label'=>'Bangsa',      'val'=>$student->race ?? '—'],
+                        ['label'=>'Sekolah',     'val'=>$student->school->name ?? '—'],
+                        ['label'=>'Kelas',       'val'=>$student->kafaClass->display_name ?? '—'],
+                    ] as $row)
+                    <div class="flex">
+                        <span class="w-32 text-gray-500 dark:text-gray-400 flex-shrink-0">{{ $row['label'] }}</span>
+                        <span class="text-gray-900 dark:text-white font-medium">{{ $row['val'] }}</span>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Ringkasan Kehadiran --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Ringkasan Kehadiran {{ $year }}</h2>
+                @if($attendanceTotals['total'] === 0)
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Tiada rekod kehadiran untuk tahun ini.</p>
+                @else
+                <div class="grid grid-cols-2 gap-3">
+                    @foreach([
+                        ['label'=>'Hadir',       'val'=>$attendanceTotals['hadir'],       'color'=>'green'],
+                        ['label'=>'Lewat',       'val'=>$attendanceTotals['lewat'],       'color'=>'yellow'],
+                        ['label'=>'Tidak Hadir', 'val'=>$attendanceTotals['tidak_hadir'], 'color'=>'red'],
+                        ['label'=>'Cuti Sakit',  'val'=>$attendanceTotals['cuti_sakit'],  'color'=>'gray'],
+                    ] as $item)
+                    @php $colorMap = ['green'=>'text-green-600 dark:text-green-400','yellow'=>'text-yellow-600 dark:text-yellow-400','red'=>'text-red-600 dark:text-red-400','gray'=>'text-gray-600 dark:text-gray-400']; @endphp
+                    <div class="text-center bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                        <div class="text-2xl font-bold {{ $colorMap[$item['color']] }}">{{ $item['val'] }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $item['label'] }}</div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+        </div>
+
+        @if(count($months) > 0)
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Pecahan Kehadiran Bulanan</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+                        <tr>
+                            <th class="px-4 py-2.5 text-left">Bulan</th>
+                            <th class="px-4 py-2.5 text-center">Hadir</th>
+                            <th class="px-4 py-2.5 text-center">Lewat</th>
+                            <th class="px-4 py-2.5 text-center">Tidak Hadir</th>
+                            <th class="px-4 py-2.5 text-center">Cuti Sakit</th>
+                            <th class="px-4 py-2.5 text-center">Jumlah</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @foreach($months as $row)
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                            <td class="px-4 py-2.5 font-medium text-gray-900 dark:text-white">{{ $row['label'] }}</td>
+                            <td class="px-4 py-2.5 text-center"><span class="px-1.5 py-0.5 text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full">{{ $row['hadir'] }}</span></td>
+                            <td class="px-4 py-2.5 text-center"><span class="px-1.5 py-0.5 text-xs bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-full">{{ $row['lewat'] }}</span></td>
+                            <td class="px-4 py-2.5 text-center"><span class="px-1.5 py-0.5 text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-full">{{ $row['tidak_hadir'] }}</span></td>
+                            <td class="px-4 py-2.5 text-center"><span class="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full">{{ $row['cuti_sakit'] }}</span></td>
+                            <td class="px-4 py-2.5 text-center text-gray-700 dark:text-gray-300">{{ $row['total'] }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endif
+    </div>
+
+    {{-- TAB 2: Prestasi Akademik --}}
+    <div id="panel-exam" class="hidden">
+        @if($examResultGroups->isEmpty())
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+            <p class="text-gray-400 text-sm">Tiada rekod keputusan peperiksaan.</p>
+        </div>
+        @else
+        @foreach($examResultGroups as $examId => $results)
+        @php $exam = $examsById[$examId] ?? null; $avg = round($results->avg('marks'), 1); $avgGrade = $avg >= 80 ? 'A' : ($avg >= 60 ? 'B' : ($avg >= 50 ? 'C' : ($avg >= 40 ? 'D' : 'E'))); $gc = match($avgGrade) { 'A' => 'bg-green-100 text-green-700', 'B' => 'bg-blue-100 text-blue-700', 'C' => 'bg-yellow-100 text-yellow-700', 'D' => 'bg-gray-100 text-gray-600', default => 'bg-red-100 text-red-700' }; @endphp
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $exam?->name ?? 'Peperiksaan' }} <span class="text-gray-400 font-normal">({{ $exam?->year ?? '' }})</span></h2>
+                <span class="px-2 py-0.5 text-xs font-medium rounded-full {{ $gc }}">Purata: {{ $avg }} ({{ $avgGrade }})</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+                        <tr>
+                            <th class="px-4 py-2.5 text-left">No</th>
+                            <th class="px-4 py-2.5 text-left">Mata Pelajaran</th>
+                            <th class="px-4 py-2.5 text-center">Markah</th>
+                            <th class="px-4 py-2.5 text-center">Gred</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @foreach($results as $i => $r)
+                        @php $rg = match($r->grade ?? 'E') { 'A' => 'bg-green-100 text-green-700', 'B' => 'bg-blue-100 text-blue-700', 'C' => 'bg-yellow-100 text-yellow-700', 'D' => 'bg-gray-100 text-gray-600', default => 'bg-red-100 text-red-700' }; @endphp
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                            <td class="px-4 py-2.5 text-gray-500 dark:text-gray-400">{{ $i + 1 }}</td>
+                            <td class="px-4 py-2.5 text-gray-900 dark:text-white">{{ $r->subject->name ?? '—' }}</td>
+                            <td class="px-4 py-2.5 text-center font-mono font-semibold text-gray-900 dark:text-white">{{ $r->marks ?? '—' }}</td>
+                            <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 text-xs font-bold rounded {{ $rg }}">{{ $r->grade ?? '—' }}</span></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endforeach
+        @endif
+    </div>
+
+    {{-- TAB 3: Sijil Pencapaian --}}
+    <div id="panel-cert" class="hidden">
+        @if($certificates->isEmpty())
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-10 text-center">
+            <p class="text-gray-400 text-sm">Tiada sijil digital dikeluarkan buat masa ini.</p>
+        </div>
+        @else
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+                        <tr>
+                            <th class="px-4 py-3 text-left">No</th>
+                            <th class="px-4 py-3 text-left">Nama Sijil</th>
+                            <th class="px-4 py-3 text-left">Program / Peperiksaan</th>
+                            <th class="px-4 py-3 text-left">Tarikh</th>
+                            <th class="px-4 py-3 text-left">No. Rujukan</th>
+                            <th class="px-4 py-3 text-center">Tindakan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @foreach($certificates as $i => $cert)
+                        <tr id="cert-row-{{ $cert->id }}" class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                            <td class="px-4 py-2.5 text-gray-500 dark:text-gray-400">{{ $i + 1 }}</td>
+                            <td class="px-4 py-2.5 font-medium text-gray-900 dark:text-white">{{ $cert->template->name ?? '—' }}</td>
+                            <td class="px-4 py-2.5 text-gray-600 dark:text-gray-300">{{ $cert->activity->name ?? $cert->exam->name ?? '—' }}</td>
+                            <td class="px-4 py-2.5 text-gray-500 dark:text-gray-400">{{ $cert->issue_date?->format('d/m/Y') ?? '—' }}</td>
+                            <td class="px-4 py-2.5 text-xs font-mono text-gray-500 dark:text-gray-400">{{ $cert->reference_no }}</td>
+                            <td class="px-4 py-2.5 text-center">
+                                <button type="button" onclick="downloadCert(this, {{ $cert->id }})"
+                                        title="Pratonton / Muat Turun PDF"
+                                        class="p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 
-<style>
-    @font-face { font-family:'Lateef'; src:url('/fonts/Lateef-Regular.ttf') format('truetype'); }
-    .rbt-default-tab .nav-link { font-size:0.88em; padding:.6rem 1rem; }
-    .color-success  { color:#28a745 !important; }
-    .color-warning  { color:#ffc107 !important; }
-    .color-danger   { color:#dc3545 !important; }
-    .color-secondary{ color:#6c757d !important; }
-    .color-primary  { color:#6c63ff !important; }
-    .bg-success-opacity  { background:rgba(40,167,69,.1); }
-    .bg-warning-opacity  { background:rgba(255,193,7,.12); }
-    .bg-danger-opacity   { background:rgba(220,53,69,.1); }
-    .bg-secondary-opacity{ background:rgba(108,117,125,.1); }
-    .bg-primary-opacity  { background:rgba(108,99,255,.1); }
-</style>
-
-@push('scripts')
 <script>
-var certUrls = {
+const certUrls = {
     @foreach($certificates as $cert)
     {{ $cert->id }}: '{{ route("certificates.single.pdf", $cert) }}',
     @endforeach
@@ -309,11 +239,7 @@ var certUrls = {
 function downloadCert(btn, certId) {
     var url = certUrls[certId];
     if (!url) return;
-
     btn.disabled = true;
-    var icon = btn.querySelector('i');
-    if (icon) icon.className = 'feather-loader spin-icon';
-
     fetch(url, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -326,15 +252,21 @@ function downloadCert(btn, certId) {
         else alert('Ralat menjana sijil.');
     })
     .catch(() => alert('Ralat sambungan.'))
-    .finally(() => {
-        btn.disabled = false;
-        if (icon) icon.className = 'feather-download';
-    });
+    .finally(() => { btn.disabled = false; });
 }
+
+function switchTab(tab) {
+    ['info','exam','cert'].forEach(function(t) {
+        document.getElementById('panel-' + t).classList.add('hidden');
+        var tb = document.getElementById('tab-' + t);
+        tb.classList.remove('border-blue-600','text-blue-600','dark:text-blue-400','dark:border-blue-400');
+        tb.classList.add('border-transparent','text-gray-500','dark:text-gray-400');
+    });
+    document.getElementById('panel-' + tab).classList.remove('hidden');
+    var active = document.getElementById('tab-' + tab);
+    active.classList.remove('border-transparent','text-gray-500','dark:text-gray-400');
+    active.classList.add('border-blue-600','text-blue-600','dark:text-blue-400','dark:border-blue-400');
+}
+switchTab('info');
 </script>
-<style>
-@keyframes spin { to { transform:rotate(360deg); } }
-.spin-icon { display:inline-block; animation:spin .8s linear infinite; }
-</style>
-@endpush
 @endsection
