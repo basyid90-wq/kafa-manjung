@@ -1,7 +1,7 @@
 ## Context
 - Project: KAFA Manjung (Educational Management System — Malaysia).
 - Framework: Laravel 12.x (PHP 8.2+), MVC structure.
-- UI: HiStudy Premium Template (Bootstrap 5).
+- UI: **Flowbite + Tailwind CSS** (migrated from HiStudy/Bootstrap 5 — completed May 2026).
 - **UI Language:** ALL labels, error messages, and system text MUST be in Bahasa Melayu.
 - **Code/Rules Language:** English only.
 - **Also read:** `AGENTS.md` for the full prohibited/required actions list.
@@ -36,7 +36,7 @@ git commit -m "type: short description of what changed"
 
 ### Step 4 — Push to remote main
 ```bash
-git push origin claude/strange-jennings-fba0ae:main
+git push origin feature/flowbite-ui:main
 ```
 
 ### Step 5 — Give user VPS commands only
@@ -44,11 +44,10 @@ After push, tell the user to run ONLY these on VPS (do NOT repeat localhost comm
 
 ```bash
 git pull origin main
-php artisan view:clear && php artisan route:clear && php artisan cache:clear
-php artisan route:cache && php artisan view:cache
+php artisan view:clear && php artisan cache:clear
 ```
 
-> **Rule:** If a new route was added → include `route:cache`. If only views changed → `view:clear` + `view:cache` is enough. Always state which commands are needed and why.
+> **Rule:** If a new route was added → also run `php artisan route:clear && php artisan route:cache`. If only views changed → `view:clear` is enough. After ANY Tailwind class addition → `npm run build` is required on VPS.
 
 ---
 
@@ -90,20 +89,97 @@ php artisan route:cache && php artisan view:cache
 
 ---
 
-## 🎨 UI & Styling (STRICT)
+## 🎨 UI & Styling (STRICT — Flowbite/Tailwind)
 
-- **NO CUSTOM CSS** — Do NOT alter `public/assets/css/styles.css` or add new classes.
-- **NO TAILWIND** — Bootstrap 5 and HiStudy theme only.
-- **Layout:** Always `@extends('layout.layout')` with `@section('content')`.
-- **Dropdowns:** All `bootstrap-select` dropdowns MUST be 50px height (same as text inputs). See `resources/views/layout/layout.blade.php`.
-- **Icons:** Use existing template icon classes only. Do NOT substitute a different icon set.
-- **Spacing:** Compact layout. No extra `mt-5`, `mb-5`, or unnecessary wrapper divs.
+> ⚠️ UI has been **fully migrated to Flowbite + Tailwind CSS**. Do NOT use Bootstrap or HiStudy classes.
+
+### Layouts
+- **Authenticated pages:** `@extends('layout-fb.layout')` with `@section('content')`
+- **Public pages (login):** `@extends('layout-fb.auth')` with `@section('content')`
+- **PDF templates:** Standalone `.blade.php` — no layout, inline CSS only
+
+### Standard Tailwind Components
+
+**Input:**
+```html
+class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+```
+
+**Primary button:**
+```html
+class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+```
+
+**Secondary/back button:**
+```html
+class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+```
+
+**Card:**
+```html
+class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+```
+
+**Table wrapper:**
+```html
+<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+```
+
+**Badge (green/yellow/red/gray):**
+```html
+class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+```
+
+### Custom Modals (NO Bootstrap)
+```html
+<div id="myModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg mx-4">
+        ...
+        <button onclick="document.getElementById('myModal').classList.add('hidden')">Tutup</button>
+    </div>
+</div>
+```
+
+### Custom Tabs (NO Bootstrap)
+```javascript
+function switchTab(tab) {
+    ['tab1','tab2'].forEach(function(t) {
+        document.getElementById('panel-' + t).classList.add('hidden');
+        document.getElementById('tab-' + t).classList.remove('border-blue-600','text-blue-600');
+        document.getElementById('tab-' + t).classList.add('border-transparent','text-gray-500');
+    });
+    document.getElementById('panel-' + tab).classList.remove('hidden');
+    document.getElementById('tab-' + tab).classList.remove('border-transparent','text-gray-500');
+    document.getElementById('tab-' + tab).classList.add('border-blue-600','text-blue-600');
+}
+```
+
+### Radio Pills (replacing Bootstrap btn-group)
+```html
+<label class="flex-1 cursor-pointer">
+    <input type="radio" class="peer sr-only" name="field" value="A">
+    <span class="flex items-center justify-center px-2 py-1 text-xs font-medium border border-gray-300 rounded-lg
+                 peer-checked:bg-green-600 peer-checked:border-green-600 peer-checked:text-white transition-colors">A</span>
+</label>
+```
+
+### Jawi Font Support
+```html
+<style>@font-face { font-family:'Lateef'; src:url('/fonts/Lateef-Regular.ttf') format('truetype'); }</style>
+<p dir="rtl" style="font-family:'Lateef',serif;font-size:1.1em;">{{ $jawiText }}</p>
+```
 
 ---
 
 ## ⚡ JavaScript Rules
 
 - **Framework:** Alpine.js only (`x-data`, `x-show`, `x-on:click`). NOT Vue, React, or jQuery.
+- **NO `@push('scripts')`** — use direct `<script>` tags before `@endsection`.
+- **AJAX:** Use vanilla `fetch()` only. No jQuery `$.ajax()`.
+- **DOM:** Use `classList.add/remove('hidden')` for show/hide. No jQuery `.show()/.hide()`.
 - Do NOT import new JS libraries without user approval.
 
 ---
@@ -111,8 +187,8 @@ php artisan route:cache && php artisan view:cache
 ## 📊 Table & Data View Rules
 
 - **"No" column:** Every table MUST start with a sequential "No" column.
-- **Pagination:** Always `->paginate(10)`. Never more.
-- **Action column ("Tindakan"):** Icons only — no text labels. Match existing icon classes.
+- **Pagination:** Always `->paginate(10)`. The global pagination view is `vendor/pagination/flowbite.blade.php` — do NOT override per-view.
+- **Action column ("Tindakan"):** Icons only — no text labels. Use inline SVG icons.
 
 ---
 
@@ -129,9 +205,25 @@ php artisan route:cache && php artisan view:cache
 ## ⚙️ Backend Rules
 
 - **Data isolation:** Filter all queries by `school_id` or `district_id` per role.
-- **Delete:** Use `data-delete-form` + `data-name` for SweetAlert2 confirmation.
-- **PDF display:** NEVER `window.open()` or `<iframe>`. ALWAYS `openPdfBlob(this, url)`.
-- **Notifications:** Use `session('success')` or `session('error')`. SweetAlert2 handles display globally.
+- **Delete:** Use `data-delete-form` + `data-name` for SweetAlert2 confirmation (handler is global in `layout-fb/layout.blade.php`).
+- **PDF display:** NEVER `window.open()` or `<iframe>`. ALWAYS `openPdfBlob(this, url)` (defined globally in `layout-fb/layout.blade.php`).
+- **Notifications:** Use `session('success')` or `session('error')`. SweetAlert2 handles display globally in `layout-fb/layout.blade.php`.
+
+---
+
+## 🏗️ layout-fb/layout.blade.php — What's Included Globally
+
+The following are already provided by `layout-fb/layout.blade.php` — do NOT re-add per-view:
+
+| Feature | How to use |
+|---------|-----------|
+| SweetAlert2 | `session('success')` / `session('error')` auto-popup |
+| Delete confirmation | `<form data-delete-form data-name="nama item">` |
+| PDF viewer | `openPdfBlob(this, url)` — returns JSON `{data: base64, filename}` |
+| PDF base64 render | `renderPdfBase64(base64string)` |
+| PDF close | `closePdfViewer()` |
+| Alpine.js | Available globally |
+| Flowbite JS | Available globally |
 
 ---
 
@@ -145,7 +237,8 @@ php artisan route:cache && php artisan view:cache
   'default_font' => 'lateef',
   'tempDir'      => storage_path('app/mpdf_temp'),
   ```
-- **Display:** All "Cetak" buttons MUST call AJAX → return base64 → display via `openPdfBlob(this, url)` in a PDF.js modal.
+- **Controller must return JSON:** `return response()->json(['data' => base64_encode($pdf), 'filename' => 'file.pdf']);`
+- **Display:** All "Cetak" buttons MUST call `openPdfBlob(this, route('x.pdf', $id))`.
 - **Template:** Separate `.blade.php` file per PDF (no navbar/sidebar). Use inline CSS only.
 
 ---
@@ -183,9 +276,30 @@ Roles: `guru-kafa`, `guru-besar`, `penyelia-kafa`, `ibu-bapa`, `bendahari-sekola
 
 ---
 
+## ⚠️ VPS Deploy Checklist
+
+After every push, tell user to run on VPS:
+
+```bash
+git pull origin main
+php artisan view:clear && php artisan cache:clear
+```
+
+**Additional if needed:**
+- New route added → `php artisan route:clear && php artisan route:cache`
+- New Tailwind classes used → `npm run build` (CRITICAL — `public/build/` is gitignored)
+- New config changed → `php artisan config:clear`
+
+---
+
 ## 🚫 Do Not
 
 - Do NOT write paragraphs of explanation. Show code first. One sentence max for notes.
 - Do NOT apologize when fixing bugs. Just provide the fix.
 - Do NOT assume DB structure. Ask for migration files if unsure.
 - Do NOT leave `dd()`, `dump()`, `var_dump()`, or `console.log()` in code.
+- Do NOT use `@extends('layout.layout')` — old Bootstrap layout, no longer in use.
+- Do NOT use Bootstrap classes (`btn`, `card`, `modal`, `nav-tabs`, `form-control`, etc.).
+- Do NOT use jQuery (`$()`, `$.ajax()`, `.selectpicker()`) — use vanilla JS only.
+- Do NOT add `@push('scripts')` / `@endpush` — use direct `<script>` before `@endsection`.
+- Do NOT call `window.open()` or use `<iframe>` for PDF — use `openPdfBlob()` only.
