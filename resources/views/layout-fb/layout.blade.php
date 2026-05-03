@@ -9,6 +9,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('styles')
+    <style>
+        /* Flowbite datepicker — ensure calendar always floats above all content */
+        [datepicker], .datepicker { z-index: 9999 !important; }
+    </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 h-full" x-data="{ sidebarOpen: false }">
 
@@ -510,21 +514,21 @@
         document.querySelectorAll('input[type="date"]').forEach(function(el) {
             var val = el.value;
 
-            // Wrap in relative container
+            // Wrap in relative container (inline style — VPS-safe)
             var wrapper = document.createElement('div');
-            wrapper.className = 'relative w-full';
+            wrapper.style.cssText = 'position:relative;display:inline-block;';
             el.parentNode.insertBefore(wrapper, el);
             wrapper.appendChild(el);
 
             // Calendar icon
             var icon = document.createElement('div');
-            icon.className = 'absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none';
-            icon.innerHTML = '<svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/></svg>';
+            icon.style.cssText = 'position:absolute;top:0;bottom:0;left:0;display:flex;align-items:center;padding-left:0.75rem;pointer-events:none;';
+            icon.innerHTML = '<svg style="width:1rem;height:1rem;color:#6b7280;" fill="currentColor" viewBox="0 0 20 20"><path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/></svg>';
             wrapper.insertBefore(icon, el);
 
             // Convert to text + Flowbite datepicker
             el.type = 'text';
-            el.classList.add('ps-10');
+            el.style.paddingLeft = '2.25rem';
             if (!el.placeholder) el.placeholder = 'YYYY-MM-DD';
 
             if (window.Datepicker) {
