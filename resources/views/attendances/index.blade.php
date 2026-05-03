@@ -170,50 +170,71 @@
 
 </div>
 
-{{-- ── Modal: Buku Kedatangan (Flowbite CRUD Modal) ── --}}
-<div id="kedatanganModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-md max-h-full">
-        <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                    Jana Buku Kedatangan (PDF Jawi)
-                </h3>
-                <button type="button" onclick="closeKedatanganModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Tutup modal</span>
-                </button>
+{{-- ── Modal: Buku Kedatangan ── --}}
+<div id="kedatanganModal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);">
+    <div style="background:#fff;border-radius:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:440px;margin:1rem;">
+        {{-- Header --}}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid #e5e7eb;">
+            <h3 style="font-size:1rem;font-weight:600;color:#111827;">Jana Buku Kedatangan (PDF Jawi)</h3>
+            <button type="button" onclick="closeKedatanganModal()"
+                    style="padding:0.375rem;color:#9ca3af;border-radius:0.5rem;border:none;background:transparent;cursor:pointer;"
+                    onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+                <svg style="width:1rem;height:1rem;" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+            </button>
+        </div>
+        {{-- Body --}}
+        <div style="padding:1.25rem;">
+            <p id="kdClassName" style="font-size:0.875rem;font-weight:600;color:#2563eb;margin-bottom:1rem;"></p>
+            <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:1.25rem;">
+                <div>
+                    <label style="display:block;margin-bottom:0.375rem;font-size:0.875rem;font-weight:500;color:#374151;">
+                        Bulan &amp; Tahun <span style="color:#ef4444;">*</span>
+                    </label>
+                    <div style="display:flex;gap:0.5rem;">
+                        <select id="kdMonth" style="flex:1;padding:0.5rem 0.75rem;font-size:0.875rem;border:1px solid #d1d5db;border-radius:0.5rem;background:#f9fafb;color:#111827;outline:none;cursor:pointer;" required>
+                            <option value="1">Januari</option>
+                            <option value="2">Februari</option>
+                            <option value="3">Mac</option>
+                            <option value="4">April</option>
+                            <option value="5">Mei</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Julai</option>
+                            <option value="8">Ogos</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Disember</option>
+                        </select>
+                        <select id="kdYear" style="width:7rem;padding:0.5rem 0.75rem;font-size:0.875rem;border:1px solid #d1d5db;border-radius:0.5rem;background:#f9fafb;color:#111827;outline:none;cursor:pointer;" required>
+                            @for($y = 2020; $y <= date('Y') + 1; $y++)
+                            <option value="{{ $y }}">{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="display:block;margin-bottom:0.375rem;font-size:0.875rem;font-weight:500;color:#374151;">
+                        Jumlah Hari Persekolahan <span style="color:#ef4444;">*</span>
+                    </label>
+                    <input type="number" id="kdTotalDays" min="1" max="31" placeholder="Contoh: 20"
+                           style="width:100%;padding:0.5rem 0.75rem;font-size:0.875rem;border:1px solid #d1d5db;border-radius:0.5rem;background:#f9fafb;color:#111827;outline:none;box-sizing:border-box;" required>
+                    <p style="margin-top:0.375rem;font-size:0.75rem;color:#6b7280;">Masukkan bilangan hari sekolah aktif (tidak termasuk cuti).</p>
+                </div>
             </div>
-            <!-- Modal body -->
-            <div class="p-4 md:p-5">
-                <p id="kdClassName" class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4"></p>
-                <div class="grid gap-4 mb-4 grid-cols-1">
-                    <div>
-                        <label for="kdMonthYear" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Bulan &amp; Tahun <span class="text-red-500">*</span>
-                        </label>
-                        <input type="month" id="kdMonthYear" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
-                    </div>
-                    <div>
-                        <label for="kdTotalDays" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Jumlah Hari Persekolahan <span class="text-red-500">*</span>
-                        </label>
-                        <input type="number" id="kdTotalDays" min="1" max="31" placeholder="Contoh: 20" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
-                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Masukkan bilangan hari sekolah aktif (tidak termasuk cuti).</p>
-                    </div>
-                </div>
-                <div class="flex items-center justify-end gap-2">
-                    <button type="button" onclick="closeKedatanganModal()" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                        Batal
-                    </button>
-                    <button id="kdSubmitBtn" type="button" onclick="submitKedatanganPdf()" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                        Jana PDF (Jawi)
-                    </button>
-                </div>
+            <div style="display:flex;justify-content:flex-end;gap:0.5rem;">
+                <button type="button" onclick="closeKedatanganModal()"
+                        style="padding:0.5rem 1.25rem;font-size:0.875rem;font-weight:500;color:#374151;background:#fff;border:1px solid #d1d5db;border-radius:0.5rem;cursor:pointer;"
+                        onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#fff'">
+                    Batal
+                </button>
+                <button id="kdSubmitBtn" type="button" onclick="submitKedatanganPdf()"
+                        style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.5rem 1.25rem;font-size:0.875rem;font-weight:500;color:#fff;background:#2563eb;border:none;border-radius:0.5rem;cursor:pointer;"
+                        onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                    <svg style="width:1rem;height:1rem;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                    Jana PDF (Jawi)
+                </button>
             </div>
         </div>
     </div>
@@ -288,29 +309,25 @@ function openKedatanganModal(btn) {
     kdClassId = btn.dataset.classId;
     document.getElementById('kdClassName').textContent = 'Kelas: ' + btn.dataset.className;
     const now = new Date();
-    const mm  = String(now.getMonth() + 1).padStart(2, '0');
-    document.getElementById('kdMonthYear').value  = now.getFullYear() + '-' + mm;
-    document.getElementById('kdTotalDays').value   = '';
-    const modal = document.getElementById('kedatanganModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    document.getElementById('kdMonth').value     = now.getMonth() + 1;
+    document.getElementById('kdYear').value      = now.getFullYear();
+    document.getElementById('kdTotalDays').value = '';
+    document.getElementById('kedatanganModal').style.display = 'flex';
 }
 
 function closeKedatanganModal() {
-    const modal = document.getElementById('kedatanganModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    document.getElementById('kedatanganModal').style.display = 'none';
 }
 
 function submitKedatanganPdf() {
-    const monthYear = document.getElementById('kdMonthYear').value;
+    const month     = document.getElementById('kdMonth').value;
+    const year      = document.getElementById('kdYear').value;
     const totalDays = document.getElementById('kdTotalDays').value;
-    if (!monthYear || !totalDays || parseInt(totalDays) < 1) {
+    if (!month || !year || !totalDays || parseInt(totalDays) < 1) {
         alert('Sila lengkapkan semua maklumat yang diperlukan.');
         return;
     }
-    const [year, month] = monthYear.split('-');
-    const url = `${kdBaseUrl}/${kdClassId}/pdf?month=${parseInt(month)}&year=${year}&total_days=${totalDays}`;
+    const url = `${kdBaseUrl}/${kdClassId}/pdf?month=${month}&year=${year}&total_days=${totalDays}`;
     openPdfBlob(document.getElementById('kdSubmitBtn'), url);
 }
 
@@ -333,6 +350,7 @@ function openCutiModal(btn) {
 document.getElementById('kedatanganModal').addEventListener('click', function(e) {
     if (e.target === this) closeKedatanganModal();
 });
+
 
 document.getElementById('cutiModal').addEventListener('click', function(e) {
     if (e.target === this) this.classList.add('hidden');
