@@ -44,7 +44,9 @@
     {{-- Penerangan --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-4">
         <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Penerangan Masalah</h2>
-        <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">{{ $feedback->description }}</div>
+        <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none">
+            {!! nl2br(e($feedback->description)) !!}
+        </div>
     </div>
 
     {{-- Tangkapan Skrin --}}

@@ -87,9 +87,11 @@ php artisan view:cache
 | 41 | 2026-05-02 | `app/Http/Controllers/FeedbackController.php` | Controller baru — create/store (semua role), index/show/update (Super Admin), systemLog (baca laravel.log) | ⏳ Belum Push |
 | 42 | 2026-05-02 | `routes/web.php` | Tambah routes feedback (create/store/index/show/update) dan admin/system-log | ⏳ Belum Push |
 | 43 | 2026-05-02 | `resources/views/feedback/create.blade.php` | Halaman baharu — form laporkan masalah (modul, penerangan, tangkapan skrin) | ⏳ Belum Push |
-| 44 | 2026-05-03 | `resources/views/attendances/index.blade.php` | Tukar modal "Buku Kedatangan" kepada Flowbite Modal with CRUD pattern — ganti custom modal | ⏳ Belum Push |
-| 44 | 2026-05-02 | `resources/views/feedback/index.blade.php` | Halaman baharu — senarai aduan untuk Super Admin (filter status/modul) | ⏳ Belum Push |
-| 45 | 2026-05-02 | `resources/views/feedback/show.blade.php` | Halaman baharu — butiran aduan + kemaskini status/balasan | ⏳ Belum Push |
+| 44 | 2026-05-03 | `resources/views/attendances/index.blade.php` | Tukar modal "Buku Kedatangan" kepada Flowbite Modal with CRUD pattern — ganti custom modal | ✅ Sudah Push |
+| 45 | 2026-05-02 | `resources/views/feedback/index.blade.php` | Halaman baharu — senarai aduan untuk Super Admin (filter status/modul) | ⏳ Belum Push |
+| 46 | 2026-05-02 | `resources/views/feedback/show.blade.php` | Halaman baharu — butiran aduan + kemaskini status/balasan | ⏳ Belum Push |
+| 47 | 2026-05-03 | `resources/views/feedback/create.blade.php` | Tukar textarea kepada Flowbite WYSIWYG Editor (bold, italic, underline, lists) | ⏳ Belum Push |
+| 48 | 2026-05-03 | `resources/views/feedback/show.blade.php` | Update display penerangan — render HTML dari WYSIWYG editor | ⏳ Belum Push |
 | 46 | 2026-05-02 | `resources/views/admin/system_log.blade.php` | Halaman baharu — Log Viewer (baca laravel.log, tapis ikut paras error/warning/info/all) | ⏳ Belum Push |
 | 47 | 2026-05-02 | `resources/views/partials/sidebar.blade.php` | Tambah "Laporkan Masalah" (non-Super Admin, atas Panduan Pengguna) + "Aduan Masalah" & "Log Sistem" (Super Admin Pemantauan) | ⏳ Belum Push |
 | 48 | 2026-05-02 | `app/Http/Controllers/DashboardController.php` | Pisahkan Super Admin dari Pentadbir — Super Admin kini guna stats sistem (sekolah, pengguna, murid, baharu) + panel aduan + health check | ⏳ Belum Push |

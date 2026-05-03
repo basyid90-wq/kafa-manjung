@@ -47,10 +47,51 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Penerangan Masalah <span class="text-red-500">*</span></label>
-                    <textarea name="description" rows="5" maxlength="2000" required
-                              placeholder="Huraikan masalah yang dihadapi dengan jelas..."
-                              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">{{ old('description') }}</textarea>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Penerangan Masalah <span class="text-red-500">*</span></label>
+                    <div class="w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                        <div class="flex items-center justify-between px-3 py-2 border-b dark:border-gray-600">
+                            <div class="flex flex-wrap items-center divide-gray-200 dark:divide-gray-600 sm:divide-x sm:rtl:divide-x-reverse">
+                                <div class="flex items-center space-x-1 rtl:space-x-reverse sm:pe-4">
+                                    <button type="button" onclick="formatDoc('bold')" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h4.5a3.5 3.5 0 1 1 0 7H8m0-7v7m0-7H6m2 7h6.5a3.5 3.5 0 1 1 0 7H8m0-7v7m0 0H6"/>
+                                        </svg>
+                                        <span class="sr-only">Bold</span>
+                                    </button>
+                                    <button type="button" onclick="formatDoc('italic')" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.874 19 6.143-14M6 19h6.33m-.66-14H18"/>
+                                        </svg>
+                                        <span class="sr-only">Italic</span>
+                                    </button>
+                                    <button type="button" onclick="formatDoc('underline')" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M6 19h12M8 5v9a4 4 0 0 0 8 0V5M6 5h4m4 0h4"/>
+                                        </svg>
+                                        <span class="sr-only">Underline</span>
+                                    </button>
+                                </div>
+                                <div class="flex flex-wrap items-center space-x-1 rtl:space-x-reverse sm:ps-4">
+                                    <button type="button" onclick="formatDoc('insertUnorderedList')" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/>
+                                        </svg>
+                                        <span class="sr-only">Bullet list</span>
+                                    </button>
+                                    <button type="button" onclick="formatDoc('insertOrderedList')" class="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6h8m-8 6h8m-8 6h8M4 16a2 2 0 1 1 3.321 1.5L4 20h5M4 5l2-1v6m-2 0h4"/>
+                                        </svg>
+                                        <span class="sr-only">Numbered list</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
+                            <div id="wysiwyg" contenteditable="true" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 min-h-[120px] max-h-[300px] overflow-y-auto" style="outline: none;">{{ old('description') }}</div>
+                        </div>
+                    </div>
+                    <textarea name="description" id="description" class="hidden" required></textarea>
                     <p class="text-xs text-gray-400 mt-1">Maksimum 2000 aksara.</p>
                 </div>
 
@@ -81,6 +122,33 @@
 </div>
 
 <script>
+// WYSIWYG Editor functions
+function formatDoc(cmd, value = null) {
+    document.execCommand(cmd, false, value);
+    document.getElementById('wysiwyg').focus();
+}
+
+// Sync contenteditable to hidden textarea before submit
+document.querySelector('form').addEventListener('submit', function(e) {
+    const content = document.getElementById('wysiwyg').innerHTML;
+    const plainText = document.getElementById('wysiwyg').innerText || document.getElementById('wysiwyg').textContent;
+
+    if (plainText.trim().length === 0) {
+        e.preventDefault();
+        alert('Sila isi penerangan masalah.');
+        return false;
+    }
+
+    if (plainText.length > 2000) {
+        e.preventDefault();
+        alert('Penerangan terlalu panjang. Maksimum 2000 aksara.');
+        return false;
+    }
+
+    document.getElementById('description').value = content;
+});
+
+// Image preview
 document.getElementById('image').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
