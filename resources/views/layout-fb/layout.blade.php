@@ -31,19 +31,141 @@
                     </a>
                 </div>
                 {{-- Right side --}}
-                <div class="flex items-center gap-3">
-                    <span class="text-sm text-gray-600 dark:text-gray-300 hidden sm:block">
-                        {{ auth()->user()->name }}
-                        <span class="ms-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                            {{ auth()->user()->getRoleNames()->first() }}
-                        </span>
-                    </span>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg dark:text-gray-400 dark:hover:bg-gray-700" title="Log Keluar">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                <div class="flex items-center gap-1">
+
+                    @php
+                        $unreadCount       = auth()->user()->unreadNotifications()->count();
+                        $recentNotifs      = auth()->user()->unreadNotifications()->latest()->take(5)->get();
+                    @endphp
+
+                    {{-- ── Bell Notification ── --}}
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.outside="open = false"
+                                class="relative p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none"
+                                title="Pemberitahuan">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            @if($unreadCount > 0)
+                            <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                                {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                            </span>
+                            @endif
                         </button>
-                    </form>
+
+                        {{-- Notification Dropdown --}}
+                        <div x-show="open" x-transition
+                             class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 z-50"
+                             style="display:none;">
+
+                            {{-- Header --}}
+                            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                                <h6 class="text-sm font-semibold text-gray-900 dark:text-white">Pemberitahuan</h6>
+                                @if($unreadCount > 0)
+                                <form method="POST" action="{{ route('notifications.markRead') }}">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-blue-600 hover:underline dark:text-blue-400">
+                                        Tandakan semua dibaca
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
+
+                            {{-- List --}}
+                            <div class="max-h-72 overflow-y-auto divide-y divide-gray-50 dark:divide-gray-700">
+                                @forelse($recentNotifs as $notif)
+                                <a href="{{ route('notifications.read', $notif->id) }}"
+                                   class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-medium text-gray-900 dark:text-white leading-snug line-clamp-2">
+                                            {{ $notif->data['title'] ?? $notif->data['message'] ?? 'Pemberitahuan baharu' }}
+                                        </p>
+                                        <p class="text-[11px] text-gray-400 mt-0.5">{{ $notif->created_at->diffForHumans() }}</p>
+                                    </div>
+                                    <span class="flex-shrink-0 w-2 h-2 mt-1 rounded-full bg-blue-500"></span>
+                                </a>
+                                @empty
+                                <div class="px-4 py-6 text-center">
+                                    <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                    </svg>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500">Tiada pemberitahuan baharu</p>
+                                </div>
+                                @endforelse
+                            </div>
+
+                            {{-- Footer --}}
+                            <div class="px-4 py-2 border-t border-gray-100 dark:border-gray-700">
+                                <a href="{{ route('announcements.index') }}"
+                                   class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                                    Lihat semua →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ── Profile Avatar Dropdown ── --}}
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.outside="open = false"
+                                class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                                title="Profil">
+                            {{-- Avatar circle with initials --}}
+                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold uppercase flex-shrink-0">
+                                {{ substr(auth()->user()->name, 0, 1) }}
+                            </div>
+                            <div class="hidden sm:block text-left leading-tight">
+                                <p class="text-xs font-semibold text-gray-800 dark:text-white max-w-[100px] truncate">{{ auth()->user()->name }}</p>
+                                <p class="text-[10px] text-gray-400">{{ auth()->user()->getRoleNames()->first() }}</p>
+                            </div>
+                            <svg class="w-3 h-3 text-gray-400 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+
+                        {{-- Profile Dropdown --}}
+                        <div x-show="open" x-transition
+                             class="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 z-50"
+                             style="display:none;">
+
+                            {{-- User info header --}}
+                            <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                                <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
+                            </div>
+
+                            {{-- Menu items --}}
+                            <div class="py-1">
+                                <a href="{{ route('profile.edit') }}"
+                                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    Edit Profil
+                                </a>
+                            </div>
+
+                            {{-- Logout --}}
+                            <div class="py-1 border-t border-gray-100 dark:border-gray-700">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                            class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                        </svg>
+                                        Log Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

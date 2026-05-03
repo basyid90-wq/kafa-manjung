@@ -175,6 +175,7 @@ php artisan view:cache
 | 114 | 2026-05-03 | `resources/views/auth/login.blade.php` | Tab Flowbite icons, Lupa Kata Laluan → WhatsApp 0194920559, semua inline style | ⏳ Belum Push |
 | 115 | 2026-05-03 | `resources/views/auth/login.blade.php` | 6 kemaskini: logo asal, teks pengumuman besar, badge "Sistem KAFA", tab full-width, Ada masalah → WA, footer v1.0 | ⏳ Belum Push |
 | 116 | 2026-05-03 | `CLAUDE.md` | Tambah Codex sebagai AI agent kedua, peraturan UI wajib Flowbite docs, VPS-safe CSS rule, kemaskini Do Not list | ⏳ Belum Push |
+| 117 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Tambah bell notification + profile avatar dropdown ke navbar — guna Flowbite Dropdown + Alpine.js | ⏳ Belum Push |
 
 ---
 
