@@ -21,7 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Paginator::useBootstrapFive();
+        Paginator::defaultView('vendor.pagination.flowbite');
+        Paginator::defaultSimpleView('vendor.pagination.flowbite-simple');
 
         if (config('app.env') === 'production') {
             URL::forceScheme('https');

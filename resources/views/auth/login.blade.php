@@ -4,10 +4,17 @@
 @section('content')
 <div class="min-h-screen flex flex-col">
 
-    {{-- Header --}}
-    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4 px-6 text-center">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Selamat Datang ke APKM</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Aplikasi Pengurusan KAFA Daerah Manjung</p>
+    {{-- Hero Header --}}
+    <div class="bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 text-white py-10 px-6 text-center">
+        <div class="max-w-2xl mx-auto">
+            <img src="{{ asset('template/perak.png') }}" alt="Logo Perak" class="h-16 mx-auto mb-4 drop-shadow-lg">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+                Selamat Datang ke APKM
+            </h1>
+            <p class="text-blue-100 text-base md:text-lg mt-3 font-medium">
+                Aplikasi Pengurusan KAFA Daerah Manjung
+            </p>
+        </div>
     </div>
 
     <div class="flex-1 flex items-start justify-center py-8 px-4">
@@ -19,7 +26,6 @@
                     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
 
                         <div class="text-center mb-5">
-                            <img src="{{ asset('template/perak.png') }}" alt="Logo Perak" class="h-20 mx-auto mb-3">
                             <h2 class="text-lg font-bold text-gray-900 dark:text-white">Log Masuk Sistem</h2>
                         </div>
 
