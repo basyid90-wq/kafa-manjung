@@ -2,11 +2,6 @@
 @extends('layout-fb.auth')
 
 @section('content')
-<style>
-@media(min-width:1024px){
-    .login-grid{grid-template-columns:2fr 3fr!important;}
-}
-</style>
 
 {{-- ══════════════════════════════════════════════════════════
      HERO HEADER — full-width gradient, all inline styles (VPS-safe)
@@ -71,12 +66,11 @@
 <div style="background:#f1f5f9;min-height:100vh;">
     <div style="max-width:72rem;margin:0 auto;padding:2rem 1rem 3rem;">
 
-        {{-- Two-column grid (inline CSS — VPS safe) --}}
-        <div class="login-grid" style="display:grid;grid-template-columns:1fr;gap:1.25rem;align-items:start;">
+        {{-- Login card — centred, max 480px --}}
+        <div style="max-width:480px;margin:0 auto 1.5rem;">
 
-            {{-- ══ LEFT: Login Card ══ --}}
-            <div class="col-login">
-                <div style="background:#fff;border-radius:1.25rem;overflow:hidden;
+            {{-- ══ Login Card ══ --}}
+            <div style="background:#fff;border-radius:1.25rem;overflow:hidden;
                             box-shadow:0 20px 60px rgba(0,0,0,0.15);">
 
                     {{-- Card top — tab switcher on blue --}}
@@ -161,12 +155,13 @@
                                            class="w-full text-sm rounded-xl border bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-2 focus:border-transparent outline-none transition-all px-3.5 py-2.5 pr-10
                                                   @error('password') border-red-400 @else border-gray-200 dark:border-gray-600 @enderror">
                                     <button type="button" onclick="togglePassword()"
-                                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                                        <svg id="icon-eye" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);
+                                                   border:none;background:none;cursor:pointer;color:#9ca3af;padding:2px;">
+                                        <svg id="icon-eye" style="width:16px;height:16px;display:block;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                         </svg>
-                                        <svg id="icon-eye-off" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg id="icon-eye-off" style="width:16px;height:16px;display:none;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
                                         </svg>
                                     </button>
@@ -222,12 +217,11 @@
                         </p>
                     </div>
                 </div>
-            </div>
+        </div>{{-- end login card wrapper --}}
 
-            {{-- ══ RIGHT: Announcements Card ══ --}}
-            <div class="col-ann">
-                <div style="background:#fff;border-radius:1.25rem;overflow:hidden;
-                            box-shadow:0 20px 60px rgba(0,0,0,0.12);">
+        {{-- ══ Announcements Card — full width below ══ --}}
+        <div style="background:#fff;border-radius:1.25rem;overflow:hidden;
+                    box-shadow:0 8px 32px rgba(0,0,0,0.10);">
 
                     {{-- Card header --}}
                     <div style="padding:1rem 1.25rem;border-bottom:1px solid #f3f4f6;
@@ -344,16 +338,7 @@
                         <p style="font-size:0.75rem;text-align:center;color:#6b90d4;margin:0;">
                             🔒 Log masuk untuk melihat butiran penuh hebahan
                         </p>
-                    </div>
-                </div>
-            </div>
-
-        </div>{{-- end login-grid --}}
-
-        {{-- ══ PRAYER TIMES WIDGET ══ --}}
-        <div style="margin-top:1.5rem;">
-            <x-prayer-times-widget />
-        </div>
+        </div>{{-- end announcements card --}}
 
         {{-- Footer credit --}}
         <p style="text-align:center;font-size:0.72rem;color:#9ca3af;margin-top:1.5rem;">
@@ -367,51 +352,57 @@
      ANNOUNCEMENT MODAL
 ═══════════════════════════════════════════════════════════ --}}
 <div id="announcementModal"
-     class="fixed inset-0 z-50 hidden flex items-center justify-center p-4"
-     style="background:rgba(0,0,0,0.65);">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl flex flex-col"
-         style="max-height:88vh;box-shadow:0 25px 80px rgba(0,0,0,0.3);">
+     style="display:none;position:fixed;inset:0;z-index:50;
+            background:rgba(0,0,0,0.65);
+            align-items:center;justify-content:center;padding:1rem;">
+
+    <div style="background:#fff;border-radius:1.25rem;width:100%;max-width:640px;
+                display:flex;flex-direction:column;max-height:88vh;
+                box-shadow:0 25px 80px rgba(0,0,0,0.3);">
 
         {{-- Modal header --}}
-        <div class="p-5 flex-shrink-0 rounded-t-2xl"
-             style="background:linear-gradient(135deg,#0f2460,#1a56db);">
-            <div class="flex items-start justify-between mb-3">
+        <div style="padding:1.25rem;flex-shrink:0;border-radius:1.25rem 1.25rem 0 0;
+                    background:linear-gradient(135deg,#0f2460,#1a56db);">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.75rem;">
                 <span id="modalLabel"
-                      class="px-3 py-1 text-xs font-bold rounded-full"
-                      style="background:rgba(255,255,255,0.2);color:#fff;">📢 Pengumuman</span>
+                      style="padding:3px 12px;font-size:0.72rem;font-weight:700;border-radius:999px;
+                             background:rgba(255,255,255,0.2);color:#fff;">📢 Pengumuman</span>
                 <button type="button" onclick="closeAnnouncementModal()"
-                        class="p-1 rounded-lg transition-colors"
-                        style="color:rgba(255,255,255,0.7);"
+                        style="padding:4px;border-radius:6px;border:none;cursor:pointer;
+                               background:transparent;color:rgba(255,255,255,0.75);"
                         onmouseover="this.style.background='rgba(255,255,255,0.15)'"
                         onmouseout="this.style.background='transparent'">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg style="width:20px;height:20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
-            <h3 id="modalTitle" class="text-base font-bold text-white leading-snug mb-2"></h3>
-            <div class="flex items-center gap-3 text-xs flex-wrap"
-                 style="color:rgba(186,222,255,0.9);">
+            <h3 id="modalTitle" style="font-size:1rem;font-weight:700;color:#fff;
+                                       line-height:1.35;margin:0 0 0.5rem;"></h3>
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;
+                        font-size:0.72rem;color:rgba(186,222,255,0.9);">
                 <span id="modalAuthor"></span>
-                <span id="modalAdminBadge" class="hidden px-2 py-0.5 font-semibold rounded-full"
-                      style="background:rgba(255,255,255,0.2);">✓ Pentadbir</span>
+                <span id="modalAdminBadge" style="display:none;padding:2px 8px;font-weight:700;
+                      border-radius:999px;background:rgba(255,255,255,0.2);">✓ Pentadbir</span>
                 <span id="modalDate" style="color:rgba(186,222,255,0.65);"></span>
             </div>
         </div>
 
         {{-- Modal body --}}
-        <div class="overflow-y-auto flex-1 p-6">
+        <div style="overflow-y:auto;flex:1;padding:1.5rem;">
             <div id="modalBody"
-                 class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                 style="font-size:0.875rem;color:#374151;line-height:1.7;white-space:pre-line;">
             </div>
         </div>
 
         {{-- Modal footer --}}
-        <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex-shrink-0">
+        <div style="padding:1rem 1.5rem;border-top:1px solid #f3f4f6;flex-shrink:0;">
             <button type="button" onclick="closeAnnouncementModal()"
-                    class="w-full flex items-center justify-center gap-2 text-white text-sm font-semibold py-2.5 rounded-xl transition-all"
-                    style="background:linear-gradient(135deg,#1a56db,#3b82f6);">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+                           color:#fff;font-size:0.875rem;font-weight:600;padding:0.625rem;
+                           border-radius:0.75rem;border:none;cursor:pointer;
+                           background:linear-gradient(135deg,#1a56db,#3b82f6);">
+                <svg style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                 </svg>
                 Faham, Tutup
@@ -454,9 +445,11 @@ function togglePassword() {
     var f = document.getElementById('password-field');
     var e = document.getElementById('icon-eye');
     var o = document.getElementById('icon-eye-off');
-    f.type === 'password'
-        ? (f.type = 'text',  e.classList.add('hidden'),    o.classList.remove('hidden'))
-        : (f.type = 'password', e.classList.remove('hidden'), o.classList.add('hidden'));
+    if (f.type === 'password') {
+        f.type = 'text'; e.style.display = 'none'; o.style.display = 'block';
+    } else {
+        f.type = 'password'; e.style.display = 'block'; o.style.display = 'none';
+    }
 }
 
 // ── Announcement modal ──────────────────────────────────────────────────────
@@ -474,9 +467,10 @@ function showAnnouncementModal(id) {
     document.getElementById('modalLabel').textContent  = (labelIcons[label] || '📢') + ' ' + (label || 'Hebahan Umum');
 
     var badge = document.getElementById('modalAdminBadge');
-    d.getAttribute('data-is-admin') === '1' ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+    badge.style.display = d.getAttribute('data-is-admin') === '1' ? 'inline' : 'none';
 
-    document.getElementById('announcementModal').classList.remove('hidden');
+    var modal = document.getElementById('announcementModal');
+    modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
     fetch('/announcements/' + annId + '/increment-view', {
@@ -489,7 +483,7 @@ function showAnnouncementModal(id) {
 }
 
 function closeAnnouncementModal() {
-    document.getElementById('announcementModal').classList.add('hidden');
+    document.getElementById('announcementModal').style.display = 'none';
     document.body.style.overflow = '';
 }
 
