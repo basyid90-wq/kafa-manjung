@@ -184,6 +184,7 @@ php artisan view:cache
 | 123 | 2026-05-03 | `resources/views/attendances/index.blade.php` | Tukar semula modal Buku Kedatangan ke inline style; ganti `type="month"` dengan dua select Bulan+Tahun (VPS-safe) | ⏳ Belum Push |
 | 124 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Fix datepicker calendar z-index (z-9999) + tukar wrapper ke inline style supaya tidak bertindih dengan elemen lain | ⏳ Belum Push |
 | 125 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Buang Flowbite datepicker global (overlay bertindih) — guna native type="date" browser semula, tambah ikon kalendar sahaja | ⏳ Belum Push |
+| 126 | 2026-05-03 | `resources/views/achievements/pdf.blade.php` | Fix kedudukan gred markah — guna bidi-override span supaya "86 (B)" tidak terbalik jadi ")B( 86" dalam RTL mPDF | ⏳ Belum Push |
 
 ---
 

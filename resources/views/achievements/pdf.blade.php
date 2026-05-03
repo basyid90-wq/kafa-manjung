@@ -63,15 +63,18 @@ $student = $achievement->student;
 $school  = $achievement->school;
 $class   = $achievement->kafaClass;
 
-// Fix: direction:ltr on .mv prevents )A(90 — but also protect the PHP string itself
+// bidi-override on span: forces 86 (B) to render correctly in RTL mPDF context
 $fmt = function($result) use ($examService) {
     if (!$result) return '-';
-    if ($result->is_absent) return 'TH';
-    return $result->marks . ' (' . $examService->calculateGrade($result->marks) . ')';
+    if ($result->is_absent) return '<span style="direction:ltr;unicode-bidi:bidi-override;">TH</span>';
+    $m = $result->marks;
+    $g = $examService->calculateGrade($m);
+    return "<span style=\"direction:ltr;unicode-bidi:bidi-override;\">{$m} ({$g})</span>";
 };
 $fmtN = function($val) use ($examService) {
     if ($val === null) return '-';
-    return $val . ' (' . $examService->calculateGrade((int)$val) . ')';
+    $g = $examService->calculateGrade((int)$val);
+    return "<span style=\"direction:ltr;unicode-bidi:bidi-override;\">{$val} ({$g})</span>";
 };
 
 $sAmali   = [$midResults->get('amali_solat'),    $endResults->get('amali_solat')];
@@ -98,7 +101,7 @@ $ePct   = $eN > 0 ? round($eSum / (10 * 100) * 100, 1) . '%' : '-';
 $mTotal = $mN > 0 ? $mSum : '-';
 $eTotal = $eN > 0 ? $eSum : '-';
 
-$gender    = $student->gender === 'L' ? 'ليلاکي' : 'ڤرمڤوان';
+$gender    = in_array($student->gender, ['L','Lelaki','lelaki','LELAKI']) ? 'ليلاکي' : 'ڤرمڤوان';
 $dob       = $student->dob ? Carbon::parse($student->dob)->format('d/m/Y') : '';
 $age       = $student->dob ? Carbon::parse($student->dob)->age : ($student->age ?? '');
 $prevEntry = $student->prev_entry_date ? Carbon::parse($student->prev_entry_date)->format('d/m/Y') : '';
@@ -271,8 +274,8 @@ $bulan = ($monthNamesJawi[(int) now()->format('n')] ?? '') . ' ' . now()->format
     {{-- rowspan 5: Ulasan Guru --}}
     <tr>
         <td class="ms">عملي صلاة</td>
-        <td class="mv">{{ $fmt($sAmali[0]) }}</td>
-        <td class="mv">{{ $fmt($sAmali[1]) }}</td>
+        <td class="mv">{!! $fmt($sAmali[0]) !!}</td>
+        <td class="mv">{!! $fmt($sAmali[1]) !!}</td>
         <td class="sig" rowspan="5" style="vertical-align:top;padding:4px 8px;">
             <div style="margin-bottom:4px;font-weight:bold;">اولسن ݢورو</div>
             <div style="font-weight:normal;font-size:9.5pt;text-align:right;line-height:1.5;">{{ $achievement->teacher_comments ?? '' }}</div>
@@ -280,29 +283,29 @@ $bulan = ($monthNamesJawi[(int) now()->format('n')] ?? '') . ' ' . now()->format
     </tr>
     <tr>
         <td class="ms">ڤڠحياتن چارا هيدوڤ اسلام</td>
-        <td class="mv">{{ $fmtN($achievement->phci_midyear) }}</td>
-        <td class="mv">{{ $fmtN($achievement->phci_endyear) }}</td>
+        <td class="mv">{!! $fmtN($achievement->phci_midyear) !!}</td>
+        <td class="mv">{!! $fmtN($achievement->phci_endyear) !!}</td>
     </tr>
     <tr>
         <td class="ms">تلاوة / تحفيظ القرءان</td>
-        <td class="mv">{{ $fmt($sTilawah[0]) }}</td>
-        <td class="mv">{{ $fmt($sTilawah[1]) }}</td>
+        <td class="mv">{!! $fmt($sTilawah[0]) !!}</td>
+        <td class="mv">{!! $fmt($sTilawah[1]) !!}</td>
     </tr>
     <tr>
         <td class="ms">عقيدة</td>
-        <td class="mv">{{ $fmt($sAkidah[0]) }}</td>
-        <td class="mv">{{ $fmt($sAkidah[1]) }}</td>
+        <td class="mv">{!! $fmt($sAkidah[0]) !!}</td>
+        <td class="mv">{!! $fmt($sAkidah[1]) !!}</td>
     </tr>
     <tr>
         <td class="ms">عباده</td>
-        <td class="mv">{{ $fmt($sIbadah[0]) }}</td>
-        <td class="mv">{{ $fmt($sIbadah[1]) }}</td>
+        <td class="mv">{!! $fmt($sIbadah[0]) !!}</td>
+        <td class="mv">{!! $fmt($sIbadah[1]) !!}</td>
     </tr>
     {{-- rowspan 3: Tandatangan Guru --}}
     <tr>
         <td class="ms">سيره</td>
-        <td class="mv">{{ $fmt($sSirah[0]) }}</td>
-        <td class="mv">{{ $fmt($sSirah[1]) }}</td>
+        <td class="mv">{!! $fmt($sSirah[0]) !!}</td>
+        <td class="mv">{!! $fmt($sSirah[1]) !!}</td>
         <td class="sigb" rowspan="3" style="padding:4px 8px;">
             <div style="font-weight:bold;">تنداتاڠن ݢورو</div>
             <div style="border-top:1px solid #555;margin-top:24px;padding-top:2px;font-weight:normal;font-size:9pt;">نام :</div>
@@ -311,19 +314,19 @@ $bulan = ($monthNamesJawi[(int) now()->format('n')] ?? '') . ' ' . now()->format
     </tr>
     <tr>
         <td class="ms">ادب</td>
-        <td class="mv">{{ $fmt($sAdab[0]) }}</td>
-        <td class="mv">{{ $fmt($sAdab[1]) }}</td>
+        <td class="mv">{!! $fmt($sAdab[0]) !!}</td>
+        <td class="mv">{!! $fmt($sAdab[1]) !!}</td>
     </tr>
     <tr>
         <td class="ms">جاوي / خظ</td>
-        <td class="mv">{{ $fmt($sJawi[0]) }}</td>
-        <td class="mv">{{ $fmt($sJawi[1]) }}</td>
+        <td class="mv">{!! $fmt($sJawi[0]) !!}</td>
+        <td class="mv">{!! $fmt($sJawi[1]) !!}</td>
     </tr>
     {{-- rowspan 3: Tandatangan Penjaga --}}
     <tr>
         <td class="ms">بهاس عرب</td>
-        <td class="mv">{{ $fmt($sArab[0]) }}</td>
-        <td class="mv">{{ $fmt($sArab[1]) }}</td>
+        <td class="mv">{!! $fmt($sArab[0]) !!}</td>
+        <td class="mv">{!! $fmt($sArab[1]) !!}</td>
         <td class="sigb" rowspan="3" style="padding:4px 8px;">
             <div style="font-weight:bold;">تنداتاڠن ڤنجاݢ</div>
             <div style="border-top:1px solid #555;margin-top:24px;padding-top:2px;font-weight:normal;font-size:9pt;">نام :</div>
@@ -332,8 +335,8 @@ $bulan = ($monthNamesJawi[(int) now()->format('n')] ?? '') . ' ' . now()->format
     </tr>
     <tr>
         <td class="ms">لغتي</td>
-        <td class="mv">{{ $fmt($sLughati[0]) }}</td>
-        <td class="mv">{{ $fmt($sLughati[1]) }}</td>
+        <td class="mv">{!! $fmt($sLughati[0]) !!}</td>
+        <td class="mv">{!! $fmt($sLughati[1]) !!}</td>
     </tr>
     <tr class="sum">
         <td class="ms">ڤراتوس</td>
