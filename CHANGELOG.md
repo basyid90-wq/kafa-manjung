@@ -154,6 +154,7 @@ php artisan view:cache
 | 108 | 2026-05-03 | `resources/views/components/prayer-times-widget.blade.php` | Cipta Blade component widget Waktu Solat — flip clock, dropdown negeri/zon JAKIM, waktu solat grid aktif | ⏳ Belum Push |
 | 109 | 2026-05-03 | `resources/views/auth/login.blade.php` | Reka bentuk semula — hero heading-mark, login card Flowbite, horizontal card hebahan, prayer widget | ⏳ Belum Push |
 | 110 | 2026-05-03 | `resources/views/dashboard/index.blade.php` | Tambah `<x-prayer-times-widget />` di bawah semua dashboard role | ⏳ Belum Push |
+| 111 | 2026-05-03 | `resources/views/auth/login.blade.php` | Reka bentuk semula hero — tajuk lebih besar (`clamp` VPS-safe), semua inline style, dekorasi bulatan, teks dua baris dengan warna aksen biru cerah | ⏳ Belum Push |
 
 ---
 
