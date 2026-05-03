@@ -2,6 +2,11 @@
 @extends('layout-fb.auth')
 
 @section('content')
+<style>
+@media(min-width:1024px){
+    .login-grid{grid-template-columns:2fr 3fr!important;}
+}
+</style>
 
 {{-- ══════════════════════════════════════════════════════════
      HERO HEADER — full-width gradient, all inline styles (VPS-safe)
@@ -63,56 +68,59 @@
 {{-- ══════════════════════════════════════════════════════════
      MAIN CONTENT — cards float up over the hero
 ═══════════════════════════════════════════════════════════ --}}
-<div class="bg-gray-50 dark:bg-gray-900" style="min-height:100vh;">
-    <div class="max-w-6xl mx-auto px-4 pb-10" style="margin-top:-60px;">
+<div style="background:#f1f5f9;min-height:100vh;">
+    <div style="max-width:72rem;margin:0 auto;padding:2rem 1rem 3rem;">
 
-        {{-- Two-column grid --}}
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
+        {{-- Two-column grid (inline CSS — VPS safe) --}}
+        <div class="login-grid" style="display:grid;grid-template-columns:1fr;gap:1.25rem;align-items:start;">
 
-            {{-- ══ LEFT: Login Card (2/5) ══ --}}
-            <div class="lg:col-span-2">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden"
-                     style="box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+            {{-- ══ LEFT: Login Card ══ --}}
+            <div class="col-login">
+                <div style="background:#fff;border-radius:1.25rem;overflow:hidden;
+                            box-shadow:0 20px 60px rgba(0,0,0,0.15);">
 
                     {{-- Card top — tab switcher on blue --}}
-                    <div style="background:linear-gradient(135deg,#1a56db,#3b82f6);"
-                         class="px-5 pt-5 pb-8">
-                        <div class="flex gap-1.5 p-1 rounded-xl" style="background:rgba(255,255,255,0.15);">
+                    <div style="background:linear-gradient(135deg,#1a56db,#3b82f6);
+                                padding:1.25rem 1.25rem 2rem;">
+                        <div style="display:flex;gap:6px;padding:5px;border-radius:0.75rem;
+                                    background:rgba(255,255,255,0.15);">
                             <button type="button" id="tab-staff" onclick="switchLoginType('staff')"
-                                    class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all"
-                                    style="background:#fff;color:#1a56db;box-shadow:0 1px 4px rgba(0,0,0,0.15);">
+                                    style="flex:1;padding:0.5rem;font-size:0.875rem;font-weight:600;
+                                           border-radius:0.5rem;border:none;cursor:pointer;transition:all 0.2s;
+                                           background:#fff;color:#1a56db;box-shadow:0 1px 4px rgba(0,0,0,0.15);">
                                 🏢 Kakitangan
                             </button>
                             <button type="button" id="tab-parent" onclick="switchLoginType('parent')"
-                                    class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all"
-                                    style="color:rgba(255,255,255,0.85);">
+                                    style="flex:1;padding:0.5rem;font-size:0.875rem;font-weight:600;
+                                           border-radius:0.5rem;border:none;cursor:pointer;transition:all 0.2s;
+                                           background:transparent;color:rgba(255,255,255,0.85);">
                                 👨‍👩‍👧‍👦 Ibu Bapa
                             </button>
                         </div>
                     </div>
 
-                    {{-- Form area — overlaps blue header slightly --}}
-                    <div class="px-6 pb-6 rounded-t-2xl bg-white dark:bg-gray-800"
-                         style="margin-top:-16px;">
+                    {{-- Form area --}}
+                    <div style="padding:0 1.5rem 1.5rem;border-radius:1rem 1rem 0 0;
+                                background:#fff;margin-top:-16px;">
 
                         {{-- Lock icon header --}}
-                        <div class="flex items-center gap-3 mb-5">
-                            <div class="p-2.5 rounded-xl" style="background:#eff6ff;">
-                                <svg class="w-5 h-5" style="color:#1a56db;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+                            <div style="padding:0.625rem;border-radius:0.75rem;background:#eff6ff;flex-shrink:0;">
+                                <svg style="width:20px;height:20px;color:#1a56db;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                           d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-gray-900 dark:text-white">Log Masuk</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Sila masukkan maklumat anda</p>
+                                <p style="font-size:0.875rem;font-weight:700;color:#111827;margin:0;">Log Masuk</p>
+                                <p style="font-size:0.75rem;color:#6b7280;margin:0;">Sila masukkan maklumat anda</p>
                             </div>
                         </div>
 
                         {{-- Session status --}}
                         <x-auth-session-status class="mb-4" :status="session('status')" />
 
-                        <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                        <form method="POST" action="{{ route('login') }}" style="display:flex;flex-direction:column;gap:1rem;">
                             @csrf
                             <input type="hidden" name="login_type" id="login_type"
                                    value="{{ old('login_type', 'staff') }}">
@@ -120,7 +128,8 @@
                             {{-- Login ID --}}
                             <div>
                                 <label for="login_id" id="login_label"
-                                       class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
+                                       style="display:block;font-size:0.7rem;font-weight:700;color:#6b7280;
+                                              text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">
                                     Alamat Emel
                                 </label>
                                 <input type="{{ old('login_type') === 'parent' ? 'text' : 'email' }}"
@@ -204,10 +213,10 @@
                         </form>
 
                         {{-- Footer note --}}
-                        <p class="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">
+                        <p style="text-align:center;font-size:0.75rem;color:#9ca3af;margin-top:1rem;">
                             Ada masalah?
                             <a href="{{ route('feedback.create') }}"
-                               class="font-medium hover:underline" style="color:#1a56db;">
+                               style="font-weight:600;color:#1a56db;text-decoration:none;">
                                 Hubungi pentadbir
                             </a>
                         </p>
@@ -215,27 +224,28 @@
                 </div>
             </div>
 
-            {{-- ══ RIGHT: Announcements Card (3/5) ══ --}}
-            <div class="lg:col-span-3">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden"
-                     style="box-shadow:0 20px 60px rgba(0,0,0,0.12);">
+            {{-- ══ RIGHT: Announcements Card ══ --}}
+            <div class="col-ann">
+                <div style="background:#fff;border-radius:1.25rem;overflow:hidden;
+                            box-shadow:0 20px 60px rgba(0,0,0,0.12);">
 
                     {{-- Card header --}}
-                    <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 rounded-lg" style="background:#eff6ff;">
-                                <svg class="w-4 h-4" style="color:#1a56db;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div style="padding:1rem 1.25rem;border-bottom:1px solid #f3f4f6;
+                                display:flex;align-items:center;justify-content:space-between;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                            <div style="padding:0.5rem;border-radius:0.5rem;background:#eff6ff;flex-shrink:0;">
+                                <svg style="width:16px;height:16px;color:#1a56db;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                           d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
                                 </svg>
                             </div>
                             <div>
-                                <h2 class="text-sm font-bold text-gray-900 dark:text-white">Papan Makluman Utama</h2>
-                                <p class="text-xs text-gray-400">Hebahan terkini sistem APKM</p>
+                                <h2 style="font-size:0.875rem;font-weight:700;color:#111827;margin:0;">Papan Makluman Utama</h2>
+                                <p style="font-size:0.75rem;color:#9ca3af;margin:0;">Hebahan terkini sistem APKM</p>
                             </div>
                         </div>
-                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full"
-                              style="background:#eff6ff;color:#1a56db;">
+                        <span style="padding:4px 10px;font-size:0.72rem;font-weight:700;border-radius:999px;
+                                     background:#eff6ff;color:#1a56db;">
                             Info Terkini
                         </span>
                     </div>
@@ -256,37 +266,43 @@
                         $lm = $labelMap[$ann->homepage_label] ?? ['bg'=>'#f3f4f6','color'=>'#374151','icon'=>'📢'];
                     @endphp
 
-                    <div class="px-5 py-4 border-b border-gray-50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors {{ $loop->last ? 'border-b-0' : '' }}">
-                        <div class="flex items-start gap-3">
+                    <div style="padding:1rem 1.25rem;border-bottom:{{ $loop->last ? 'none' : '1px solid #f9fafb' }};">
+                        <div style="display:flex;align-items:flex-start;gap:0.75rem;">
 
                             {{-- Icon badge --}}
-                            <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-                                 style="background:{{ $lm['bg'] }};">
+                            <div style="flex-shrink:0;width:40px;height:40px;border-radius:0.75rem;
+                                        display:flex;align-items:center;justify-content:center;
+                                        font-size:1.125rem;background:{{ $lm['bg'] }};">
                                 {{ $lm['icon'] }}
                             </div>
 
                             {{-- Content --}}
                             <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2 mb-1 flex-wrap">
-                                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
-                                          style="background:{{ $lm['bg'] }};color:{{ $lm['color'] }};">
+                                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;">
+                                    <span style="font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:999px;
+                                                 background:{{ $lm['bg'] }};color:{{ $lm['color'] }};">
                                         {{ $ann->homepage_label ?? 'Hebahan Umum' }}
                                     </span>
-                                    <span class="text-xs text-gray-400">
+                                    <span style="font-size:0.7rem;color:#9ca3af;">
                                         {{ $ann->created_at->format('d M Y') }}
                                     </span>
                                 </div>
                                 <button type="button" onclick="showAnnouncementModal({{ $ann->id }})"
-                                        class="text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 text-left w-full leading-snug transition-colors line-clamp-1">
+                                        style="font-size:0.875rem;font-weight:700;color:#111827;border:none;
+                                               background:none;cursor:pointer;text-align:left;width:100%;
+                                               line-height:1.35;padding:0;display:-webkit-box;
+                                               -webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">
                                     {{ $ann->title }}
                                 </button>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
+                                <p style="font-size:0.75rem;color:#6b7280;margin:4px 0 0;
+                                          display:-webkit-box;-webkit-line-clamp:2;
+                                          -webkit-box-orient:vertical;overflow:hidden;">
                                     {{ \Illuminate\Support\Str::limit(strip_tags($ann->content), 100) }}
                                 </p>
                                 @if(strlen(strip_tags($ann->content)) > 100)
                                 <button type="button" onclick="showAnnouncementModal({{ $ann->id }})"
-                                        class="text-xs font-medium mt-1 hover:underline transition-colors"
-                                        style="color:#1a56db;">
+                                        style="font-size:0.75rem;font-weight:600;color:#1a56db;border:none;
+                                               background:none;cursor:pointer;padding:4px 0 0;text-decoration:none;">
                                     Baca selanjutnya →
                                 </button>
                                 @endif
@@ -294,7 +310,7 @@
                         </div>
 
                         {{-- Hidden modal data --}}
-                        <div id="announcement-data-{{ $ann->id }}" class="hidden"
+                        <div id="announcement-data-{{ $ann->id }}" style="display:none;"
                              data-title="{{ $ann->title }}"
                              data-author="{{ $ann->user->name }}"
                              data-is-admin="{{ $ann->user->hasRole('Super Admin') ? '1' : '0' }}"
@@ -308,37 +324,39 @@
                     </div>
 
                     @empty
-                    <div class="flex flex-col items-center justify-center py-14 text-center px-6">
-                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                             style="background:#f0f9ff;">
-                            <svg class="w-8 h-8" style="color:#93c5fd;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+                                padding:3.5rem 1.5rem;text-align:center;">
+                        <div style="width:56px;height:56px;border-radius:1rem;
+                                    display:flex;align-items:center;justify-content:center;
+                                    background:#f0f9ff;margin-bottom:1rem;">
+                            <svg style="width:28px;height:28px;color:#93c5fd;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                       d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                             </svg>
                         </div>
-                        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Tiada Hebahan Baharu</p>
-                        <p class="text-xs text-gray-400 mt-1">Semak semula kemudian.</p>
+                        <p style="font-size:0.875rem;font-weight:600;color:#6b7280;margin:0;">Tiada Hebahan Baharu</p>
+                        <p style="font-size:0.75rem;color:#9ca3af;margin:4px 0 0;">Semak semula kemudian.</p>
                     </div>
                     @endforelse
 
                     {{-- Footer --}}
-                    <div class="px-5 py-3" style="background:#f8faff;border-top:1px solid #e8f0fe;">
-                        <p class="text-xs text-center" style="color:#6b90d4;">
+                    <div style="padding:0.75rem 1.25rem;background:#f8faff;border-top:1px solid #e8f0fe;">
+                        <p style="font-size:0.75rem;text-align:center;color:#6b90d4;margin:0;">
                             🔒 Log masuk untuk melihat butiran penuh hebahan
                         </p>
                     </div>
                 </div>
             </div>
 
-        </div>{{-- end grid --}}
+        </div>{{-- end login-grid --}}
 
         {{-- ══ PRAYER TIMES WIDGET ══ --}}
-        <div class="mt-5">
+        <div style="margin-top:1.5rem;">
             <x-prayer-times-widget />
         </div>
 
         {{-- Footer credit --}}
-        <p class="text-center text-xs text-gray-400 dark:text-gray-600 mt-6">
+        <p style="text-align:center;font-size:0.72rem;color:#9ca3af;margin-top:1.5rem;">
             © {{ date('Y') }} Jabatan Agama Islam Daerah Manjung &bull; APKM v2.0
         </p>
 
