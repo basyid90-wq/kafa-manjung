@@ -494,6 +494,16 @@
 
     @stack('scripts')
 
+    {{-- ── Global File Input Filename Display ── --}}
+    <script>
+    function updateFilename(input, spanId) {
+        var span = document.getElementById(spanId);
+        if (span) {
+            span.textContent = input.files && input.files[0] ? input.files[0].name : 'Tiada fail dipilih';
+        }
+    }
+    </script>
+
     {{-- ── Global Flowbite Datepicker (converts all type="date" inputs) ── --}}
     <script>
     document.addEventListener('DOMContentLoaded', function() {

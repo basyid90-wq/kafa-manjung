@@ -54,10 +54,12 @@
                         <img src="{{ asset('storage/' . $activity->photo_path) }}" alt="Foto Semasa" class="h-24 rounded-lg border border-gray-200 dark:border-gray-700">
                     </div>
                     @endif
-                    <input type="file" name="photo" id="photo_edit" accept="image/*"
-                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                           aria-describedby="photo_edit_help">
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="photo_edit_help">JPG, PNG atau JPEG (MAX. 2MB). Kosongkan jika tiada perubahan.</p>
+                    <div style="display:flex;align-items:center;border:1px solid #d1d5db;border-radius:0.5rem;overflow:hidden;background:#f9fafb;cursor:pointer;" onclick="document.getElementById('photo_edit').click()">
+                        <span style="padding:0.5rem 1rem;background:#f3f4f6;border-right:1px solid #d1d5db;font-size:0.875rem;font-weight:500;color:#374151;white-space:nowrap;flex-shrink:0;">Pilih Fail</span>
+                        <span id="photo_edit-fname" style="padding:0.5rem 0.75rem;font-size:0.875rem;color:#6b7280;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Tiada fail dipilih</span>
+                    </div>
+                    <input type="file" name="photo" id="photo_edit" accept="image/*" style="display:none;" onchange="updateFilename(this,'photo_edit-fname')">
+                    <p style="margin-top:4px;font-size:0.75rem;color:#6b7280;" id="photo_edit_help">JPG, PNG atau JPEG (MAX. 2MB). Kosongkan jika tiada perubahan.</p>
                 </div>
             </div>
 

@@ -85,19 +85,23 @@
 
                 <div id="wrapSig" class="{{ old('include_signature') ? '' : 'hidden' }}">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="signature">Imej Tandatangan (PNG)</label>
-                    <input type="file" name="signature" id="signature" accept=".png,.jpg,.jpeg"
-                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 @error('signature') border-red-500 @enderror"
-                           aria-describedby="signature_help">
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="signature_help">PNG, JPG atau JPEG. Latar telus (PNG) lebih baik.</p>
+                    <div style="display:flex;align-items:center;border:1px solid {{ $errors->has('signature') ? '#ef4444' : '#d1d5db' }};border-radius:0.5rem;overflow:hidden;background:#f9fafb;cursor:pointer;" onclick="document.getElementById('signature').click()">
+                        <span style="padding:0.5rem 1rem;background:#f3f4f6;border-right:1px solid #d1d5db;font-size:0.875rem;font-weight:500;color:#374151;white-space:nowrap;flex-shrink:0;">Pilih Fail</span>
+                        <span id="signature-fname" style="padding:0.5rem 0.75rem;font-size:0.875rem;color:#6b7280;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Tiada fail dipilih</span>
+                    </div>
+                    <input type="file" name="signature" id="signature" accept=".png,.jpg,.jpeg" style="display:none;" onchange="updateFilename(this,'signature-fname')">
+                    <p style="margin-top:4px;font-size:0.75rem;color:#6b7280;" id="signature_help">PNG, JPG atau JPEG. Latar telus (PNG) lebih baik.</p>
                     @error('signature')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="background">Imej Latar Belakang (JPEG/PNG, maks 5MB)</label>
-                    <input type="file" name="background" id="background" accept=".jpg,.jpeg,.png"
-                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 @error('background') border-red-500 @enderror"
-                           aria-describedby="background_help">
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="background_help">JPG, JPEG atau PNG (MAX. 5MB). Dimensi optimum: 2480 × 1754 px (A4 Landskap).</p>
+                    <div style="display:flex;align-items:center;border:1px solid {{ $errors->has('background') ? '#ef4444' : '#d1d5db' }};border-radius:0.5rem;overflow:hidden;background:#f9fafb;cursor:pointer;" onclick="document.getElementById('background').click()">
+                        <span style="padding:0.5rem 1rem;background:#f3f4f6;border-right:1px solid #d1d5db;font-size:0.875rem;font-weight:500;color:#374151;white-space:nowrap;flex-shrink:0;">Pilih Fail</span>
+                        <span id="background-fname" style="padding:0.5rem 0.75rem;font-size:0.875rem;color:#6b7280;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Tiada fail dipilih</span>
+                    </div>
+                    <input type="file" name="background" id="background" accept=".jpg,.jpeg,.png" style="display:none;" onchange="updateFilename(this,'background-fname')">
+                    <p style="margin-top:4px;font-size:0.75rem;color:#6b7280;" id="background_help">JPG, JPEG atau PNG (MAX. 5MB). Dimensi optimum: 2480 × 1754 px (A4 Landskap).</p>
                     @error('background')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>

@@ -300,10 +300,12 @@
                         @endif
                         <div>
                             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_upload">Fail Excel (.xls, .xlsx, .csv) <span class="text-red-500">*</span></label>
-                            <input type="file" name="file" id="file_upload" required accept=".xls,.xlsx,.csv"
-                                   class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                   aria-describedby="file_upload_help">
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_upload_help">XLS, XLSX atau CSV (MAX. 10MB).</p>
+                            <div style="display:flex;align-items:center;border:1px solid #d1d5db;border-radius:0.5rem;overflow:hidden;background:#f9fafb;cursor:pointer;" onclick="document.getElementById('file_upload').click()">
+                                <span style="padding:0.5rem 1rem;background:#f3f4f6;border-right:1px solid #d1d5db;font-size:0.875rem;font-weight:500;color:#374151;white-space:nowrap;flex-shrink:0;">Pilih Fail</span>
+                                <span id="file_upload-fname" style="padding:0.5rem 0.75rem;font-size:0.875rem;color:#6b7280;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Tiada fail dipilih</span>
+                            </div>
+                            <input type="file" name="file" id="file_upload" required accept=".xls,.xlsx,.csv" style="display:none;" onchange="updateFilename(this,'file_upload-fname')">
+                            <p style="margin-top:4px;font-size:0.75rem;color:#6b7280;" id="file_upload_help">XLS, XLSX atau CSV (MAX. 10MB).</p>
                         </div>
                     </div>
                     <div class="flex gap-2 p-4 border-t border-gray-200 dark:border-gray-600">

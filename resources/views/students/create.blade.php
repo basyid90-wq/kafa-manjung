@@ -50,10 +50,12 @@
                 {{-- Photo upload centred --}}
                 <div class="md:col-span-2 flex flex-col items-center gap-2">
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="profile_picture">Gambar Pelajar</label>
-                    <input type="file" name="profile_picture" id="profile_picture" accept="image/*"
-                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                           aria-describedby="profile_picture_help">
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="profile_picture_help">JPEG, PNG atau JPG (MAX. 2MB).</p>
+                    <div style="display:flex;align-items:center;border:1px solid #d1d5db;border-radius:0.5rem;overflow:hidden;background:#f9fafb;cursor:pointer;" onclick="document.getElementById('profile_picture').click()">
+                        <span style="padding:0.5rem 1rem;background:#f3f4f6;border-right:1px solid #d1d5db;font-size:0.875rem;font-weight:500;color:#374151;white-space:nowrap;flex-shrink:0;">Pilih Fail</span>
+                        <span id="profile_picture-fname" style="padding:0.5rem 0.75rem;font-size:0.875rem;color:#6b7280;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Tiada fail dipilih</span>
+                    </div>
+                    <input type="file" name="profile_picture" id="profile_picture" accept="image/*" style="display:none;" onchange="updateFilename(this,'profile_picture-fname')">
+                    <p style="margin-top:4px;font-size:0.75rem;color:#6b7280;" id="profile_picture_help">JPEG, PNG atau JPG (MAX. 2MB).</p>
                 </div>
 
                 <div class="md:col-span-2">

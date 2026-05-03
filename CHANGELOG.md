@@ -176,6 +176,11 @@ php artisan view:cache
 | 115 | 2026-05-03 | `resources/views/auth/login.blade.php` | 6 kemaskini: logo asal, teks pengumuman besar, badge "Sistem KAFA", tab full-width, Ada masalah → WA, footer v1.0 | ⏳ Belum Push |
 | 116 | 2026-05-03 | `CLAUDE.md` | Tambah Codex sebagai AI agent kedua, peraturan UI wajib Flowbite docs, VPS-safe CSS rule, kemaskini Do Not list | ⏳ Belum Push |
 | 117 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Tambah bell notification + profile avatar dropdown ke navbar — guna Flowbite Dropdown + Alpine.js | ⏳ Belum Push |
+| 118 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Tambah fungsi global `updateFilename()` — dikongsi semua file input di seluruh aplikasi | ⏳ Belum Push |
+| 119 | 2026-05-03 | `resources/views/students/index.blade.php` | Kemaskini file input Import SIMPENI ke Flowbite File Input inline style (VPS-safe) | ⏳ Belum Push |
+| 120 | 2026-05-03 | `resources/views/activities/create.blade.php` | Kemaskini file input ke Flowbite File Input inline style (VPS-safe) | ⏳ Belum Push |
+| 121 | 2026-05-03 | `resources/views/schools/create.blade.php` | Kemaskini file input logo ke Flowbite File Input inline style (VPS-safe) | ⏳ Belum Push |
+| 122 | 2026-05-03 | `resources/views/schools/edit.blade.php` | Kemaskini file input logo ke Flowbite File Input inline style (VPS-safe) | ⏳ Belum Push |
 
 ---
 
