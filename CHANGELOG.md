@@ -137,6 +137,19 @@ php artisan view:cache
 | 91 | 2026-05-03 | `resources/views/dashboard/index.blade.php` | Migrate ke Flowbite UI — delegate ke fb/ partials | ⏳ Belum Push |
 | 92 | 2026-05-03 | `resources/views/exams/results/enter.blade.php` | Migrate ke Flowbite UI — jadual markah, TH/kosongkan checkbox, sticky footer | ⏳ Belum Push |
 | 93 | 2026-05-03 | `resources/views/exams/results/show.blade.php` | Migrate ke Flowbite UI — paparan markah baca-sahaja, butang kunci Guru Besar | ⏳ Belum Push |
+| 94 | 2026-05-03 | `resources/views/vendor/pagination/flowbite.blade.php` | Cipta custom pagination view Flowbite/Tailwind — nombor halaman, chevron SVG, papar rekod | ⏳ Belum Push |
+| 95 | 2026-05-03 | `resources/views/vendor/pagination/flowbite-simple.blade.php` | Cipta simple pagination view (Sebelumnya/Seterusnya) tanpa nombor halaman | ⏳ Belum Push |
+| 96 | 2026-05-03 | `app/Providers/AppServiceProvider.php` | Tukar pagination global ke Flowbite — ganti useBootstrapFive() dengan defaultView/defaultSimpleView | ⏳ Belum Push |
+| 97 | 2026-05-03 | `CLAUDE.md` | Tulis semula CLAUDE.md — kemaskini untuk era Flowbite/Tailwind, buang Bootstrap, tambah panduan komponen Tailwind | ⏳ Belum Push |
+| 98 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Tambah SweetAlert2, handler delete-form, PDF viewer (PDF.js), `openPdfBlob()`, `renderPdfBase64()`, `closePdfViewer()` | ⏳ Belum Push |
+| 99 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Tambah global Flowbite Datepicker init — auto-tukar semua `input[type=date]` ke Flowbite calendar picker | ⏳ Belum Push |
+| 100 | 2026-05-03 | `resources/views/auth/login.blade.php` | Fix hero gradient — tukar Tailwind gradient classes ke inline style supaya VPS nampak tanpa rebuild | ⏳ Belum Push |
+| 101 | 2026-05-03 | `resources/views/activities/create.blade.php` | Kemaskini file input ke Flowbite File Input dengan helper text format/saiz | ⏳ Belum Push |
+| 102 | 2026-05-03 | `resources/views/activities/edit.blade.php` | Kemaskini file input ke Flowbite File Input dengan helper text | ⏳ Belum Push |
+| 103 | 2026-05-03 | `resources/views/feedback/create.blade.php` | Kemaskini file input ke Flowbite File Input dengan helper text | ⏳ Belum Push |
+| 104 | 2026-05-03 | `resources/views/students/create.blade.php` | Kemaskini file input ke Flowbite File Input dengan helper text | ⏳ Belum Push |
+| 105 | 2026-05-03 | `resources/views/students/edit.blade.php` | Kemaskini file input ke Flowbite File Input dengan helper text | ⏳ Belum Push |
+| 106 | 2026-05-03 | `resources/views/certificates/templates/create.blade.php` | Kemaskini 2 file input (tandatangan + latar) ke Flowbite File Input dengan helper text | ⏳ Belum Push |
 
 ---
 

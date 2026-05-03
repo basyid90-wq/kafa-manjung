@@ -51,8 +51,8 @@
                 <div class="md:col-span-2 flex flex-col items-center gap-2">
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Gambar Pelajar</label>
                     <input type="file" name="profile_picture" accept="image/*"
-                           class="text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                    <p class="text-xs text-gray-400">Format: jpeg, png, jpg. Maks: 2MB</p>
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPEG, PNG, JPG. Maks: 2MB.</p>
                 </div>
 
                 <div class="md:col-span-2">

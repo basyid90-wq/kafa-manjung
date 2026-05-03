@@ -86,15 +86,16 @@
                 <div id="wrapSig" class="{{ old('include_signature') ? '' : 'hidden' }}">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imej Tandatangan (PNG)</label>
                     <input type="file" name="signature" accept=".png,.jpg,.jpeg"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 @error('signature') border-red-500 @enderror">
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 @error('signature') border-red-500 @enderror">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: PNG, JPG, JPEG. Latar telus (PNG) lebih baik.</p>
                     @error('signature')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imej Latar Belakang (JPEG/PNG, maks 5MB)</label>
                     <input type="file" name="background" accept=".jpg,.jpeg,.png"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 @error('background') border-red-500 @enderror">
-                    <p class="text-xs text-gray-400 mt-1">Dimensi optimum: 2480 × 1754 px (A4 Landskap).</p>
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 @error('background') border-red-500 @enderror">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, JPEG, PNG. Maks: 5MB. Dimensi optimum: 2480 × 1754 px (A4 Landskap).</p>
                     @error('background')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>

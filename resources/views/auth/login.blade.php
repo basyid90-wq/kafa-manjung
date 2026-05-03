@@ -5,7 +5,7 @@
 <div class="min-h-screen flex flex-col">
 
     {{-- Hero Header --}}
-    <div class="bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 text-white py-10 px-6 text-center">
+    <div style="background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 55%,#4f46e5 100%);" class="text-white py-10 px-6 text-center">
         <div class="max-w-2xl mx-auto">
             <img src="{{ asset('template/perak.png') }}" alt="Logo Perak" class="h-16 mx-auto mb-4 drop-shadow-lg">
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
