@@ -106,6 +106,37 @@ php artisan view:cache
 | 60 | 2026-05-03 | `resources/views/activities/attendance.blade.php` | Migrate ke Flowbite UI — per-group select-all checkbox, Tailwind table | ⏳ Belum Push |
 | 61 | 2026-05-03 | `resources/views/achievements/create.blade.php` | Migrate ke Flowbite UI — Tailwind radio pills ganti Bootstrap btn-group, per-student cards | ⏳ Belum Push |
 | 62 | 2026-05-03 | `resources/views/achievements/show.blade.php` | Migrate ke Flowbite UI — maklumat murid, markah table, penilaian lain | ⏳ Belum Push |
+| 63 | 2026-05-03 | `resources/views/announcements/create-homepage.blade.php` | Migrate ke Flowbite UI — Quill editor, label select, datetime-local | ⏳ Belum Push |
+| 64 | 2026-05-03 | `resources/views/announcements/edit-homepage.blade.php` | Migrate ke Flowbite UI — sama create + nilai sedia ada, PUT method | ⏳ Belum Push |
+| 65 | 2026-05-03 | `resources/views/rph_approvals/history.blade.php` | Migrate ke Flowbite UI — search, status badges, openPdfBlob, revert form | ⏳ Belum Push |
+| 66 | 2026-05-03 | `resources/views/feedback/create.blade.php` | Migrate ke Flowbite UI — module select, image upload dengan JS preview | ⏳ Belum Push |
+| 67 | 2026-05-03 | `resources/views/feedback/show.blade.php` | Migrate ke Flowbite UI — info grid, status PATCH form dengan admin_reply | ⏳ Belum Push |
+| 68 | 2026-05-03 | `resources/views/students/import_summary.blade.php` | Migrate ke Flowbite UI — 3 stat cards, jadual keputusan import | ⏳ Belum Push |
+| 69 | 2026-05-03 | `resources/views/certificates/templates/create.blade.php` | Migrate ke Flowbite UI — JS toggle sekolah/tandatangan | ⏳ Belum Push |
+| 70 | 2026-05-03 | `resources/views/timetable/create.blade.php` | Migrate ke Flowbite UI — grid 2-kolum untuk semua select | ⏳ Belum Push |
+| 71 | 2026-05-03 | `resources/views/timetable/edit.blade.php` | Migrate ke Flowbite UI — nilai $timetable, PUT method | ⏳ Belum Push |
+| 72 | 2026-05-03 | `resources/views/book_orders/create.blade.php` | Migrate ke Flowbite UI — katalog buku + addToCart() via fetch() | ⏳ Belum Push |
+| 73 | 2026-05-03 | `resources/views/book_orders/cart.blade.php` | Migrate ke Flowbite UI — subtotal JS, clear cart, submit | ⏳ Belum Push |
+| 74 | 2026-05-03 | `resources/views/book_orders/show.blade.php` | Migrate ke Flowbite UI — info order, items table, status actions, print CSS | ⏳ Belum Push |
+| 75 | 2026-05-03 | `resources/views/book_orders/edit.blade.php` | Migrate ke Flowbite UI — edit draft, inline qty listener, row highlight | ⏳ Belum Push |
+| 76 | 2026-05-03 | `resources/views/book_orders/supplier_summary.blade.php` | Migrate ke Flowbite UI — filter bulan/tahun, openPdfBlob, grandTotal | ⏳ Belum Push |
+| 77 | 2026-05-03 | `resources/views/reports/attendance.blade.php` | Migrate ke Flowbite UI — filter, jadual sekolah, 3 stat cards | ⏳ Belum Push |
+| 78 | 2026-05-03 | `resources/views/reports/exams.blade.php` | Migrate ke Flowbite UI — filter exam, ranking table, progress bars | ⏳ Belum Push |
+| 79 | 2026-05-03 | `resources/views/reports/exams_detail.blade.php` | Migrate ke Flowbite UI — per-subjek/kelas tables, helper PHP statusBadge() | ⏳ Belum Push |
+| 80 | 2026-05-03 | `resources/views/reports/rph_kpi.blade.php` | Migrate ke Flowbite UI — custom Tailwind modal #modalGuru, JS toggle toggle | ⏳ Belum Push |
+| 81 | 2026-05-03 | `resources/views/reports/show.blade.php` | Migrate ke Flowbite UI — 3 stat cards, exam results, disciplinary table | ⏳ Belum Push |
+| 82 | 2026-05-03 | `resources/views/parent/results/show.blade.php` | Migrate ke Flowbite UI — senarai peperiksaan untuk ibu bapa | ⏳ Belum Push |
+| 83 | 2026-05-03 | `resources/views/parent/results/detail.blade.php` | Migrate ke Flowbite UI — slip keputusan, grade legend, print CSS | ⏳ Belum Push |
+| 84 | 2026-05-03 | `resources/views/parents/dashboard.blade.php` | Migrate ke Flowbite UI — grid kad anak, Lateef font, avatar, status badge | ⏳ Belum Push |
+| 85 | 2026-05-03 | `resources/views/parents/student_profile.blade.php` | Migrate ke Flowbite UI — switchTab() JS, panel info/exam/cert | ⏳ Belum Push |
+| 86 | 2026-05-03 | `resources/views/exams/create.blade.php` | Migrate ke Flowbite UI — borang 3 medan: nama, tahun, penggal | ⏳ Belum Push |
+| 87 | 2026-05-03 | `resources/views/disciplinary/create.blade.php` | Migrate ke Flowbite UI — borang 4 medan rekod disiplin | ⏳ Belum Push |
+| 88 | 2026-05-03 | `resources/views/student_transfers/create.blade.php` | Migrate ke Flowbite UI — dual-mode form, jQuery → vanilla fetch() AJAX | ⏳ Belum Push |
+| 89 | 2026-05-03 | `resources/views/auth/login.blade.php` | Migrate ke Flowbite UI — 2-kolum login + hebahan, custom tabs/modal, tanpa Bootstrap | ⏳ Belum Push |
+| 90 | 2026-05-03 | `resources/views/layout-fb/auth.blade.php` | Cipta layout awam (tanpa sidebar) untuk halaman login | ⏳ Belum Push |
+| 91 | 2026-05-03 | `resources/views/dashboard/index.blade.php` | Migrate ke Flowbite UI — delegate ke fb/ partials | ⏳ Belum Push |
+| 92 | 2026-05-03 | `resources/views/exams/results/enter.blade.php` | Migrate ke Flowbite UI — jadual markah, TH/kosongkan checkbox, sticky footer | ⏳ Belum Push |
+| 93 | 2026-05-03 | `resources/views/exams/results/show.blade.php` | Migrate ke Flowbite UI — paparan markah baca-sahaja, butang kunci Guru Besar | ⏳ Belum Push |
 
 ---
 
