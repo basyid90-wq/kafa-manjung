@@ -212,10 +212,17 @@
                         </button>
                     </form>
                     @else
-                    <div style="flex:1;padding:8px;font-size:0.8rem;font-weight:600;text-align:center;
-                                border-radius:8px;background:#dcfce7;color:#166534;">
-                        ✓ Sedang Aktif
-                    </div>
+                    <form method="POST" action="{{ route('chatbot.provider.deactivate', $provider) }}" style="flex:1;"
+                          onsubmit="return confirm('Matikan {{ addslashes($provider->name) }}? Chatbot tidak akan berfungsi sehingga provider lain diaktifkan.')">
+                        @csrf
+                        <button type="submit"
+                                style="width:100%;padding:8px;font-size:0.8rem;font-weight:600;border:none;cursor:pointer;
+                                       border-radius:8px;background:#fee2e2;color:#991b1b;"
+                                onmouseover="this.style.background='#fecaca'"
+                                onmouseout="this.style.background='#fee2e2'">
+                            ⏹ Matikan
+                        </button>
+                    </form>
                     @endif
                 </div>
             </form>

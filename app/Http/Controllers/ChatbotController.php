@@ -166,6 +166,15 @@ class ChatbotController extends Controller
             ->with('success', '✅ Profil chatbot berjaya dikemaskini.');
     }
 
+    public function deactivateProvider(ChatbotProvider $provider)
+    {
+        // Deactivate this provider — chatbot goes offline until another is activated
+        $provider->update(['is_active' => false, 'is_enabled' => false]);
+
+        return redirect()->route('chatbot.settings')
+            ->with('success', "⏹ {$provider->name} telah dimatikan. Chatbot tidak aktif sehingga provider lain diaktifkan.");
+    }
+
     public function toggleDataAccess()
     {
         $settings = ChatbotSetting::current();

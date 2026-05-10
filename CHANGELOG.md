@@ -208,6 +208,9 @@ php artisan view:cache
 | 147 | 2026-05-10 | `resources/views/components/chatbot-widget.blade.php` | Widget papar nama & avatar dinamik dari DB; bot message bubble guna avatar sama | ⏳ Belum Push |
 | 148 | 2026-05-10 | `resources/views/layout-fb/layout.blade.php` | Tambah menu "Tetapan Chatbot AI" dalam sidebar Super Admin | ⏳ Belum Push |
 | 149 | 2026-05-10 | `resources/views/components/chatbot-widget.blade.php` | Textarea auto-grow oninput — kotak input kembang mengikut panjang teks, kecil semula selepas hantar | ⏳ Belum Push |
+| 150 | 2026-05-10 | `routes/web.php` | Tambah route POST chatbot.provider.deactivate untuk matikan provider aktif | ⏳ Belum Push |
+| 151 | 2026-05-10 | `app/Http/Controllers/ChatbotController.php` | Tambah method deactivateProvider() — matikan provider tanpa perlu aktifkan yang lain | ⏳ Belum Push |
+| 152 | 2026-05-10 | `resources/views/super-admin/chatbot-settings.blade.php` | Tukar "Sedang Aktif" static label kepada butang "Matikan" merah dengan confirm dialog | ⏳ Belum Push |
 
 ---
 

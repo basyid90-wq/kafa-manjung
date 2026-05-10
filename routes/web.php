@@ -295,6 +295,7 @@ Route::middleware('auth')->group(function () {
         Route::get('super-admin/chatbot-settings', [\App\Http\Controllers\ChatbotController::class, 'settings'])->name('chatbot.settings');
         Route::patch('super-admin/chatbot-settings/provider/{provider}', [\App\Http\Controllers\ChatbotController::class, 'updateProvider'])->name('chatbot.provider.update');
         Route::post('super-admin/chatbot-settings/activate/{provider}', [\App\Http\Controllers\ChatbotController::class, 'activateProvider'])->name('chatbot.provider.activate');
+        Route::post('super-admin/chatbot-settings/deactivate/{provider}', [\App\Http\Controllers\ChatbotController::class, 'deactivateProvider'])->name('chatbot.provider.deactivate');
         Route::post('super-admin/chatbot-settings/toggle-data', [\App\Http\Controllers\ChatbotController::class, 'toggleDataAccess'])->name('chatbot.toggle-data');
         Route::post('super-admin/chatbot-settings/bot-profile', [\App\Http\Controllers\ChatbotController::class, 'updateBotProfile'])->name('chatbot.bot-profile');
     });
