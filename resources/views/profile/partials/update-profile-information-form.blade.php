@@ -6,7 +6,7 @@
     <div class="p-3 mb-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 text-xs text-blue-700 dark:text-blue-300 space-y-1.5">
         <p class="font-semibold mb-1">Cara Log Masuk (Kakitangan):</p>
         <p>📧 <strong>E-mel</strong> — Kaedah utama. Wajib ada dan mesti unik.</p>
-        <p>👤 <strong>Username</strong> — Nama pilihan sebagai alternatif log masuk. Tiada ruang dibenarkan.</p>
+        <p>👤 <strong>Username</strong> — Nama pilihan sebagai alternatif log masuk. Bebas menggunakan apa sahaja.</p>
         <p>🪪 <strong>No. Kad Pengenalan</strong> — Boleh digunakan untuk log masuk jika diisi. Format: nombor sahaja tanpa sempang (cth: <strong>890101105555</strong>).</p>
     </div>
 
@@ -52,7 +52,7 @@
                 <input id="username" name="username" type="text" value="{{ old('username', $user->username) }}"
                        placeholder="Masukkan nama pengguna anda"
                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                <p class="text-xs text-gray-400 mt-1">Nama unik untuk log masuk. Tiada ruang dibenarkan.</p>
+                <p class="text-xs text-gray-400 mt-1">Nama unik untuk log masuk. Bebas menggunakan apa sahaja.</p>
                 @if($errors->get('username'))
                 <p class="text-red-500 text-xs mt-1">{{ $errors->first('username') }}</p>
                 @endif
