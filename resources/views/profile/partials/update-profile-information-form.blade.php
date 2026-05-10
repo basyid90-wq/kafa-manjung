@@ -44,7 +44,7 @@
                 <input id="username" name="username" type="text" value="{{ old('username', $user->username) }}"
                        placeholder="cth: guru_ali01"
                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                <p class="text-xs text-gray-400 mt-1">Huruf, nombor, underscore (_) dan titik (.) sahaja. Digunakan untuk log masuk.</p>
+                <p class="text-xs text-gray-400 mt-1">Boleh guna huruf, nombor, underscore (_), titik (.) atau sempang (-). Tiada ruang. Digunakan untuk log masuk.</p>
                 @if($errors->get('username'))
                 <p class="text-red-500 text-xs mt-1">{{ $errors->first('username') }}</p>
                 @endif

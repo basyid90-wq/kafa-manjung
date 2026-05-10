@@ -30,7 +30,7 @@ class ProfileUpdateRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:50',
-                'regex:/^[a-zA-Z0-9_\.]+$/',
+                'regex:/^[a-zA-Z0-9_\.\-]+$/',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
             'ic_number' => [
@@ -46,7 +46,7 @@ class ProfileUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'username.regex'    => 'Nama pengguna hanya boleh mengandungi huruf, nombor, underscore (_) dan titik (.).',
+            'username.regex'    => 'Nama pengguna hanya boleh mengandungi huruf, nombor, underscore (_), titik (.) dan sempang (-).',
             'username.unique'   => 'Nama pengguna ini telah digunakan.',
             'ic_number.regex'   => 'No. IC hanya boleh mengandungi nombor dan tanda sempang (-).',
             'ic_number.unique'  => 'No. IC ini telah didaftarkan.',
