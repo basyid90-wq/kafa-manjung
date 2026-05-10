@@ -88,8 +88,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No. Telefon</label>
-                    <input type="text" name="no_telefon" value="{{ old('no_telefon') }}" placeholder="Cth: 012-3456789"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <x-phone-input name="no_telefon" :value="old('no_telefon')" />
                 </div>
 
                 <div>

@@ -238,8 +238,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No. Tel Bapa</label>
-                    <input type="text" name="father_phone" value="{{ old('father_phone') }}"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <x-phone-input name="father_phone" :value="old('father_phone')" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pekerjaan Bapa</label>
@@ -268,8 +267,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No. Tel Ibu</label>
-                    <input type="text" name="mother_phone" value="{{ old('mother_phone') }}"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <x-phone-input name="mother_phone" :value="old('mother_phone')" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pekerjaan Ibu</label>

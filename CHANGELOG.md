@@ -185,6 +185,12 @@ php artisan view:cache
 | 124 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Fix datepicker calendar z-index (z-9999) + tukar wrapper ke inline style supaya tidak bertindih dengan elemen lain | ⏳ Belum Push |
 | 125 | 2026-05-03 | `resources/views/layout-fb/layout.blade.php` | Buang Flowbite datepicker global (overlay bertindih) — guna native type="date" browser semula, tambah ikon kalendar sahaja | ⏳ Belum Push |
 | 126 | 2026-05-03 | `resources/views/achievements/pdf.blade.php` | Fix kedudukan gred markah — guna bidi-override span supaya "86 (B)" tidak terbalik jadi ")B( 86" dalam RTL mPDF | ⏳ Belum Push |
+| 127 | 2026-05-10 | `resources/views/components/phone-input.blade.php` | Komponen baru: Flowbite Phone Input dengan prefiks Malaysia (+60) tetap, dark mode support via CSS | ⏳ Belum Push |
+| 128 | 2026-05-10 | `resources/views/students/create.blade.php` | Tukar input father_phone dan mother_phone ke komponen `<x-phone-input>` | ⏳ Belum Push |
+| 129 | 2026-05-10 | `resources/views/students/edit.blade.php` | Tukar input father_phone dan mother_phone ke komponen `<x-phone-input>` | ⏳ Belum Push |
+| 130 | 2026-05-10 | `resources/views/schools/create.blade.php` | Tukar input no_telefon ke komponen `<x-phone-input>` | ⏳ Belum Push |
+| 131 | 2026-05-10 | `resources/views/schools/edit.blade.php` | Tukar input no_telefon ke komponen `<x-phone-input>` | ⏳ Belum Push |
+| 132 | 2026-05-10 | `resources/views/students/qr_cards.blade.php` | Reka semula paparan skrin ke gaya Flowbite "Share profile with QR" (gradient header, avatar bulat, kad bersih); cetak kekal layout kompak A4 2 kolum | ⏳ Belum Push |
 
 ---
 
