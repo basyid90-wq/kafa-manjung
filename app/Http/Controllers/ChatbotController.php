@@ -6,6 +6,7 @@ use App\Models\ChatbotProvider;
 use App\Models\ChatbotSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class ChatbotController extends Controller
 {
@@ -103,6 +104,29 @@ class ChatbotController extends Controller
         $provider->update(['is_active' => true, 'is_enabled' => true]);
 
         return back()->with('success', "{$provider->name} kini aktif sebagai provider chatbot.");
+    }
+
+    public function updateBotProfile(Request $request)
+    {
+        $request->validate([
+            'bot_name'   => 'required|string|max:50',
+            'bot_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:1024',
+        ]);
+
+        $settings = ChatbotSetting::current();
+        $data     = ['bot_name' => $request->bot_name];
+
+        if ($request->hasFile('bot_avatar')) {
+            // Delete old avatar if exists
+            if ($settings->bot_avatar && Storage::disk('public')->exists($settings->bot_avatar)) {
+                Storage::disk('public')->delete($settings->bot_avatar);
+            }
+            $data['bot_avatar'] = $request->file('bot_avatar')->store('chatbot', 'public');
+        }
+
+        $settings->update($data);
+
+        return back()->with('success', 'Profil chatbot berjaya dikemaskini.');
     }
 
     public function toggleDataAccess()

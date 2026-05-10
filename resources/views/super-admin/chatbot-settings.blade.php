@@ -11,6 +11,58 @@
         </div>
     </div>
 
+    {{-- ── Bot Profile ── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">🤖 Profil Chatbot</h2>
+        <form method="POST" action="{{ route('chatbot.bot-profile') }}" enctype="multipart/form-data">
+            @csrf
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+
+                {{-- Avatar preview --}}
+                <div style="position:relative;flex-shrink:0;">
+                    <div id="avatar-preview"
+                         style="width:80px;height:80px;border-radius:50%;overflow:hidden;
+                                border:3px solid #e2e8f0;display:flex;align-items:center;
+                                justify-content:center;background:#eff6ff;font-size:2rem;cursor:pointer;"
+                         onclick="document.getElementById('bot_avatar').click()">
+                        @if($settings->bot_avatar)
+                            <img src="{{ asset('storage/'.$settings->bot_avatar) }}"
+                                 id="avatar-img"
+                                 style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                            <span id="avatar-emoji">🤖</span>
+                        @endif
+                    </div>
+                    <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;
+                                background:#1d4ed8;display:flex;align-items:center;justify-content:center;
+                                border:2px solid white;cursor:pointer;"
+                         onclick="document.getElementById('bot_avatar').click()">
+                        <svg style="width:12px;height:12px;color:white;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                    </div>
+                    <input type="file" id="bot_avatar" name="bot_avatar"
+                           accept="image/*" style="display:none;"
+                           onchange="previewAvatar(this)">
+                    <p style="font-size:0.68rem;color:#9ca3af;text-align:center;margin-top:4px;">Klik untuk tukar</p>
+                </div>
+
+                {{-- Name + submit --}}
+                <div style="flex:1;min-width:200px;">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Chatbot</label>
+                    <input type="text" name="bot_name" value="{{ $settings->bot_name ?? 'Pembantu KAFA AI' }}"
+                           maxlength="50" required
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <p class="text-xs text-gray-400 mt-1">Nama ini akan dipaparkan dalam widget chatbot.</p>
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors mt-3">
+                        Simpan Profil
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     {{-- ── Global: Data Access Toggle ── --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
@@ -226,6 +278,16 @@
 function toggleKey(id) {
     var el = document.getElementById(id);
     el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+function previewAvatar(input) {
+    if (!input.files || !input.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        var preview = document.getElementById('avatar-preview');
+        preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    };
+    reader.readAsDataURL(input.files[0]);
 }
 </script>
 @endsection

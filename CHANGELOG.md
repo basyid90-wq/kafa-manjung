@@ -200,6 +200,13 @@ php artisan view:cache
 | 139 | 2026-05-10 | `resources/views/components/chatbot-widget.blade.php` | Komponen baru: floating chat bubble widget dengan conversation history | ⏳ Belum Push |
 | 140 | 2026-05-10 | `routes/web.php` | Tambah routes chatbot (message, settings, activate, toggle-data) | ⏳ Belum Push |
 | 141 | 2026-05-10 | `resources/views/layout-fb/layout.blade.php` | Inject <x-chatbot-widget /> sebelum </body> untuk semua authenticated pages | ⏳ Belum Push |
+| 142 | 2026-05-10 | `database/migrations/2026_05_10_160001_add_bot_profile_to_chatbot_settings_table.php` | Tambah kolum bot_name dan bot_avatar ke chatbot_settings | ⏳ Belum Push |
+| 143 | 2026-05-10 | `app/Models/ChatbotSetting.php` | Tambah bot_name & bot_avatar ke fillable | ⏳ Belum Push |
+| 144 | 2026-05-10 | `app/Http/Controllers/ChatbotController.php` | Tambah updateBotProfile() untuk upload gambar & nama chatbot | ⏳ Belum Push |
+| 145 | 2026-05-10 | `routes/web.php` | Tambah route chatbot.bot-profile + chatbot.settings dalam sidebar | ⏳ Belum Push |
+| 146 | 2026-05-10 | `resources/views/super-admin/chatbot-settings.blade.php` | Tambah section Profil Chatbot (nama + avatar upload dengan preview) | ⏳ Belum Push |
+| 147 | 2026-05-10 | `resources/views/components/chatbot-widget.blade.php` | Widget papar nama & avatar dinamik dari DB; bot message bubble guna avatar sama | ⏳ Belum Push |
+| 148 | 2026-05-10 | `resources/views/layout-fb/layout.blade.php` | Tambah menu "Tetapan Chatbot AI" dalam sidebar Super Admin | ⏳ Belum Push |
 
 ---
 

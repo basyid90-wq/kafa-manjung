@@ -8,7 +8,7 @@ class ChatbotSetting extends Model
 {
     protected $table = 'chatbot_settings';
 
-    protected $fillable = ['data_access_enabled'];
+    protected $fillable = ['data_access_enabled', 'bot_name', 'bot_avatar'];
 
     protected $casts = ['data_access_enabled' => 'boolean'];
 

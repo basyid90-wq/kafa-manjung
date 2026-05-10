@@ -3,6 +3,11 @@
     Auto-included in layout-fb/layout.blade.php
     Visible for all authenticated users
 --}}
+@php
+    $botConfig  = \App\Models\ChatbotSetting::current();
+    $botName    = $botConfig->bot_name ?? 'Pembantu KAFA AI';
+    $botAvatar  = $botConfig->bot_avatar ? asset('storage/' . $botConfig->bot_avatar) : null;
+@endphp
 <style>
     #chatbot-bubble {
         position:fixed; bottom:24px; right:24px; z-index:9980;
@@ -122,9 +127,15 @@
 <div id="chatbot-panel" class="hidden-panel">
     <div class="cb-header">
         <div class="cb-header-title">
-            <div class="cb-avatar">🤖</div>
+            <div class="cb-avatar">
+                @if($botAvatar)
+                    <img src="{{ $botAvatar }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="bot">
+                @else
+                    🤖
+                @endif
+            </div>
             <div>
-                <div class="cb-title">Pembantu KAFA AI</div>
+                <div class="cb-title">{{ $botName }}</div>
                 <div class="cb-subtitle">Tanya apa sahaja tentang sistem</div>
             </div>
         </div>
@@ -138,9 +149,15 @@
     <div id="chatbot-messages">
         {{-- Welcome message --}}
         <div class="cb-msg bot">
-            <div class="cb-msg-avatar">🤖</div>
+            <div class="cb-msg-avatar">
+                @if($botAvatar)
+                    <img src="{{ $botAvatar }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="bot">
+                @else
+                    🤖
+                @endif
+            </div>
             <div class="cb-bubble">
-                Assalamualaikum! Saya Pembantu AI KAFA. Boleh saya bantu anda hari ini? 😊
+                Assalamualaikum! Saya {{ $botName }}. Boleh saya bantu anda hari ini? 😊
             </div>
         </div>
     </div>
@@ -180,6 +197,8 @@
         setTimeout(function () { msgs.scrollTop = msgs.scrollHeight; }, 50);
     }
 
+    var BOT_AVATAR_URL = '{{ $botAvatar }}';
+
     function appendMsg(role, text) {
         var msgs    = document.getElementById('chatbot-messages');
         var wrapper = document.createElement('div');
@@ -187,7 +206,13 @@
 
         var avatar = document.createElement('div');
         avatar.className = 'cb-msg-avatar';
-        avatar.textContent = role === 'user' ? '👤' : '🤖';
+        if (role === 'user') {
+            avatar.textContent = '👤';
+        } else if (BOT_AVATAR_URL) {
+            avatar.innerHTML = '<img src="' + BOT_AVATAR_URL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="bot">';
+        } else {
+            avatar.textContent = '🤖';
+        }
 
         var bubble = document.createElement('div');
         bubble.className = 'cb-bubble';

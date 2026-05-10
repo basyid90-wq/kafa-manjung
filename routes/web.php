@@ -296,6 +296,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('super-admin/chatbot-settings/provider/{provider}', [\App\Http\Controllers\ChatbotController::class, 'updateProvider'])->name('chatbot.provider.update');
         Route::post('super-admin/chatbot-settings/activate/{provider}', [\App\Http\Controllers\ChatbotController::class, 'activateProvider'])->name('chatbot.provider.activate');
         Route::post('super-admin/chatbot-settings/toggle-data', [\App\Http\Controllers\ChatbotController::class, 'toggleDataAccess'])->name('chatbot.toggle-data');
+        Route::post('super-admin/chatbot-settings/bot-profile', [\App\Http\Controllers\ChatbotController::class, 'updateBotProfile'])->name('chatbot.bot-profile');
     });
 
     // 17. Aduan / Laporkan Masalah
