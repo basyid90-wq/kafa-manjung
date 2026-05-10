@@ -41,20 +41,49 @@ class ChatbotController extends Controller
         );
 
         try {
-            $response = Http::timeout(30)
-                ->withToken($apiKey)
-                ->post(rtrim($provider->base_url, '/') . '/chat/completions', [
-                    'model'       => $provider->model,
-                    'messages'    => $messages,
-                    'max_tokens'  => 600,
-                    'temperature' => 0.7,
-                ]);
+            // Anthropic uses a different API format from OpenAI-compatible providers
+            if ($provider->slug === 'anthropic') {
+                $historyOnly = array_merge(
+                    $history,
+                    [['role' => 'user', 'content' => $request->message]]
+                );
 
-            if ($response->failed()) {
-                return response()->json(['error' => 'Ralat menghubungi AI. Cuba sebentar lagi.'], 500);
+                $response = Http::timeout(30)
+                    ->withHeaders([
+                        'x-api-key'         => $apiKey,
+                        'anthropic-version' => '2023-06-01',
+                        'content-type'      => 'application/json',
+                    ])
+                    ->post(rtrim($provider->base_url, '/') . '/messages', [
+                        'model'      => $provider->model,
+                        'max_tokens' => 600,
+                        'system'     => $systemPrompt,
+                        'messages'   => $historyOnly,
+                    ]);
+
+                if ($response->failed()) {
+                    return response()->json(['error' => 'Ralat menghubungi Anthropic API.'], 500);
+                }
+
+                $reply = $response->json('content.0.text') ?? 'Tiada jawapan diterima.';
+
+            } else {
+                // OpenAI-compatible: DeepSeek, OpenAI, Gemini Flash, Groq
+                $response = Http::timeout(30)
+                    ->withToken($apiKey)
+                    ->post(rtrim($provider->base_url, '/') . '/chat/completions', [
+                        'model'       => $provider->model,
+                        'messages'    => $messages,
+                        'max_tokens'  => 600,
+                        'temperature' => 0.7,
+                    ]);
+
+                if ($response->failed()) {
+                    return response()->json(['error' => 'Ralat menghubungi AI. Cuba sebentar lagi.'], 500);
+                }
+
+                $reply = $response->json('choices.0.message.content') ?? 'Tiada jawapan diterima.';
             }
-
-            $reply = $response->json('choices.0.message.content') ?? 'Tiada jawapan diterima.';
 
             return response()->json(['reply' => $reply]);
 

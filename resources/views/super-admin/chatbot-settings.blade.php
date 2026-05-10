@@ -179,8 +179,16 @@
                         Model
                     </label>
                     <input type="text" name="model" value="{{ $provider->model }}"
+                           list="models-{{ $provider->slug }}"
+                           placeholder="Pilih atau taip nama model..."
                            style="width:100%;padding:8px 10px;font-size:0.8rem;border:1px solid #e5e7eb;
                                   border-radius:8px;background:#f9fafb;outline:none;box-sizing:border-box;">
+                    <datalist id="models-{{ $provider->slug }}">
+                        @foreach(\App\Models\ChatbotProvider::MODEL_SUGGESTIONS[$provider->slug] ?? [] as $m)
+                        <option value="{{ $m }}">
+                        @endforeach
+                    </datalist>
+                    <p style="font-size:0.68rem;color:#9ca3af;margin-top:3px;">Klik field untuk senarai model, atau taip sendiri.</p>
                 </div>
 
                 <div style="display:flex;gap:8px;">
@@ -224,48 +232,97 @@
         @endforeach
     </div>
 
-    {{-- ── Info box ── --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mt-6">
+    {{-- ── Cara Tukar Provider ── --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-blue-100 dark:border-blue-900/40 p-4 mt-6"
+         style="background:linear-gradient(135deg,rgba(239,246,255,0.8),rgba(238,242,255,0.8));">
+        <div class="dark:hidden">
+            <p style="font-size:0.82rem;color:#1e40af;margin:0;">
+                💡 <strong>Cara tukar provider:</strong>
+                Masukkan API Key → klik <strong>Simpan</strong> → klik <strong>Aktifkan</strong>.
+                Provider lama auto dimatikan. Hanya satu provider boleh aktif pada satu masa.
+            </p>
+        </div>
+        <div class="hidden dark:block">
+            <p style="font-size:0.82rem;color:#93c5fd;margin:0;">
+                💡 <strong>Cara tukar provider:</strong>
+                Masukkan API Key → klik <strong>Simpan</strong> → klik <strong>Aktifkan</strong>.
+                Provider lama auto dimatikan. Hanya satu provider boleh aktif pada satu masa.
+            </p>
+        </div>
+    </div>
+
+    {{-- ── Panduan Provider ── --}}
+    <style>
+        .guide-table { width:100%; font-size:0.8rem; border-collapse:collapse; }
+        .guide-table th {
+            padding:9px 12px; text-align:left; font-weight:600;
+            background:#f8fafc; color:#6b7280;
+            border-bottom:1px solid #e5e7eb;
+        }
+        .guide-table th.center { text-align:center; }
+        .guide-table td {
+            padding:9px 12px; color:#111827;
+            border-bottom:1px solid #f3f4f6;
+        }
+        .guide-table td.center { text-align:center; }
+        .guide-table tr:last-child td { border-bottom:none; }
+        /* Dark mode */
+        .dark .guide-table th { background:#1f2937; color:#9ca3af; border-color:#374151; }
+        .dark .guide-table td { color:#e5e7eb; border-color:#374151; }
+        .dark .guide-table tr:last-child td { border-color:transparent; }
+        .guide-table a { color:#1d4ed8; text-decoration:none; }
+        .dark .guide-table a { color:#60a5fa; }
+        .guide-table a:hover { text-decoration:underline; }
+    </style>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mt-4">
         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">📋 Panduan Provider</h3>
         <div style="overflow-x:auto;">
-            <table style="width:100%;font-size:0.8rem;border-collapse:collapse;">
+            <table class="guide-table">
                 <thead>
-                    <tr style="background:#f8fafc;">
-                        <th style="padding:8px 12px;text-align:left;color:#6b7280;font-weight:600;border-bottom:1px solid #e5e7eb;">Provider</th>
-                        <th style="padding:8px 12px;text-align:center;color:#6b7280;font-weight:600;border-bottom:1px solid #e5e7eb;">Kualiti</th>
-                        <th style="padding:8px 12px;text-align:center;color:#6b7280;font-weight:600;border-bottom:1px solid #e5e7eb;">Kos</th>
-                        <th style="padding:8px 12px;text-align:center;color:#6b7280;font-weight:600;border-bottom:1px solid #e5e7eb;">PDPA Selamat</th>
-                        <th style="padding:8px 12px;text-align:left;color:#6b7280;font-weight:600;border-bottom:1px solid #e5e7eb;">Daftar API Key</th>
+                    <tr>
+                        <th>Provider</th>
+                        <th class="center">Kualiti</th>
+                        <th class="center">Kos (~300 guru)</th>
+                        <th class="center">PDPA</th>
+                        <th>Daftar API Key</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom:1px solid #f3f4f6;">
-                        <td style="padding:8px 12px;font-weight:600;">🧠 DeepSeek V4 Pro</td>
-                        <td style="padding:8px 12px;text-align:center;">⭐⭐⭐⭐</td>
-                        <td style="padding:8px 12px;text-align:center;">~RM1.30/bln</td>
-                        <td style="padding:8px 12px;text-align:center;color:#991b1b;">⚠️ Tidak</td>
-                        <td style="padding:8px 12px;"><a href="https://platform.deepseek.com" target="_blank" style="color:#1d4ed8;">platform.deepseek.com</a></td>
-                    </tr>
-                    <tr style="border-bottom:1px solid #f3f4f6;">
-                        <td style="padding:8px 12px;font-weight:600;">✨ OpenAI (ChatGPT)</td>
-                        <td style="padding:8px 12px;text-align:center;">⭐⭐⭐⭐⭐</td>
-                        <td style="padding:8px 12px;text-align:center;">~RM20-95/bln</td>
-                        <td style="padding:8px 12px;text-align:center;color:#166534;">✅ Ya</td>
-                        <td style="padding:8px 12px;"><a href="https://platform.openai.com" target="_blank" style="color:#1d4ed8;">platform.openai.com</a></td>
-                    </tr>
-                    <tr style="border-bottom:1px solid #f3f4f6;">
-                        <td style="padding:8px 12px;font-weight:600;">♊ Google Gemini Flash</td>
-                        <td style="padding:8px 12px;text-align:center;">⭐⭐⭐</td>
-                        <td style="padding:8px 12px;text-align:center;">Percuma (had)</td>
-                        <td style="padding:8px 12px;text-align:center;color:#166534;">✅ Ya</td>
-                        <td style="padding:8px 12px;"><a href="https://aistudio.google.com" target="_blank" style="color:#1d4ed8;">aistudio.google.com</a></td>
+                    <tr>
+                        <td style="font-weight:600;">🧠 DeepSeek V4 Pro</td>
+                        <td class="center">⭐⭐⭐⭐</td>
+                        <td class="center">~RM1.30/bln</td>
+                        <td class="center" style="color:#f87171;">⚠️ Tidak</td>
+                        <td><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a></td>
                     </tr>
                     <tr>
-                        <td style="padding:8px 12px;font-weight:600;">⚡ Groq (Llama)</td>
-                        <td style="padding:8px 12px;text-align:center;">⭐⭐⭐</td>
-                        <td style="padding:8px 12px;text-align:center;">Percuma</td>
-                        <td style="padding:8px 12px;text-align:center;color:#166534;">✅ Ya</td>
-                        <td style="padding:8px 12px;"><a href="https://console.groq.com" target="_blank" style="color:#1d4ed8;">console.groq.com</a></td>
+                        <td style="font-weight:600;">✨ OpenAI (ChatGPT)</td>
+                        <td class="center">⭐⭐⭐⭐⭐</td>
+                        <td class="center">~RM20–95/bln</td>
+                        <td class="center" style="color:#4ade80;">✅ Ya</td>
+                        <td><a href="https://platform.openai.com" target="_blank">platform.openai.com</a></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:600;">♊ Google Gemini Flash</td>
+                        <td class="center">⭐⭐⭐</td>
+                        <td class="center">Percuma (had)</td>
+                        <td class="center" style="color:#4ade80;">✅ Ya</td>
+                        <td><a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:600;">⚡ Groq (Llama)</td>
+                        <td class="center">⭐⭐⭐</td>
+                        <td class="center">Percuma</td>
+                        <td class="center" style="color:#4ade80;">✅ Ya</td>
+                        <td><a href="https://console.groq.com" target="_blank">console.groq.com</a></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:600;">🔮 Anthropic (Claude)</td>
+                        <td class="center">⭐⭐⭐⭐⭐</td>
+                        <td class="center">~RM24–467/bln</td>
+                        <td class="center" style="color:#4ade80;">✅ Ya</td>
+                        <td><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></td>
                     </tr>
                 </tbody>
             </table>

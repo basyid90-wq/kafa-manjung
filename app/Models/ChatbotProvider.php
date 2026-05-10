@@ -19,14 +19,24 @@ class ChatbotProvider extends Model
 
     // Provider icons for UI
     public const ICONS = [
-        'deepseek' => '🧠',
-        'openai'   => '✨',
-        'gemini'   => '♊',
-        'groq'     => '⚡',
+        'deepseek'  => '🧠',
+        'openai'    => '✨',
+        'gemini'    => '♊',
+        'groq'      => '⚡',
+        'anthropic' => '🔮',
+    ];
+
+    // Model suggestions per provider (for datalist)
+    public const MODEL_SUGGESTIONS = [
+        'deepseek'  => ['deepseek-chat', 'deepseek-reasoner'],
+        'openai'    => ['gpt-4o', 'gpt-4o-mini', 'o1', 'o1-mini', 'o3-mini'],
+        'gemini'    => ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'],
+        'groq'      => ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'],
+        'anthropic' => ['claude-opus-4-5', 'claude-sonnet-4-5', 'claude-haiku-3-5', 'claude-3-5-sonnet-latest', 'claude-3-5-haiku-latest'],
     ];
 
     // Providers trusted with full data access (not China-based)
-    public const SAFE_PROVIDERS = ['openai', 'gemini', 'groq'];
+    public const SAFE_PROVIDERS = ['openai', 'gemini', 'groq', 'anthropic'];
 
     public function getIconAttribute(): string
     {
