@@ -191,6 +191,7 @@ php artisan view:cache
 | 130 | 2026-05-10 | `resources/views/schools/create.blade.php` | Tukar input no_telefon ke komponen `<x-phone-input>` | ⏳ Belum Push |
 | 131 | 2026-05-10 | `resources/views/schools/edit.blade.php` | Tukar input no_telefon ke komponen `<x-phone-input>` | ⏳ Belum Push |
 | 132 | 2026-05-10 | `resources/views/students/qr_cards.blade.php` | Reka semula paparan skrin ke gaya Flowbite "Share profile with QR" (gradient header, avatar bulat, kad bersih); cetak kekal layout kompak A4 2 kolum | ⏳ Belum Push |
+| 133 | 2026-05-10 | `resources/views/auth/login.blade.php` | Tukar layout login page dari 1 kolum ke 2 kolum (login kiri, papan makluman kanan); mobile kekal atas-bawah | ⏳ Belum Push |
 
 ---
 
