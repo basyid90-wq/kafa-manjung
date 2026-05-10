@@ -119,10 +119,16 @@
         border:1px solid #e5e7eb; border-radius:10px;
         outline:none; background:#f9fafb; resize:none;
         font-family:inherit; line-height:1.5;
+        min-height:42px; max-height:140px;
+        overflow-y:auto;
+        transition:height .1s;
     }
     #chatbot-input:focus { border-color:#6c63ff; box-shadow:0 0 0 2px rgba(108,99,255,.15); }
     #chatbot-send {
-        width:36px; height:36px; border-radius:10px; border:none; cursor:pointer; flex-shrink:0;
+        align-self:flex-end;
+    }
+    #chatbot-send {
+        width:40px; height:40px; border-radius:10px; border:none; cursor:pointer; flex-shrink:0;
         background:linear-gradient(135deg,#1a56db,#6c63ff); color:white;
         display:flex; align-items:center; justify-content:center; align-self:flex-end;
     }
@@ -179,6 +185,7 @@
 
     <form id="chatbot-form" onsubmit="cbSend(event)">
         <textarea id="chatbot-input" rows="1" placeholder="Taip soalan di sini..."
+                  oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px';"
                   onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cbSend(event);}"></textarea>
         <button type="submit" id="chatbot-send">
             <svg style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -273,8 +280,9 @@
         var msg   = input.value.trim();
         if (!msg) return;
 
-        input.value = '';
-        isTyping    = true;
+        input.value  = '';
+        input.style.height = 'auto';   // shrink back after send
+        isTyping     = true;
         document.getElementById('chatbot-send').disabled = true;
 
         appendMsg('user', msg);

@@ -207,6 +207,7 @@ php artisan view:cache
 | 146 | 2026-05-10 | `resources/views/super-admin/chatbot-settings.blade.php` | Tambah section Profil Chatbot (nama + avatar upload dengan preview) | ⏳ Belum Push |
 | 147 | 2026-05-10 | `resources/views/components/chatbot-widget.blade.php` | Widget papar nama & avatar dinamik dari DB; bot message bubble guna avatar sama | ⏳ Belum Push |
 | 148 | 2026-05-10 | `resources/views/layout-fb/layout.blade.php` | Tambah menu "Tetapan Chatbot AI" dalam sidebar Super Admin | ⏳ Belum Push |
+| 149 | 2026-05-10 | `resources/views/components/chatbot-widget.blade.php` | Textarea auto-grow oninput — kotak input kembang mengikut panjang teks, kecil semula selepas hantar | ⏳ Belum Push |
 
 ---
 
