@@ -49,7 +49,25 @@ class LoginRequest extends FormRequest
         $loginType = $this->input('login_type');
 
         if ($loginType === 'staff') {
-            $credentials = ['email' => $loginId, 'password' => $password];
+            // Try email first, then username, then IC number
+            if (filter_var($loginId, FILTER_VALIDATE_EMAIL)) {
+                $credentials = ['email' => $loginId, 'password' => $password];
+            } else {
+                $ic   = preg_replace('/[^0-9]/', '', $loginId);
+                $user = \App\Models\User::where('username', $loginId)
+                    ->orWhere('ic_number', $ic)
+                    ->whereDoesntHave('roles', fn($q) => $q->where('name', 'Ibu Bapa'))
+                    ->first();
+
+                if (! $user) {
+                    RateLimiter::hit($this->throttleKey());
+                    throw ValidationException::withMessages([
+                        'login_id' => trans('auth.failed'),
+                    ]);
+                }
+
+                $credentials = ['email' => $user->email, 'password' => $password];
+            }
         } elseif ($loginType === 'parent') {
             // Strip dashes/spaces from IC, find matching user
             $ic   = preg_replace('/[^0-9]/', '', $loginId);

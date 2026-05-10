@@ -118,12 +118,12 @@
                                 <label for="login_id" id="login_label"
                                        style="display:block;font-size:0.7rem;font-weight:700;color:#6b7280;
                                               text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">
-                                    Alamat Emel
+                                    {{ old('login_type') === 'parent' ? 'No. Kad Pengenalan Ibu/Bapa' : 'Emel / No. IC / Nama Pengguna' }}
                                 </label>
-                                <input type="{{ old('login_type') === 'parent' ? 'text' : 'email' }}"
+                                <input type="text"
                                        id="login_id" name="login_id"
                                        value="{{ old('login_id') }}" required autofocus
-                                       placeholder="{{ old('login_type') === 'parent' ? '890101-10-5555' : 'nama@sekolah.edu.my' }}"
+                                       placeholder="{{ old('login_type') === 'parent' ? '890101-10-5555' : 'emel / no. ic / username' }}"
                                        style="width:100%;font-size:0.875rem;border-radius:0.75rem;
                                               border:1px solid {{ $errors->has('login_id') ? '#f87171' : '#e5e7eb' }};
                                               background:#f9fafb;padding:0.625rem 0.875rem;
@@ -431,9 +431,9 @@ function switchLoginType(type) {
     loginType.value = type;
 
     if (type === 'staff') {
-        loginLabel.textContent  = 'Alamat Emel';
-        loginId.type            = 'email';
-        loginId.placeholder     = 'nama@sekolah.edu.my';
+        loginLabel.textContent  = 'Emel / No. IC / Nama Pengguna';
+        loginId.type            = 'text';
+        loginId.placeholder     = 'emel / no. ic / username';
         tabStaff.style.cssText  = TAB_ACTIVE;
         tabParent.style.cssText = TAB_INACTIVE;
     } else {
