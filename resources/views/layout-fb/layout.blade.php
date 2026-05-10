@@ -110,6 +110,21 @@
                         </div>
                     </div>
 
+                    {{-- ── Dark Mode Toggle ── --}}
+                    <button id="theme-toggle" type="button" title="Tukar Tema"
+                            class="p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none">
+                        {{-- Sun icon (shown in dark mode) --}}
+                        <svg id="icon-sun" class="hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+                        </svg>
+                        {{-- Moon icon (shown in light mode) --}}
+                        <svg id="icon-moon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                        </svg>
+                    </button>
+
                     {{-- ── Profile Avatar Dropdown ── --}}
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.outside="open = false"
@@ -520,6 +535,44 @@
             wrapper.insertBefore(icon, el);
 
             el.style.paddingLeft = '2.25rem';
+        });
+    });
+    </script>
+
+    {{-- ── Dark Mode Toggle ── --}}
+    <script>
+    (function() {
+        var html    = document.documentElement;
+        var saved   = localStorage.getItem('theme');
+        if (saved === 'dark') html.classList.add('dark');
+        else html.classList.remove('dark');
+    })();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var btn     = document.getElementById('theme-toggle');
+        var sun     = document.getElementById('icon-sun');
+        var moon    = document.getElementById('icon-moon');
+        var html    = document.documentElement;
+
+        function applyTheme(dark) {
+            if (dark) {
+                html.classList.add('dark');
+                sun.classList.remove('hidden');
+                moon.classList.add('hidden');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                sun.classList.add('hidden');
+                moon.classList.remove('hidden');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Init icon on load
+        applyTheme(localStorage.getItem('theme') === 'dark');
+
+        btn.addEventListener('click', function() {
+            applyTheme(!html.classList.contains('dark'));
         });
     });
     </script>
