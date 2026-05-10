@@ -119,20 +119,27 @@ class ChatbotController extends Controller
 
         $provider->update($data);
 
-        return back()->with('success', "Tetapan {$provider->name} telah dikemaskini.");
+        return redirect()->route('chatbot.settings')
+            ->with('success', "✅ Tetapan {$provider->name} telah dikemaskini.");
     }
 
     public function activateProvider(ChatbotProvider $provider)
     {
-        if (!$provider->api_key && !$provider->is_free) {
-            return back()->with('error', 'Masukkan API Key dahulu sebelum mengaktifkan provider ini.');
+        // ALL providers — including free tier — still require an API key
+        if (!$provider->api_key) {
+            $hint = $provider->is_free
+                ? "Provider ini ada tier percuma — daftar di laman web mereka untuk dapatkan API Key, kemudian masukkan di sini."
+                : "Masukkan API Key dahulu sebelum mengaktifkan provider ini.";
+
+            return redirect()->route('chatbot.settings')->with('error', $hint);
         }
 
-        // Deactivate all, then activate selected
+        // Deactivate all → activate selected
         ChatbotProvider::query()->update(['is_active' => false]);
         $provider->update(['is_active' => true, 'is_enabled' => true]);
 
-        return back()->with('success', "{$provider->name} kini aktif sebagai provider chatbot.");
+        return redirect()->route('chatbot.settings')
+            ->with('success', "✅ {$provider->name} kini aktif sebagai provider chatbot.");
     }
 
     public function updateBotProfile(Request $request)
@@ -155,7 +162,8 @@ class ChatbotController extends Controller
 
         $settings->update($data);
 
-        return back()->with('success', 'Profil chatbot berjaya dikemaskini.');
+        return redirect()->route('chatbot.settings')
+            ->with('success', '✅ Profil chatbot berjaya dikemaskini.');
     }
 
     public function toggleDataAccess()
@@ -165,7 +173,8 @@ class ChatbotController extends Controller
 
         $status = $settings->fresh()->data_access_enabled ? 'DIAKTIFKAN' : 'DIMATIKAN';
 
-        return back()->with('success', "Mod Akses Data kini {$status}.");
+        return redirect()->route('chatbot.settings')
+            ->with('success', "Mod Akses Data kini {$status}.");
     }
 
     // ══════════════════════════════════════════════════════

@@ -134,7 +134,7 @@
                             @endif
                             @if($provider->is_free)
                             <span style="font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:999px;
-                                         background:#dcfce7;color:#166534;">PERCUMA</span>
+                                         background:#dcfce7;color:#166534;">Tier Percuma</span>
                             @endif
                             @if(!$provider->is_safe)
                             <span style="font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:999px;
@@ -157,7 +157,7 @@
                     </label>
                     <div style="position:relative;">
                         <input type="password" name="api_key" id="key-{{ $provider->id }}"
-                               placeholder="{{ $provider->api_key ? '••••••••• (ada key, kosongkan untuk kekal)' : 'Masukkan API Key...' }}"
+                               placeholder="{{ $provider->api_key ? '••••••••• (ada key, kosongkan untuk kekal)' : ($provider->is_free ? 'Daftar percuma → dapat key → tampal di sini' : 'Masukkan API Key...') }}"
                                style="width:100%;padding:8px 36px 8px 10px;font-size:0.8rem;border:1px solid #e5e7eb;
                                       border-radius:8px;background:#f9fafb;outline:none;box-sizing:border-box;">
                         <button type="button" onclick="toggleKey('key-{{ $provider->id }}')"
@@ -237,16 +237,16 @@
          style="background:linear-gradient(135deg,rgba(239,246,255,0.8),rgba(238,242,255,0.8));">
         <div class="dark:hidden">
             <p style="font-size:0.82rem;color:#1e40af;margin:0;">
-                💡 <strong>Cara tukar provider:</strong>
-                Masukkan API Key → klik <strong>Simpan</strong> → klik <strong>Aktifkan</strong>.
-                Provider lama auto dimatikan. Hanya satu provider boleh aktif pada satu masa.
+                💡 <strong>Cara tukar provider (termasuk yang percuma):</strong>
+                Daftar di laman web provider → salin API Key → tampal di sini → klik <strong>Simpan</strong> → klik <strong>Aktifkan</strong>.
+                Provider lama auto dimatikan. <strong>Semua provider — termasuk Groq &amp; Gemini — memerlukan API Key</strong> walaupun ia percuma.
             </p>
         </div>
         <div class="hidden dark:block">
             <p style="font-size:0.82rem;color:#93c5fd;margin:0;">
-                💡 <strong>Cara tukar provider:</strong>
-                Masukkan API Key → klik <strong>Simpan</strong> → klik <strong>Aktifkan</strong>.
-                Provider lama auto dimatikan. Hanya satu provider boleh aktif pada satu masa.
+                💡 <strong>Cara tukar provider (termasuk yang percuma):</strong>
+                Daftar di laman web provider → salin API Key → tampal di sini → klik <strong>Simpan</strong> → klik <strong>Aktifkan</strong>.
+                Provider lama auto dimatikan. <strong>Semua provider — termasuk Groq &amp; Gemini — memerlukan API Key</strong> walaupun ia percuma.
             </p>
         </div>
     </div>
