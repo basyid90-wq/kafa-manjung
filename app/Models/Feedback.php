@@ -31,9 +31,9 @@ class Feedback extends Model
     ];
 
     public const STATUSES = [
-        'baru'           => ['label' => 'Baru',          'class' => 'bg-danger'],
-        'dalam_semakan'  => ['label' => 'Dalam Semakan', 'class' => 'bg-warning text-dark'],
-        'selesai'        => ['label' => 'Selesai',       'class' => 'bg-success'],
+        'baru'           => ['label' => 'Baru',          'class' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
+        'dalam_semakan'  => ['label' => 'Dalam Semakan', 'class' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'],
+        'selesai'        => ['label' => 'Selesai',       'class' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'],
     ];
 
     public function user()

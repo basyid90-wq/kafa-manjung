@@ -26,7 +26,7 @@
                     <a href="{{ route('dashboard') }}" class="flex ms-2 md:me-24 items-center gap-2">
                         <img src="{{ asset('template/perak.png') }}" class="h-8" alt="Logo">
                         <span class="self-center text-sm font-semibold whitespace-nowrap dark:text-white leading-tight">
-                            APKM<br><span class="text-xs font-normal text-gray-500">Sistem KAFA Perak</span>
+                            APKM<br><span class="text-xs font-normal text-gray-500 dark:text-gray-300">Sistem KAFA Perak</span>
                         </span>
                     </a>
                 </div>
