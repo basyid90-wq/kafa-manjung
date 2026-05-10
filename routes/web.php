@@ -287,6 +287,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/manual-logs', [\App\Http\Controllers\ManualController::class, 'logs'])->name('admin.manual.logs');
     });
 
+    // 18. Chatbot AI
+    // All authenticated users — send message
+    Route::post('chatbot/message', [\App\Http\Controllers\ChatbotController::class, 'message'])->name('chatbot.message');
+    // Super Admin only — manage settings
+    Route::middleware(['role:Super Admin'])->group(function () {
+        Route::get('super-admin/chatbot-settings', [\App\Http\Controllers\ChatbotController::class, 'settings'])->name('chatbot.settings');
+        Route::patch('super-admin/chatbot-settings/provider/{provider}', [\App\Http\Controllers\ChatbotController::class, 'updateProvider'])->name('chatbot.provider.update');
+        Route::post('super-admin/chatbot-settings/activate/{provider}', [\App\Http\Controllers\ChatbotController::class, 'activateProvider'])->name('chatbot.provider.activate');
+        Route::post('super-admin/chatbot-settings/toggle-data', [\App\Http\Controllers\ChatbotController::class, 'toggleDataAccess'])->name('chatbot.toggle-data');
+    });
+
     // 17. Aduan / Laporkan Masalah
     // Semua role kecuali Super Admin boleh hantar aduan
     Route::middleware(['role:Pentadbir|Penyelia KAFA|Guru Besar|Guru KAFA|Pembekal|Bendahari Sekolah|Ibu Bapa'])->group(function () {

@@ -577,5 +577,10 @@
         });
     });
     </script>
+
+    {{-- Chatbot widget — visible for all authenticated users --}}
+    @auth
+    <x-chatbot-widget />
+    @endauth
 </body>
 </html>

@@ -192,6 +192,14 @@ php artisan view:cache
 | 131 | 2026-05-10 | `resources/views/schools/edit.blade.php` | Tukar input no_telefon ke komponen `<x-phone-input>` | ⏳ Belum Push |
 | 132 | 2026-05-10 | `resources/views/students/qr_cards.blade.php` | Reka semula paparan skrin ke gaya Flowbite "Share profile with QR" (gradient header, avatar bulat, kad bersih); cetak kekal layout kompak A4 2 kolum | ⏳ Belum Push |
 | 133 | 2026-05-10 | `resources/views/auth/login.blade.php` | Tukar layout login page dari 1 kolum ke 2 kolum (login kiri, papan makluman kanan); mobile kekal atas-bawah | ⏳ Belum Push |
+| 134 | 2026-05-10 | `database/migrations/2026_05_10_150001_create_chatbot_providers_table.php` | Migration baru: chatbot_providers + chatbot_settings table, seed 4 provider (DeepSeek, OpenAI, Gemini, Groq) | ⏳ Belum Push |
+| 135 | 2026-05-10 | `app/Models/ChatbotProvider.php` | Model baru: ChatbotProvider dengan helper icon, is_safe, decrypted_key | ⏳ Belum Push |
+| 136 | 2026-05-10 | `app/Models/ChatbotSetting.php` | Model baru: ChatbotSetting (global toggle data_access_enabled) | ⏳ Belum Push |
+| 137 | 2026-05-10 | `app/Http/Controllers/ChatbotController.php` | Controller baru: proxy AI API, role-aware system prompt, PDPA toggle logic | ⏳ Belum Push |
+| 138 | 2026-05-10 | `resources/views/super-admin/chatbot-settings.blade.php` | View baru: panel settings chatbot Super Admin (provider cards, API key, toggle data) | ⏳ Belum Push |
+| 139 | 2026-05-10 | `resources/views/components/chatbot-widget.blade.php` | Komponen baru: floating chat bubble widget dengan conversation history | ⏳ Belum Push |
+| 140 | 2026-05-10 | `routes/web.php` | Tambah routes chatbot (message, settings, activate, toggle-data) | ⏳ Belum Push |
+| 141 | 2026-05-10 | `resources/views/layout-fb/layout.blade.php` | Inject <x-chatbot-widget /> sebelum </body> untuk semua authenticated pages | ⏳ Belum Push |
 
 ---
 
