@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms" class="h-full">
+<html lang="ms" class="h-full dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -542,10 +542,10 @@
     {{-- ── Dark Mode Toggle ── --}}
     <script>
     (function() {
-        var html    = document.documentElement;
-        var saved   = localStorage.getItem('theme');
-        if (saved === 'dark') html.classList.add('dark');
-        else html.classList.remove('dark');
+        var html  = document.documentElement;
+        var saved = localStorage.getItem('theme');
+        if (saved === 'light') html.classList.remove('dark');
+        else html.classList.add('dark');
     })();
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -568,8 +568,9 @@
             }
         }
 
-        // Init icon on load
-        applyTheme(localStorage.getItem('theme') === 'dark');
+        // Init icon on load — default dark
+        var saved = localStorage.getItem('theme');
+        applyTheme(saved !== 'light');
 
         btn.addEventListener('click', function() {
             applyTheme(!html.classList.contains('dark'));
