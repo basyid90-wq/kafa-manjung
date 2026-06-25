@@ -1,97 +1,247 @@
-@section('title', 'Log Masuk')
+@section('title', 'eKAFA — Sistem Pengurusan KAFA Digital')
 @extends('layout-fb.auth')
 
 @section('content')
-<div x-data="{ loginType: '{{ old('login_type', 'staff') }}', showPassword: false }">
+<div x-data="{ loginType: '{{ old('login_type', 'staff') }}', showPassword: false, yearly: true, mobileMenu: false }" class="scroll-smooth">
 
-    {{-- HERO SECTION --}}
-    <section class="bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600">
-        <div class="max-w-5xl mx-auto px-5 py-14 md:py-20 text-center">
-            <div class="flex justify-center mb-5">
-                <div class="bg-white rounded-2xl p-3.5 shadow-lg">
-                    <img src="{{ asset('template/perak.png') }}" alt="Logo APKM" class="h-16 md:h-20 w-auto">
+    {{-- ════════════ 1. NAVBAR ════════════ --}}
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+        <div class="max-w-6xl mx-auto px-5">
+            <div class="flex items-center justify-between h-16">
+                <a href="#" class="text-xl font-extrabold text-gray-900 tracking-tight">eKAFA</a>
+
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#ciri-ciri" onclick="smoothScroll('#ciri-ciri')" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Ciri-ciri</a>
+                    <a href="#harga" onclick="smoothScroll('#harga')" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Harga</a>
+                    <a href="#log-masuk" onclick="smoothScroll('#log-masuk')" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">Log Masuk</a>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a href="https://wa.me/60194920559" target="_blank" rel="noopener"
+                       class="hidden md:inline-flex bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+                        Mula Sekarang
+                    </a>
+                    <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 text-gray-600 hover:text-gray-900">
+                        <svg x-show="!mobileMenu" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        <svg x-show="mobileMenu" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
             </div>
-            <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/20 text-blue-100 text-xs font-semibold tracking-wide mb-4">
-                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                Sistem KAFA &mdash; Daerah Manjung, Perak
+
+            <div x-show="mobileMenu" x-transition class="md:hidden border-t border-gray-100 py-4 space-y-3">
+                <a href="#ciri-ciri" onclick="smoothScroll('#ciri-ciri'); mobileMenu=false" class="block text-sm font-medium text-gray-600 hover:text-blue-600 py-1">Ciri-ciri</a>
+                <a href="#harga" onclick="smoothScroll('#harga'); mobileMenu=false" class="block text-sm font-medium text-gray-600 hover:text-blue-600 py-1">Harga</a>
+                <a href="#log-masuk" onclick="smoothScroll('#log-masuk'); mobileMenu=false" class="block text-sm font-medium text-gray-600 hover:text-blue-600 py-1">Log Masuk</a>
+                <a href="https://wa.me/60194920559" target="_blank" rel="noopener"
+                   class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg text-center transition-colors">
+                    Mula Sekarang
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    {{-- ════════════ 2. HERO ════════════ --}}
+    <section class="pt-24 pb-16 md:pt-32 md:pb-20 bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-700">
+        <div class="max-w-4xl mx-auto px-5 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 text-blue-100 text-sm font-medium mb-6">
+                🎓 Dipercayai Sekolah KAFA Seluruh Malaysia
             </div>
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
-                Aplikasi Pengurusan KAFA Manjung
+                Urus Sekolah KAFA Anda Lebih Mudah
             </h1>
-            <p class="text-base md:text-lg text-blue-100 max-w-lg mx-auto">
-                Sistem bersepadu untuk pentadbir, guru, dan ibu bapa
+            <p class="text-base md:text-lg text-blue-100/90 max-w-2xl mx-auto mb-8 leading-relaxed">
+                Sistem pengurusan digital lengkap — guru, murid, kehadiran, peperiksaan dan lebih lagi dalam satu platform.
             </p>
-        </div>
-    </section>
-
-    {{-- FEATURES SECTION --}}
-    <section class="bg-gray-50 py-14 md:py-16">
-        <div class="max-w-5xl mx-auto px-5">
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-2">Segala-galanya dalam satu platform</h2>
-            <p class="text-gray-500 text-center mb-10 max-w-md mx-auto">APKM menyediakan modul lengkap untuk pengurusan pendidikan KAFA</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {{-- 1 --}}
-                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-4">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-1.5">Dashboard Guru</h3>
-                    <p class="text-sm text-gray-500">Rumusan aktiviti, kehadiran, dan prestasi pelajar dalam satu pandangan.</p>
-                </div>
-                {{-- 2 --}}
-                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center mb-4">
-                        <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-1.5">Rekod Kehadiran</h3>
-                    <p class="text-sm text-gray-500">Imbasan QR pantas dan laporan kehadiran bulanan yang terperinci.</p>
-                </div>
-                {{-- 3 --}}
-                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                    <div class="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center mb-4">
-                        <svg class="w-5 h-5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-1.5">Peperiksaan & Keputusan</h3>
-                    <p class="text-sm text-gray-500">Rekod markah, slip keputusan, dan analisis prestasi peperiksaan pelajar.</p>
-                </div>
-                {{-- 4 --}}
-                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center mb-4">
-                        <svg class="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-1.5">Jadual Waktu & RPH</h3>
-                    <p class="text-sm text-gray-500">Penjadualan kelas dan rancangan pengajaran harian yang tersusun.</p>
-                </div>
-                {{-- 5 --}}
-                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                    <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center mb-4">
-                        <svg class="w-5 h-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-1.5">Pengurusan Pelajar</h3>
-                    <p class="text-sm text-gray-500">Pendaftaran, profil, pemindahan kelas, dan rekod pencapaian pelajar.</p>
-                </div>
-                {{-- 6 --}}
-                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                    <div class="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center mb-4">
-                        <svg class="w-5 h-5 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    </div>
-                    <h3 class="text-sm font-semibold text-gray-900 mb-1.5">Laporan & Analitik</h3>
-                    <p class="text-sm text-gray-500">Laporan komprehensif dan eksport data untuk analisis di pelbagai peringkat.</p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+                <a href="https://wa.me/60194920559" target="_blank" rel="noopener"
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-semibold px-8 py-3 rounded-lg text-sm transition-colors shadow-lg shadow-black/10">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                    Hubungi Kami
+                </a>
+                <a href="#demo" onclick="smoothScroll('#demo')"
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2 border-2 border-white/30 hover:border-white/50 text-white font-semibold px-8 py-3 rounded-lg text-sm transition-colors">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Lihat Demo
+                </a>
+            </div>
+            <div class="max-w-3xl mx-auto">
+                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700 bg-gray-900 p-2">
+                    <img src="/storage/frontend/dashboard.png"
+                         onerror="this.src='{{ asset('template/perak.png') }}'"
+                         alt="eKAFA Dashboard" class="rounded-lg w-full">
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- LOGIN SECTION --}}
-    <section class="bg-gray-100 py-14 md:py-16">
+    {{-- ════════════ 3. STATS ════════════ --}}
+    <section class="relative -mt-10 pb-6">
+        <div class="max-w-3xl mx-auto px-5">
+            <div class="bg-white rounded-2xl shadow-lg grid grid-cols-3 divide-x divide-gray-100 overflow-hidden">
+                <div class="px-4 py-6 text-center">
+                    <div class="text-2xl md:text-3xl font-extrabold text-gray-900">100+</div>
+                    <div class="text-xs md:text-sm text-gray-500 mt-1">Sekolah Berdaftar</div>
+                </div>
+                <div class="px-4 py-6 text-center">
+                    <div class="text-2xl md:text-3xl font-extrabold text-gray-900">10,000+</div>
+                    <div class="text-xs md:text-sm text-gray-500 mt-1">Murid Diuruskan</div>
+                </div>
+                <div class="px-4 py-6 text-center">
+                    <div class="text-2xl md:text-3xl font-extrabold text-gray-900">99.9%</div>
+                    <div class="text-xs md:text-sm text-gray-500 mt-1">Uptime Sistem</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ════════════ 4. FEATURES ════════════ --}}
+    <section id="ciri-ciri" class="py-16 md:py-20 bg-gray-50 scroll-mt-20">
+        <div class="max-w-5xl mx-auto px-5">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3">Semua yang anda perlukan</h2>
+                <p class="text-gray-500 max-w-lg mx-auto">Modul lengkap untuk pengurusan KAFA — dari rekod murid hingga analitik prestasi.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="text-2xl mb-3">📊</div>
+                    <h3 class="text-sm font-bold text-gray-900 mb-1.5">Dashboard Guru</h3>
+                    <p class="text-sm text-gray-500">Rumusan aktiviti, kehadiran dan prestasi pelajar dalam satu pandangan.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="text-2xl mb-3">✅</div>
+                    <h3 class="text-sm font-bold text-gray-900 mb-1.5">Rekod Kehadiran</h3>
+                    <p class="text-sm text-gray-500">Imbasan QR pantas dan laporan kehadiran bulanan yang terperinci.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="text-2xl mb-3">📝</div>
+                    <h3 class="text-sm font-bold text-gray-900 mb-1.5">Peperiksaan & Keputusan</h3>
+                    <p class="text-sm text-gray-500">Rekod markah, slip keputusan dan analisis prestasi peperiksaan.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="text-2xl mb-3">📅</div>
+                    <h3 class="text-sm font-bold text-gray-900 mb-1.5">Jadual Waktu & RPH</h3>
+                    <p class="text-sm text-gray-500">Penjadualan kelas dan rancangan pengajaran harian yang tersusun.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="text-2xl mb-3">👨‍👧</div>
+                    <h3 class="text-sm font-bold text-gray-900 mb-1.5">Pengurusan Pelajar</h3>
+                    <p class="text-sm text-gray-500">Profil lengkap, pendaftaran dan pemindahan kelas pelajar.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="text-2xl mb-3">📈</div>
+                    <h3 class="text-sm font-bold text-gray-900 mb-1.5">Laporan & Analitik</h3>
+                    <p class="text-sm text-gray-500">Eksport data dan laporan komprehensif di pelbagai peringkat.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ════════════ 5. DEMO ════════════ --}}
+    <section id="demo" class="py-16 md:py-20 bg-white scroll-mt-20">
+        <div class="max-w-5xl mx-auto px-5">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3">Tengok sendiri bagaimana eKAFA berfungsi</h2>
+                <p class="text-gray-500 max-w-lg mx-auto">Dashboard yang intuitif dan mudah digunakan oleh semua peringkat pengguna.</p>
+            </div>
+            <div class="max-w-4xl mx-auto bg-gray-900 rounded-2xl p-2 shadow-2xl">
+                <img src="/storage/frontend/dashboard.png"
+                     onerror="this.src='{{ asset('template/perak.png') }}'"
+                     alt="Demo eKAFA" class="rounded-xl w-full">
+            </div>
+        </div>
+    </section>
+
+    {{-- ════════════ 6. PRICING ════════════ --}}
+    <section id="harga" class="py-16 md:py-20 bg-gray-50 scroll-mt-20">
+        <div class="max-w-5xl mx-auto px-5">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3">Harga Mudah, Tiada Kejutan</h2>
+                <p class="text-gray-500">Satu pelan. Semua modul. Tiada yuran tersembunyi.</p>
+            </div>
+
+            <div class="flex items-center justify-center gap-1 bg-gray-100 rounded-lg p-1 w-fit mx-auto mb-10">
+                <button @click="yearly = false"
+                        :class="!yearly ? 'bg-white shadow text-gray-900' : 'text-gray-500'"
+                        class="px-5 py-2 rounded-md text-sm font-semibold transition-all">
+                    Bulanan
+                </button>
+                <button @click="yearly = true"
+                        :class="yearly ? 'bg-white shadow text-gray-900' : 'text-gray-500'"
+                        class="px-5 py-2 rounded-md text-sm font-semibold transition-all">
+                    Tahunan
+                </button>
+            </div>
+
+            <div class="max-w-md mx-auto">
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-blue-500 overflow-hidden">
+                    <div class="bg-blue-600 text-white text-center py-2 text-xs font-bold uppercase tracking-wider">Paling Popular</div>
+                    <div class="p-8 text-center">
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">eKAFA Pro</h3>
+                        <p class="text-sm text-gray-500 mb-6">Untuk sekolah KAFA yang serius</p>
+                        <div class="mb-6">
+                            <span class="text-4xl font-extrabold text-gray-900" x-text="yearly ? 'RM250' : 'RM25'"></span>
+                            <span class="text-gray-500 text-sm">/</span>
+                            <span class="text-gray-500 text-sm" x-text="yearly ? 'tahun' : 'bulan'"></span>
+                        </div>
+                        <div x-show="yearly" class="text-xs font-semibold text-green-600 bg-green-50 rounded-full px-3 py-1 inline-block mb-6">Jimat RM50!</div>
+                        <ul class="space-y-3 text-left mb-8">
+                            <li class="flex items-center gap-2.5 text-sm text-gray-700">
+                                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                Guru Tanpa Had
+                            </li>
+                            <li class="flex items-center gap-2.5 text-sm text-gray-700">
+                                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                Murid Tanpa Had
+                            </li>
+                            <li class="flex items-center gap-2.5 text-sm text-gray-700">
+                                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                Semua Modul Termasuk
+                            </li>
+                            <li class="flex items-center gap-2.5 text-sm text-gray-700">
+                                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                Sokongan WhatsApp
+                            </li>
+                            <li class="flex items-center gap-2.5 text-sm text-gray-700">
+                                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                Kemaskini Percuma
+                            </li>
+                            <li class="flex items-center gap-2.5 text-sm text-gray-700">
+                                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                Data Selamat & Disandar
+                            </li>
+                        </ul>
+                        <a href="https://wa.me/60194920559" target="_blank" rel="noopener"
+                           class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg text-sm transition-colors">
+                            Mulakan Percubaan
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ════════════ 7. CTA ════════════ --}}
+    <section class="py-16 md:py-20 bg-gradient-to-br from-blue-600 to-indigo-700">
+        <div class="max-w-3xl mx-auto px-5 text-center">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-4">Bersedia untuk digitalisasi sekolah anda?</h2>
+            <p class="text-blue-100/80 mb-8 max-w-lg mx-auto">Sertai 100+ sekolah KAFA yang telah beralih ke sistem digital.</p>
+            <a href="https://wa.me/60194920559" target="_blank" rel="noopener"
+               class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-semibold px-8 py-3.5 rounded-lg text-sm transition-colors shadow-lg shadow-black/10">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                Hubungi Kami Sekarang
+            </a>
+        </div>
+    </section>
+
+    {{-- ════════════ 8. LOGIN SECTION ════════════ --}}
+    <section id="log-masuk" class="py-16 md:py-20 bg-white scroll-mt-20">
         <div class="max-w-md mx-auto px-5">
+            <div class="text-center mb-6">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Sudah menjadi pengguna?</p>
+                <h2 class="text-xl font-bold text-gray-900 mt-1">Log Masuk ke Sistem</h2>
+            </div>
 
-            {{-- Login Card --}}
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-
-                {{-- Tabs --}}
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="flex border-b border-gray-100">
                     <button type="button" @click="loginType='staff'"
                             :class="loginType === 'staff' ? 'text-blue-600 border-blue-600 font-semibold' : 'text-gray-400 border-transparent font-medium'"
@@ -107,7 +257,6 @@
                     </button>
                 </div>
 
-                {{-- Form --}}
                 <div class="p-6">
                     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -115,7 +264,6 @@
                         @csrf
                         <input type="hidden" name="login_type" x-model="loginType">
 
-                        {{-- Login ID --}}
                         <div>
                             <label for="login_id"
                                    class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
@@ -131,7 +279,6 @@
                             @enderror
                         </div>
 
-                        {{-- Password --}}
                         <div>
                             <label for="password-field"
                                    class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
@@ -154,7 +301,6 @@
                             @enderror
                         </div>
 
-                        {{-- Remember + Help --}}
                         <div class="flex items-center justify-between">
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <input type="checkbox" name="remember" id="remember_me"
@@ -169,7 +315,6 @@
                             </a>
                         </div>
 
-                        {{-- Submit --}}
                         <button type="submit"
                                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200">
                             Masuk ke Akaun
@@ -189,7 +334,16 @@
             </div>
 
             {{-- Announcements Panel --}}
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden mt-6">
+            @php
+            $labelMap = [
+                'Ciri Baharu'     => ['bg'=>'bg-emerald-50','text'=>'text-emerald-700','icon'=>'🆕'],
+                'Pembaikan'       => ['bg'=>'bg-cyan-50','text'=>'text-cyan-700','icon'=>'🔧'],
+                'Penyelenggaraan' => ['bg'=>'bg-amber-50','text'=>'text-amber-700','icon'=>'⚠️'],
+                'Kritikal'        => ['bg'=>'bg-red-50','text'=>'text-red-700','icon'=>'🚨'],
+                'Pengumuman'      => ['bg'=>'bg-blue-50','text'=>'text-blue-700','icon'=>'📢'],
+            ];
+            @endphp
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mt-6">
                 <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-lg bg-blue-50">
@@ -204,19 +358,8 @@
                 </div>
 
                 <div class="max-h-96 overflow-y-auto divide-y divide-gray-50">
-                    @php
-                    $labelMap = [
-                        'Ciri Baharu'     => ['bg'=>'bg-emerald-50','text'=>'text-emerald-700','icon'=>'🆕'],
-                        'Pembaikan'       => ['bg'=>'bg-cyan-50','text'=>'text-cyan-700','icon'=>'🔧'],
-                        'Penyelenggaraan' => ['bg'=>'bg-amber-50','text'=>'text-amber-700','icon'=>'⚠️'],
-                        'Kritikal'        => ['bg'=>'bg-red-50','text'=>'text-red-700','icon'=>'🚨'],
-                        'Pengumuman'      => ['bg'=>'bg-blue-50','text'=>'text-blue-700','icon'=>'📢'],
-                    ];
-                    @endphp
-
                     @forelse($announcements as $ann)
                     @php $lm = $labelMap[$ann->homepage_label] ?? ['bg'=>'bg-gray-50','text'=>'text-gray-600','icon'=>'📢']; @endphp
-
                     <div class="px-5 py-4">
                         <div class="flex items-start gap-3">
                             <div class="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg {{ $lm['bg'] }}">
@@ -233,9 +376,7 @@
                                         class="text-sm font-bold text-gray-900 text-left w-full hover:text-blue-600 transition-colors truncate leading-snug">
                                     {{ $ann->title }}
                                 </button>
-                                <p class="text-sm text-gray-500 mt-1 truncate">
-                                    {{ strip_tags($ann->content) }}
-                                </p>
+                                <p class="text-sm text-gray-500 mt-1 truncate">{{ strip_tags($ann->content) }}</p>
                             </div>
                         </div>
                         <div id="announcement-data-{{ $ann->id }}" class="hidden"
@@ -248,7 +389,6 @@
                             {!! $ann->content !!}
                         </div>
                     </div>
-
                     @empty
                     <div class="flex flex-col items-center justify-center py-12 px-5 text-center">
                         <div class="w-14 h-14 rounded-xl flex items-center justify-center bg-blue-50 mb-3">
@@ -264,93 +404,113 @@
                     <p class="text-xs text-blue-500/70">Log masuk untuk melihat butiran penuh hebahan</p>
                 </div>
             </div>
-
         </div>
     </section>
 
-    {{-- FOOTER --}}
-    <footer class="bg-white border-t border-gray-100 py-6">
-        <div class="max-w-5xl mx-auto px-5 text-center">
-            <p class="text-xs text-gray-400">&copy; 2026 Pengurusan KAFA Daerah &bull; v1.0</p>
+    {{-- ════════════ 9. FOOTER ════════════ --}}
+    <footer class="bg-gray-900 py-12">
+        <div class="max-w-5xl mx-auto px-5">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="text-center md:text-left">
+                    <div class="text-xl font-extrabold text-white tracking-tight mb-1">eKAFA</div>
+                    <p class="text-sm text-gray-400">Sistem Pengurusan KAFA Digital</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <a href="#ciri-ciri" onclick="smoothScroll('#ciri-ciri')" class="text-sm text-gray-400 hover:text-white transition-colors">Ciri-ciri</a>
+                    <a href="#harga" onclick="smoothScroll('#harga')" class="text-sm text-gray-400 hover:text-white transition-colors">Harga</a>
+                    <a href="https://wa.me/60194920559" target="_blank" rel="noopener" class="text-sm text-gray-400 hover:text-white transition-colors">Hubungi Kami</a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-6 text-center">
+                <p class="text-xs text-gray-500">&copy; 2026 eKAFA &middot; Hak Cipta Terpelihara</p>
+            </div>
         </div>
     </footer>
 
-</div>
-
-{{-- ANNOUNCEMENT MODAL --}}
-<div id="announcementModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70">
-
-    <div class="bg-white rounded-2xl w-full max-w-xl flex flex-col max-h-[88vh] shadow-2xl">
-
-        <div class="shrink-0 rounded-t-2xl bg-gradient-to-r from-blue-900 to-blue-600 px-5 py-4">
-            <div class="flex items-start justify-between mb-2">
-                <span id="modalLabel" class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white">📢 Pengumuman</span>
-                <button type="button" onclick="closeAnnouncementModal()" class="p-1 rounded-md text-white/70 hover:text-white hover:bg-white/20 transition-colors">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    {{-- ════════════ MODAL ════════════ --}}
+    <div id="announcementModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/70">
+        <div class="bg-white rounded-2xl w-full max-w-xl flex flex-col max-h-[88vh] shadow-2xl">
+            <div class="shrink-0 rounded-t-2xl bg-gradient-to-r from-blue-900 to-blue-600 px-5 py-4">
+                <div class="flex items-start justify-between mb-2">
+                    <span id="modalLabel" class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white">📢 Pengumuman</span>
+                    <button type="button" onclick="closeAnnouncementModal()" class="p-1 rounded-md text-white/70 hover:text-white hover:bg-white/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <h3 id="modalTitle" class="text-sm font-bold text-white leading-snug mb-1.5"></h3>
+                <div class="flex items-center gap-3 flex-wrap text-xs text-blue-200/80">
+                    <span id="modalAuthor"></span>
+                    <span id="modalAdminBadge" class="hidden px-2 py-0.5 font-bold rounded-full bg-white/20">✓ Pentadbir</span>
+                    <span id="modalDate" class="text-blue-200/60"></span>
+                </div>
+            </div>
+            <div class="overflow-y-auto flex-1 px-5 py-4">
+                <div id="modalBody" class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"></div>
+            </div>
+            <div class="shrink-0 px-5 py-3 border-t border-gray-100">
+                <button type="button" onclick="closeAnnouncementModal()"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200">
+                    Faham, Tutup
                 </button>
             </div>
-            <h3 id="modalTitle" class="text-sm font-bold text-white leading-snug mb-1.5"></h3>
-            <div class="flex items-center gap-3 flex-wrap text-xs text-blue-200/80">
-                <span id="modalAuthor"></span>
-                <span id="modalAdminBadge" class="hidden px-2 py-0.5 font-bold rounded-full bg-white/20">✓ Pentadbir</span>
-                <span id="modalDate" class="text-blue-200/60"></span>
-            </div>
-        </div>
-
-        <div class="overflow-y-auto flex-1 px-5 py-4">
-            <div id="modalBody" class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"></div>
-        </div>
-
-        <div class="shrink-0 px-5 py-3 border-t border-gray-100">
-            <button type="button" onclick="closeAnnouncementModal()"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200">
-                Faham, Tutup
-            </button>
         </div>
     </div>
-</div>
 
-<script>
-var labelIcons = { 'Ciri Baharu':'🆕','Pembaikan':'🔧','Penyelenggaraan':'⚠️','Kritikal':'🚨','Pengumuman':'📢' };
-
-function showAnnouncementModal(id) {
-    var d = document.getElementById('announcement-data-' + id);
-    if (!d) return;
-    var label = d.getAttribute('data-label');
-    var annId = d.getAttribute('data-announcement-id');
-    document.getElementById('modalTitle').textContent  = d.getAttribute('data-title');
-    document.getElementById('modalBody').innerHTML     = d.innerHTML;
-    document.getElementById('modalAuthor').textContent = '👤 ' + d.getAttribute('data-author');
-    document.getElementById('modalDate').textContent   = '📅 ' + d.getAttribute('data-date');
-    document.getElementById('modalLabel').textContent  = (labelIcons[label] || '📢') + ' ' + (label || 'Hebahan Umum');
-    var badge = document.getElementById('modalAdminBadge');
-    badge.style.display = d.getAttribute('data-is-admin') === '1' ? 'inline' : 'none';
-    var modal = document.getElementById('announcementModal');
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    fetch('/announcements/' + annId + '/increment-view', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
-    });
-}
-
-function closeAnnouncementModal() {
-    var modal = document.getElementById('announcementModal');
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-}
-
-document.getElementById('announcementModal').addEventListener('click', function (e) {
-    if (e.target === this) closeAnnouncementModal();
-});
-
-document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-        var modal = document.getElementById('announcementModal');
-        if (modal && !modal.classList.contains('hidden')) closeAnnouncementModal();
+    {{-- ════════════ SCRIPTS ════════════ --}}
+    <script>
+    function smoothScroll(selector) {
+        var el = document.querySelector(selector);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
-});
-</script>
+
+    var labelIcons = { 'Ciri Baharu':'🆕','Pembaikan':'🔧','Penyelenggaraan':'⚠️','Kritikal':'🚨','Pengumuman':'📢' };
+
+    function showAnnouncementModal(id) {
+        var d = document.getElementById('announcement-data-' + id);
+        if (!d) return;
+        var label = d.getAttribute('data-label');
+        var annId = d.getAttribute('data-announcement-id');
+        document.getElementById('modalTitle').textContent  = d.getAttribute('data-title');
+        document.getElementById('modalBody').innerHTML     = d.innerHTML;
+        document.getElementById('modalAuthor').textContent = '\uD83D\uDC64 ' + d.getAttribute('data-author');
+        document.getElementById('modalDate').textContent   = '\uD83D\uDCC5 ' + d.getAttribute('data-date');
+        document.getElementById('modalLabel').textContent  = (labelIcons[label] || '\uD83D\uDCE2') + ' ' + (label || 'Hebahan Umum');
+        var badge = document.getElementById('modalAdminBadge');
+        badge.style.display = d.getAttribute('data-is-admin') === '1' ? 'inline' : 'none';
+        var modal = document.getElementById('announcementModal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        fetch('/announcements/' + annId + '/increment-view', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+        });
+    }
+
+    function closeAnnouncementModal() {
+        var modal = document.getElementById('announcementModal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('announcementModal');
+        if (modal) {
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) closeAnnouncementModal();
+            });
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                var m = document.getElementById('announcementModal');
+                if (m && !m.classList.contains('hidden')) closeAnnouncementModal();
+            }
+        });
+    });
+    </script>
+
+</div>
 @endsection
