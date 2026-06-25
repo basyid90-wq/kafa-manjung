@@ -211,7 +211,7 @@ php artisan view:cache
 | 150 | 2026-05-10 | `routes/web.php` | Tambah route POST chatbot.provider.deactivate untuk matikan provider aktif | ⏳ Belum Push |
 | 151 | 2026-05-10 | `app/Http/Controllers/ChatbotController.php` | Tambah method deactivateProvider() — matikan provider tanpa perlu aktifkan yang lain | ⏳ Belum Push |
 | 152 | 2026-05-10 | `resources/views/super-admin/chatbot-settings.blade.php` | Tukar "Sedang Aktif" static label kepada butang "Matikan" merah dengan confirm dialog | ⏳ Belum Push |
-| 153 | 2026-06-25 | `resources/views/auth/login.blade.php` | Redesign penuh login page jadi landing page moden: Hero + Features grid + Login form + Footer. Guna Tailwind CSS + Alpine.js sahaja, buang semua inline style & jQuery | ⏳ Belum Push |
+| 153 | 2026-06-25 | `resources/views/auth/login.blade.php` | Redesign penuh login page jadi landing page moden: Hero + Features grid + Login form + Footer. Guna Tailwind CSS + Alpine.js sahaja, buang semua inline style & jQuery | ✅ Sudah Push |
 
 ---
 
