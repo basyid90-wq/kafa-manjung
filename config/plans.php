@@ -16,18 +16,21 @@ return [
     'plans' => [
         'free' => [
             'label'                  => 'Percuma',
+            'price'                  => 0,
             'rank'                   => 0,
             'max_classes'            => 3,
             'max_students_per_class' => 40,
         ],
         'personal' => [
             'label'                  => 'Personal',
+            'price'                  => 19,   // RM sebulan
             'rank'                   => 1,
             'max_classes'            => null,
             'max_students_per_class' => null,
         ],
         'sekolah' => [
             'label'                  => 'Sekolah',
+            'price'                  => 49,   // RM sebulan
             'rank'                   => 2,
             'max_classes'            => null,
             'max_students_per_class' => null,

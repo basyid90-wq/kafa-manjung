@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+
+    'bayarcash' => [
+        'sandbox'         => env('BAYARCASH_SANDBOX', true),
+        'api_token'       => env('BAYARCASH_API_TOKEN'),        // Personal Access Token (PAT)
+        'secret_key'      => env('BAYARCASH_API_SECRET_KEY'),   // HMAC-SHA256 checksum key
+        'portal_key'      => env('BAYARCASH_PORTAL_KEY'),
+        'payment_channel' => (int) env('BAYARCASH_PAYMENT_CHANNEL', 1), // 1 = FPX
+        'base_url'        => env('BAYARCASH_SANDBOX', true)
+            ? 'https://api.console.bayarcash-sandbox.com/v3/'
+            : 'https://api.console.bayar.cash/v3/',
+    ],
+
 ];

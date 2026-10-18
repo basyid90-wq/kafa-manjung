@@ -86,3 +86,11 @@ Perkara ini PERNAH atau BOLEH berlaku — elak setiap masa:
 [ ] Panduan pengguna (manuals/*.blade.php) dikemaskini jika modul baru
 [ ] CHANGELOG.md dikemaskini dengan perubahan terkini
 ```
+
+---
+
+## 💳 Pembayaran (Bayarcash)
+
+- Kunci `BAYARCASH_*` hanya dalam `.env` — jangan commit, jangan tampal dalam chat/tiket. Jika terdedah, jana semula di console Bayarcash.
+- Callback (`/webhook/bayarcash`) dan return URL WAJIB disahkan dengan checksum HMAC-SHA256 sebelum apa-apa tindakan.
+- Pakej hanya diaktifkan oleh `Payment::markPaid()`; jumlah bayaran mesti sepadan dengan pesanan.

@@ -28,6 +28,9 @@ class SubscriptionController extends Controller
         $typePlans = config("plans.types.{$school->type}.plans", array_keys($plans));
         $highlight = $request->query('modul');
 
-        return view('subscription.index', compact('school', 'usage', 'plans', 'modules', 'typePlans', 'highlight'));
+        $payments      = \App\Models\Payment::where('school_id', $school->id)->latest()->paginate(10);
+        $billingReady  = app(\App\Services\Bayarcash::class)->isConfigured();
+
+        return view('subscription.index', compact('school', 'usage', 'plans', 'modules', 'typePlans', 'highlight', 'payments', 'billingReady'));
     }
 }

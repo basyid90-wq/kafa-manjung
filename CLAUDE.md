@@ -115,6 +115,13 @@ Removed in the SaaS pivot (do NOT reintroduce): Pentadbir, Penyelia KAFA, Pembek
 - Teachers join via `/jemputan/{token}` (InvitationController; only the sha256 of the token is stored). A Personal-workspace owner who accepts is merged into the school by `App\Services\WorkspaceMerger` (blocked while MyKid duplicates exist).
 - App locale is `ms`; translations live in `lang/ms/`. Every new validation attribute should get a Malay name in `lang/ms/validation.php`.
 
+**Billing (Bayarcash, monthly):**
+- Prices live in `config/plans.php` (`price`, RM/month). Credentials only in `.env` (`BAYARCASH_*`, see `.env.example`) — never commit or paste real keys.
+- Flow: `POST /langganan/bayar` (owner only) → `App\Services\Bayarcash::createPaymentIntent()` → Bayarcash page → `POST /webhook/bayarcash` (server callback) and `/langganan/bayar/kembali` (return URL). Both are CSRF-exempt and trusted ONLY after HMAC-SHA256 checksum verification.
+- Plans are activated exclusively by `Payment::markPaid()` (idempotent; renewals extend from the current expiry; amount must match). Never activate a plan from browser input.
+- `php artisan plans:remind` (scheduled daily 09:00) e-mails owners 7 and 1 days before expiry — Hostinger needs a cron for `php artisan schedule:run`.
+- Cover billing changes in `tests/Feature/BillingTest.php` (use `Http::fake`, never real gateway calls).
+
 ---
 
 ## 🏷️ Naming Conventions

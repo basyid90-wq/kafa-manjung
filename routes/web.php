@@ -26,6 +26,10 @@ Route::view('/privasi', 'legal.privacy')->name('legal.privacy');
 Route::get('/jemputan/{token}', [\App\Http\Controllers\InvitationController::class, 'show'])->name('invitations.show');
 Route::post('/jemputan/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])->middleware('throttle:10,1')->name('invitations.accept');
 
+// Bayarcash — pengesahan melalui checksum, bukan sesi
+Route::match(['get', 'post'], '/langganan/bayar/kembali', [\App\Http\Controllers\BillingController::class, 'return'])->name('billing.return');
+Route::post('/webhook/bayarcash', [\App\Http\Controllers\BillingController::class, 'callback'])->middleware('throttle:60,1')->name('billing.callback');
+
 // Public routes — boleh akses tanpa login (dari login page)
 Route::post('announcements/{announcement}/increment-view', [AnnouncementController::class, 'incrementView'])
     ->name('announcements.increment-view');
@@ -228,6 +232,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Langganan (pakej & had)
     Route::get('/langganan', [\App\Http\Controllers\SubscriptionController::class, 'index'])->name('subscription.index');
+    Route::post('/langganan/bayar', [\App\Http\Controllers\BillingController::class, 'checkout'])->middleware('throttle:10,1')->name('billing.checkout');
 
     // 16. Rekod Pencapaian Murid
     Route::middleware(['role:Super Admin|Guru Besar|Guru KAFA'])->group(function () {

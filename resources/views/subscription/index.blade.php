@@ -71,6 +71,7 @@
             <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">{{ $key === 'personal' ? 'Untuk guru individu' : 'Untuk sekolah' }}</span>
             @endif
         </div>
+        <p class="mb-2"><span class="text-3xl font-bold text-gray-900 dark:text-white">{{ $plan['price'] ? 'RM' . $plan['price'] : 'RM0' }}</span><span class="text-sm text-gray-500 dark:text-gray-400"> / bulan</span></p>
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
             {{ $plan['max_classes'] ? 'Sehingga ' . $plan['max_classes'] . ' kelas' : 'Kelas tanpa had' }}
             · {{ $plan['max_students_per_class'] ? $plan['max_students_per_class'] . ' murid sekelas' : 'murid tanpa had' }}
@@ -91,12 +92,27 @@
         </ul>
 
         <div class="mt-auto">
-            @if($isUpgrade && $isOwner)
-            <a href="https://wa.me/{{ $waNumber }}?text={{ $waText }}" target="_blank" rel="noopener"
-               class="w-full inline-flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                Naik Taraf ke {{ $plan['label'] }}
-            </a>
-            <p class="text-xs text-gray-400 mt-2 text-center">Pembayaran dalam talian akan dibuka tidak lama lagi. Buat masa ini, hubungi kami untuk pengaktifan.</p>
+            @php
+                $isRenewal = $isCurrent && $key !== 'free' && $available;
+            @endphp
+            @if(($isUpgrade || $isRenewal) && $isOwner)
+                @if($billingReady)
+                <form method="POST" action="{{ route('billing.checkout') }}">
+                    @csrf
+                    <input type="hidden" name="plan" value="{{ $key }}">
+                    <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        {{ $isRenewal ? 'Lanjutkan 1 Bulan' : 'Naik Taraf' }} — RM{{ $plan['price'] }}
+                    </button>
+                </form>
+                <p class="text-xs text-gray-400 mt-2 text-center">Bayaran melalui FPX (Bayarcash). Pakej aktif serta-merta selepas bayaran berjaya.</p>
+                @else
+                <a href="https://wa.me/{{ $waNumber }}?text={{ $waText }}" target="_blank" rel="noopener"
+                   class="w-full inline-flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Naik Taraf ke {{ $plan['label'] }}
+                </a>
+                <p class="text-xs text-gray-400 mt-2 text-center">Pembayaran dalam talian akan dibuka tidak lama lagi. Buat masa ini, hubungi kami untuk pengaktifan.</p>
+                @endif
             @elseif($isUpgrade)
             <p class="text-xs text-gray-500 dark:text-gray-400 text-center">Hubungi Guru Besar anda untuk naik taraf pakej.</p>
             @endif
@@ -104,4 +120,44 @@
     </div>
     @endforeach
 </div>
+{{-- ── Sejarah pembayaran ── --}}
+@if($payments->total() > 0)
+<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mt-6">
+    <div class="px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Sejarah Pembayaran</h2>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+                <tr>
+                    <th class="px-5 py-3 text-left w-12">No</th>
+                    <th class="px-5 py-3 text-left">Tarikh</th>
+                    <th class="px-5 py-3 text-left">No. Pesanan</th>
+                    <th class="px-5 py-3 text-left">Pakej</th>
+                    <th class="px-5 py-3 text-left">Tempoh</th>
+                    <th class="px-5 py-3 text-right">Jumlah</th>
+                    <th class="px-5 py-3 text-left">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                @foreach($payments as $p)
+                @php $badge = ['paid' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', 'pending' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'][$p->status] ?? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'; @endphp
+                <tr>
+                    <td class="px-5 py-3 text-gray-400 text-xs">{{ $payments->firstItem() + $loop->index }}</td>
+                    <td class="px-5 py-3 text-gray-600 dark:text-gray-300">{{ $p->created_at->format('d/m/Y H:i') }}</td>
+                    <td class="px-5 py-3 font-mono text-xs text-gray-600 dark:text-gray-300">{{ $p->order_number }}</td>
+                    <td class="px-5 py-3 text-gray-900 dark:text-white">{{ config("plans.plans.{$p->plan}.label") }}</td>
+                    <td class="px-5 py-3 text-gray-600 dark:text-gray-300">{{ $p->period_start ? $p->period_start->format('d/m/Y') . ' – ' . $p->period_end->format('d/m/Y') : '—' }}</td>
+                    <td class="px-5 py-3 text-right text-gray-900 dark:text-white">RM{{ $p->amountString() }}</td>
+                    <td class="px-5 py-3"><span class="px-2.5 py-0.5 text-xs font-medium rounded-full {{ $badge }}">{{ $p->statusLabel() }}</span></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @if($payments->hasPages())
+    <div class="px-5 py-4 border-t border-gray-200 dark:border-gray-700">{{ $payments->links() }}</div>
+    @endif
+</div>
+@endif
 @endsection

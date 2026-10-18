@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Bayarcash server-to-server callback and return URL carry their own HMAC checksum
+        $middleware->validateCsrfTokens(except: ['webhook/bayarcash', 'langganan/bayar/kembali']);
+
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,

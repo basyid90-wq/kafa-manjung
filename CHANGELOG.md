@@ -263,6 +263,14 @@ php artisan view:cache
 | 202 | 2026-10-18 | `resources/views/auth/login.blade.php` | Butang "Mula Sekarang" ke /daftar, pautan "Daftar percuma", Lupa Kata Laluan melalui e-mel | ✅ Sudah Push |
 | 203 | 2026-10-18 | `tests/Feature/Auth/*, tests/Feature/{InvitationTest,ExampleTest,ProfileTest}.php` | BARU: 7 ujian pendaftaran + 8 ujian jemputan/gabung; ujian lama dibetulkan (6 kegagalan lama selesai, 2 dilangkau kerana padam akaun sendiri dimatikan) | ✅ Sudah Push |
 | 204 | 2026-10-18 | `CLAUDE.md` | Peraturan daftar sendiri, pengesahan e-mel, jemputan dan BM | ✅ Sudah Push |
+| 205 | 2026-10-18 | `config/plans.php, config/services.php, .env.example` | Harga pakej (Personal RM19, Sekolah RM49 sebulan) dan konfigurasi Bayarcash (sandbox/production, PAT, secret key, portal key) | ⏳ Belum Push |
+| 206 | 2026-10-18 | `database/migrations/2026_10_18_000005_create_payments_table.php, app/Models/Payment.php` | BARU: rekod pembayaran; markPaid() aktifkan/lanjutkan pakej secara idempotent | ⏳ Belum Push |
+| 207 | 2026-10-18 | `app/Services/Bayarcash.php` | BARU: klien Bayarcash v3 (payment intent + checksum HMAC-SHA256 + pengesahan callback/return) tanpa pakej tambahan | ⏳ Belum Push |
+| 208 | 2026-10-18 | `app/Http/Controllers/BillingController.php, routes/web.php, bootstrap/app.php` | BARU: checkout /langganan/bayar, return URL, webhook /webhook/bayarcash (dikecualikan CSRF, disahkan checksum, semak jumlah) | ⏳ Belum Push |
+| 209 | 2026-10-18 | `app/Http/Controllers/SubscriptionController.php, resources/views/subscription/index.blade.php` | Halaman Langganan: harga, butang Naik Taraf / Lanjutkan 1 Bulan, sejarah pembayaran | ⏳ Belum Push |
+| 210 | 2026-10-18 | `app/Notifications/PlanExpiringNotification.php, routes/console.php` | BARU: arahan plans:remind (harian 09:00) — peringatan 7 & 1 hari sebelum pakej tamat | ⏳ Belum Push |
+| 211 | 2026-10-18 | `tests/Feature/BillingTest.php` | BARU: 11 ujian pembayaran (checksum, callback palsu, jumlah salah, idempotent, pembaharuan, peringatan) | ⏳ Belum Push |
+| 212 | 2026-10-18 | `CLAUDE.md, docs/SECURITY.md` | Peraturan pembayaran dan keselamatan kunci Bayarcash | ⏳ Belum Push |
 
 ---
 
