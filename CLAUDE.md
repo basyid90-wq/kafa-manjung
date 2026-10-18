@@ -163,6 +163,7 @@ Removed in the SaaS pivot (do NOT reintroduce): Pentadbir, Penyelia KAFA, Pembek
 ### Layouts
 - **Authenticated pages:** `@extends('layout-fb.layout')` with `@section('content')`
 - **Public pages (login):** `@extends('layout-fb.auth')` with `@section('content')`
+- **Landing page (`/`, `/login`):** `resources/views/auth/login.blade.php` is a standalone marketing page (own `<head>`, generated from the Claude Design draft `scratch/ekafa-landing.html`). It uses many Tailwind classes not used elsewhere → `npm run build` is REQUIRED on every deploy. Keep the login form field names (`login_type`, `login_id`, `password`, `remember`).
 - **PDF templates:** Standalone `.blade.php` — no layout, inline CSS only
 
 ### Standard Tailwind Components

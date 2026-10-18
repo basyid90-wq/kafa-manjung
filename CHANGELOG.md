@@ -271,6 +271,8 @@ php artisan view:cache
 | 210 | 2026-10-18 | `app/Notifications/PlanExpiringNotification.php, routes/console.php` | BARU: arahan plans:remind (harian 09:00) — peringatan 7 & 1 hari sebelum pakej tamat | ✅ Sudah Push |
 | 211 | 2026-10-18 | `tests/Feature/BillingTest.php` | BARU: 11 ujian pembayaran (checksum, callback palsu, jumlah salah, idempotent, pembaharuan, peringatan) | ✅ Sudah Push |
 | 212 | 2026-10-18 | `CLAUDE.md, docs/SECURITY.md` | Peraturan pembayaran dan keselamatan kunci Bayarcash | ✅ Sudah Push |
+| 213 | 2026-10-19 | `resources/views/auth/login.blade.php` | Laman utama baharu (reka bentuk Claude Design): 13 seksyen — hero dengan mock dashboard, modul, lawatan produk (5 tab), harga RM0/RM19/RM49, keselamatan, soalan lazim, log masuk, CTA; animasi & skrol; hebahan platform sebagai kad makluman; FIX graf kehadiran mingguan (bar tinggi 0) | ⏳ Belum Push |
+| 214 | 2026-10-19 | `CLAUDE.md` | Nota: laman utama ialah halaman kendiri dan wajib npm run build semasa deploy | ⏳ Belum Push |
 
 ---
 
