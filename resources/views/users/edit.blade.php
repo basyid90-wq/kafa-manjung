@@ -43,22 +43,11 @@
                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <div id="district_container" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Daerah</label>
-                    <select id="district_id" name="district_id"
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="">-- Pilih Daerah --</option>
-                        @foreach($districts as $district)
-                            <option value="{{ $district->id }}" {{ old('district_id', $user->district_id) == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
                 <div id="school_container" class="hidden">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sekolah</label>
                     <select id="school_id" name="school_id"
                             class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="">Tiada Sekolah / Pentadbiran & Pembekal</option>
+                        <option value="">Tiada Sekolah (Super Admin sahaja)</option>
                         @foreach($schools as $school)
                             <option value="{{ $school->id }}" {{ old('school_id', $user->school_id) == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
                         @endforeach
@@ -101,28 +90,16 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const roleCheckboxes    = document.querySelectorAll('input[name="roles[]"]');
-    const districtContainer = document.getElementById('district_container');
-    const districtSelect    = document.getElementById('district_id');
     const schoolContainer   = document.getElementById('school_container');
     const schoolSelect      = document.getElementById('school_id');
 
     function toggleFieldsVisibility() {
-        let isSupervisor = false;
         let isSchoolRole = false;
         roleCheckboxes.forEach(cb => {
             if (cb.checked) {
-                if (cb.value === 'Penyelia KAFA') isSupervisor = true;
                 if (cb.value === 'Guru KAFA' || cb.value === 'Guru Besar') isSchoolRole = true;
             }
         });
-        if (isSupervisor || isSchoolRole) {
-            districtContainer.classList.remove('hidden');
-            districtSelect.setAttribute('required', 'required');
-        } else {
-            districtContainer.classList.add('hidden');
-            districtSelect.removeAttribute('required');
-            districtSelect.value = '';
-        }
         if (isSchoolRole) {
             schoolContainer.classList.remove('hidden');
             schoolSelect.setAttribute('required', 'required');

@@ -30,19 +30,11 @@ class StudentImportController extends Controller
         }
 
         // ── Resolve school_id ────────────────────────────────────────────
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+        if ($user->isSuperAdmin()) {
             $schoolId = (int) $request->school_id;
             if (!$schoolId) {
                 return back()->with('error', 'Sila pilih sekolah sebelum import.');
             }
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $schoolId = (int) $request->school_id;
-            if (!$schoolId) {
-                return back()->with('error', 'Sila pilih sekolah sebelum import.');
-            }
-            // Ensure school belongs to supervisor's district
-            $ok = School::where('id', $schoolId)->where('district_id', $user->district_id)->exists();
-            if (!$ok) abort(403);
         } else {
             $schoolId = (int) $user->school_id;
             if (!$schoolId) {

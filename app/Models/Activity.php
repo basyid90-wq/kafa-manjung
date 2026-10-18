@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 
 class Activity extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
         'school_id',
-        'district_id',
         'tahap',
         'name',
         'date',
@@ -19,11 +20,6 @@ class Activity extends Model
     public function school()
     {
         return $this->belongsTo(School::class);
-    }
-
-    public function district()
-    {
-        return $this->belongsTo(District::class);
     }
 
     public function students()

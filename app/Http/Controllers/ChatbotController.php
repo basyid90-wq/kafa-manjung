@@ -196,7 +196,7 @@ class ChatbotController extends Controller
         $school = $user->school?->name ?? '-';
         $name   = $user->name;
 
-        $base = "Kamu adalah Pembantu AI rasmi untuk Sistem Pengurusan KAFA Manjung (APKM), Malaysia.
+        $base = "Kamu adalah Pembantu AI rasmi untuk eKafa Online, platform pengurusan KAFA di Malaysia.
 Sentiasa jawab dalam Bahasa Melayu yang mesra dan profesional.
 Jawapan mestilah ringkas, jelas dan berguna. Elak jawapan terlalu panjang.
 Pengguna: {$name} | Peranan: {$role} | Sekolah: {$school}.";
@@ -208,30 +208,18 @@ Pengguna: {$name} | Peranan: {$role} | Sekolah: {$school}.";
 
             'Guru Besar' =>
                 "Bantu guru besar dengan: pengurusan pentadbiran sekolah, prosedur laporan kehadiran, " .
-                "statistik murid, penyeliaan guru, cara guna modul dalam sistem APKM.",
-
-            'Penyelia KAFA' =>
-                "Bantu penyelia dengan: pemantauan sekolah-sekolah dalam daerah, prosedur penilaian guru, " .
-                "laporan pencapaian daerah, cara semak data dalam sistem.",
+                "statistik murid, penyeliaan guru, cara guna modul dalam eKafa Online.",
 
             'Ibu Bapa' =>
                 "Bantu ibu bapa dengan: maklumat am tentang KAFA, jadual persekolahan, cara hubungi guru, " .
                 "soalan lazim tentang UPKK, cara semak maklumat anak dalam sistem.",
 
-            'Pentadbir' =>
-                "Bantu pentadbir dengan: pengurusan pengguna sistem, laporan daerah, prosedur pendaftaran " .
-                "sekolah baharu, cara guna semua modul dalam APKM.",
-
-            'Pembekal' =>
-                "Bantu pembekal dengan: prosedur tempahan buku, cara semak status pembekalan, " .
-                "cara hantar invois, syarat dan prosedur pembekalan KAFA.",
-
             'Super Admin' =>
-                "Kamu membantu Super Admin sistem. Boleh jawab soalan tentang semua aspek sistem APKM, " .
+                "Kamu membantu Super Admin sistem. Boleh jawab soalan tentang semua aspek eKafa Online, " .
                 "pengurusan pengguna, tetapan sistem, laporan, dan troubleshooting.",
 
             default =>
-                "Bantu pengguna dengan soalan berkaitan Sistem Pengurusan KAFA Manjung.",
+                "Bantu pengguna dengan soalan berkaitan eKafa Online.",
         };
 
         $pdpaNote = $dataAccess

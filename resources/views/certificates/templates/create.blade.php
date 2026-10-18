@@ -27,42 +27,18 @@
                     @error('name')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
 
-                @hasanyrole('Super Admin|Pentadbir|Penyelia KAFA')
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peringkat <span class="text-red-500">*</span></label>
-                    <select name="level" id="selectLevel"
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="sekolah" {{ old('level','sekolah')==='sekolah' ? 'selected':'' }}>Sekolah</option>
-                        <option value="daerah"  {{ old('level')==='daerah'  ? 'selected':'' }}>Daerah</option>
-                    </select>
-                </div>
-                @endhasanyrole
-
-                @if($districts->isNotEmpty())
-                <div id="wrapDistrict">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Daerah</label>
-                    <select name="district_id"
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="">-- Pilih Daerah --</option>
-                        @foreach($districts as $d)
-                        <option value="{{ $d->id }}" {{ old('district_id')==$d->id ? 'selected':'' }}>{{ $d->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
-
-                @if($schools->isNotEmpty())
+                @role('Super Admin')
                 <div id="wrapSchool">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sekolah</label>
                     <select name="school_id"
                             class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="">-- Pilih Sekolah --</option>
+                        <option value="">Templat Platform (semua sekolah)</option>
                         @foreach($schools as $s)
                         <option value="{{ $s->id }}" {{ old('school_id')==$s->id ? 'selected':'' }}>{{ $s->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                @endif
+                @endrole
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Susun Atur Teks <span class="text-red-500">*</span></label>
@@ -123,17 +99,6 @@
 <script>
 document.getElementById('chkSig').addEventListener('change', function() {
     document.getElementById('wrapSig').classList.toggle('hidden', !this.checked);
-});
-document.addEventListener('DOMContentLoaded', function () {
-    var sel = document.getElementById('selectLevel');
-    var wrapSchool = document.getElementById('wrapSchool');
-    if (sel && wrapSchool) {
-        function toggleSchool() {
-            wrapSchool.classList.toggle('hidden', sel.value !== 'sekolah');
-        }
-        sel.addEventListener('change', toggleSchool);
-        toggleSchool();
-    }
 });
 </script>
 @endsection

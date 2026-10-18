@@ -31,20 +31,20 @@
 
     @if($examId)
 
-    {{-- District summary cards --}}
+    {{-- Overall summary cards --}}
     @if($districtTotals && $districtTotals['total_candidates'] > 0)
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-center">
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">JUMLAH CALON DAERAH</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">JUMLAH CALON</p>
             <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $districtTotals['total_candidates'] }}</p>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-center">
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">PURATA LULUS DAERAH</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">PURATA LULUS</p>
             @php $pc = $districtTotals['pass_percentage']; $pcColor = $pc >= 80 ? 'text-green-600 dark:text-green-400' : ($pc >= 60 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'); @endphp
             <p class="text-2xl font-bold {{ $pcColor }}">{{ number_format($pc, 1) }}%</p>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 text-center">
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">GPS PURATA DAERAH</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">GPS PURATA</p>
             @php $gps = $districtTotals['gps']; $gpsBadge = $gps <= 2.5 ? 'bg-green-100 text-green-700' : ($gps <= 4.0 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'); @endphp
             <span class="inline-block px-3 py-1 text-xl font-bold rounded-lg {{ $gpsBadge }}">{{ number_format($gps, 2) }}</span>
         </div>
@@ -133,7 +133,7 @@
                 @if($districtTotals && $districtTotals['total_candidates'] > 0)
                 <tfoot>
                     <tr class="border-t-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/30 font-semibold">
-                        <td colspan="3" class="px-4 py-3 text-right text-gray-900 dark:text-white">Jumlah / Purata Daerah</td>
+                        <td colspan="3" class="px-4 py-3 text-right text-gray-900 dark:text-white">Jumlah / Purata Keseluruhan</td>
                         <td class="px-4 py-3 text-center text-gray-900 dark:text-white">{{ $districtTotals['total_candidates'] }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-2">

@@ -6,19 +6,45 @@ use App\Models\KafaClass;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class KafaClassController extends Controller
 {
+    private function teachersOf($schoolId)
+    {
+        return User::role(['Guru KAFA', 'Guru Besar'])->where('school_id', $schoolId)->get();
+    }
+
+    private function validated(Request $request, User $user): array
+    {
+        $isSuperAdmin = $user->isSuperAdmin();
+        $schoolId     = $isSuperAdmin ? $request->input('school_id') : $user->school_id;
+
+        $validated = $request->validate([
+            'name'       => 'required|string|max:255',
+            'tahun'      => 'required|integer|between:1,6',
+            'teacher_id' => ['nullable', Rule::exists('users', 'id')->where('school_id', $schoolId)],
+            'school_id'  => $isSuperAdmin ? 'required|exists:schools,id' : 'nullable',
+        ], [
+            'tahun.required'    => 'Sila pilih tahun pengajian.',
+            'tahun.between'     => 'Tahun mesti antara 1 hingga 6.',
+            'teacher_id.exists' => 'Guru yang dipilih bukan dari sekolah ini.',
+        ]);
+
+        return [
+            'school_id'  => $schoolId,
+            'name'       => $validated['name'],
+            'tahun'      => $validated['tahun'],
+            'teacher_id' => $validated['teacher_id'] ?? null,
+        ];
+    }
+
     public function index()
     {
         $user = auth()->user();
         $query = KafaClass::with(['school', 'teacher']);
 
-        if ($user->hasRole('Penyelia KAFA')) {
-            $query->whereHas('school', function ($q) use ($user) {
-                $q->where('district_id', $user->district_id);
-            });
-        } elseif (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
+        if (!$user->isSuperAdmin()) {
             $query->where('school_id', $user->school_id);
         }
 
@@ -32,14 +58,10 @@ class KafaClassController extends Controller
         $schools = null;
         $teachers = collect();
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            $schools = School::all();
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $schools = School::where('district_id', $user->district_id)->get();
+        if ($user->isSuperAdmin()) {
+            $schools = School::orderBy('name')->get();
         } else {
-            $teachers = User::role(['Guru KAFA', 'Guru Besar'])
-                ->where('school_id', $user->school_id)
-                ->get();
+            $teachers = $this->teachersOf($user->school_id);
         }
 
         return view('kafa_classes.create', compact('teachers', 'schools'));
@@ -47,32 +69,7 @@ class KafaClassController extends Controller
 
     public function store(Request $request)
     {
-        $user = auth()->user();
-        $requiresSchool = $user->hasAnyRole(['Super Admin', 'Pentadbir', 'Penyelia KAFA']);
-
-        $validated = $request->validate([
-            'name'       => 'required|string|max:255',
-            'tahun'      => 'required|integer|between:1,6',
-            'teacher_id' => 'nullable|exists:users,id',
-            'school_id'  => $requiresSchool ? 'required|exists:schools,id' : 'nullable',
-        ], [
-            'tahun.required' => 'Sila pilih tahun pengajian.',
-            'tahun.between'  => 'Tahun mesti antara 1 hingga 6.',
-        ]);
-
-        // Extra district check for Penyelia KAFA
-        if ($user->hasRole('Penyelia KAFA')) {
-            $schoolInDistrict = School::where('id', $validated['school_id'])
-                ->where('district_id', $user->district_id)->exists();
-            if (!$schoolInDistrict) abort(403);
-        }
-
-        KafaClass::create([
-            'school_id'  => $requiresSchool ? $validated['school_id'] : $user->school_id,
-            'name'       => $validated['name'],
-            'tahun'      => $validated['tahun'],
-            'teacher_id' => $validated['teacher_id'],
-        ]);
+        KafaClass::create($this->validated($request, auth()->user()));
 
         return redirect()->route('kafa_classes.index')->with('success', 'Kelas berjaya ditambah.');
     }
@@ -80,80 +77,27 @@ class KafaClassController extends Controller
     public function edit(KafaClass $kafaClass)
     {
         $user = auth()->user();
+        $this->authorizeSchool($kafaClass->school_id);
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            // Full access
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            if ($kafaClass->school->district_id !== $user->district_id) abort(403);
-        } else {
-            if ($kafaClass->school_id !== $user->school_id) abort(403);
-        }
-
-        $schools = null;
-        $teachers = collect();
-
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            $schools = School::all();
-            $teachers = User::role(['Guru KAFA', 'Guru Besar'])
-                ->where('school_id', $kafaClass->school_id)
-                ->get();
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $schools = School::where('district_id', $user->district_id)->get();
-            $teachers = User::role(['Guru KAFA', 'Guru Besar'])
-                ->where('school_id', $kafaClass->school_id)
-                ->get();
-        } else {
-            $teachers = User::role(['Guru KAFA', 'Guru Besar'])
-                ->where('school_id', $user->school_id)
-                ->get();
-        }
+        $schools  = $user->isSuperAdmin() ? School::orderBy('name')->get() : null;
+        $teachers = $this->teachersOf($kafaClass->school_id);
 
         return view('kafa_classes.edit', compact('kafaClass', 'teachers', 'schools'));
     }
 
     public function update(Request $request, KafaClass $kafaClass)
     {
-        $user = auth()->user();
+        $this->authorizeSchool($kafaClass->school_id);
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            // Full access
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            if ($kafaClass->school->district_id !== $user->district_id) abort(403);
-        } else {
-            if ($kafaClass->school_id !== $user->school_id) abort(403);
-        }
-
-        $requiresSchool = $user->hasAnyRole(['Super Admin', 'Pentadbir', 'Penyelia KAFA']);
-
-        $validated = $request->validate([
-            'name'       => 'required|string|max:255',
-            'tahun'      => 'required|integer|between:1,6',
-            'teacher_id' => 'nullable|exists:users,id',
-            'school_id'  => $requiresSchool ? 'required|exists:schools,id' : 'nullable',
-        ], [
-            'tahun.required' => 'Sila pilih tahun pengajian.',
-            'tahun.between'  => 'Tahun mesti antara 1 hingga 6.',
-        ]);
-
-        // Extra district check for Penyelia KAFA
-        if ($user->hasRole('Penyelia KAFA')) {
-            $schoolInDistrict = School::where('id', $validated['school_id'])
-                ->where('district_id', $user->district_id)->exists();
-            if (!$schoolInDistrict) abort(403);
-        }
-
-        $kafaClass->update([
-            'name'       => $validated['name'],
-            'tahun'      => $validated['tahun'],
-            'teacher_id' => $validated['teacher_id'],
-            'school_id'  => $requiresSchool ? $validated['school_id'] : $user->school_id,
-        ]);
+        $kafaClass->update($this->validated($request, auth()->user()));
 
         return redirect()->route('kafa_classes.index')->with('success', 'Kelas berjaya dikemaskini.');
     }
 
     public function getTeachersBySchool($school_id)
     {
+        $this->authorizeSchool($school_id);
+
         $teachers = User::role(['Guru KAFA', 'Guru Besar'])
             ->where('school_id', $school_id)
             ->get(['id', 'name']);
@@ -163,6 +107,8 @@ class KafaClassController extends Controller
 
     public function getClassesBySchool($school_id)
     {
+        $this->authorizeSchool($school_id);
+
         $classes = KafaClass::where('school_id', $school_id)
             ->orderBy('tahun')
             ->orderBy('name')
@@ -174,15 +120,7 @@ class KafaClassController extends Controller
 
     public function destroy(KafaClass $kafaClass)
     {
-        $user = auth()->user();
-
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            if ($user->hasRole('Penyelia KAFA')) {
-                if ($kafaClass->school->district_id !== $user->district_id) abort(403);
-            } else {
-                if ($kafaClass->school_id !== $user->school_id) abort(403);
-            }
-        }
+        $this->authorizeSchool($kafaClass->school_id);
 
         $kafaClass->delete();
         return redirect()->route('kafa_classes.index')->with('success', 'Kelas berjaya dipadam.');

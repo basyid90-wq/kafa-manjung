@@ -12,18 +12,14 @@ class ManualController extends Controller
     private array $roleMap = [
         'Guru KAFA'        => 'guru-kafa',
         'Guru Besar'       => 'guru-besar',
-        'Penyelia KAFA'    => 'penyelia-kafa',
         'Ibu Bapa'         => 'ibu-bapa',
-        'Bendahari Sekolah'=> 'bendahari-sekolah',
-        'Pentadbir'        => 'pentadbir',
-        'Pembekal'         => 'pembekal',
     ];
 
     public function download()
     {
         $user     = Auth::user();
-        $roleName = $user->getRoleNames()->first() ?? 'Pentadbir';
-        $slug     = $this->roleMap[$roleName] ?? 'pentadbir';
+        $roleName = $user->getRoleNames()->first() ?? 'Guru KAFA';
+        $slug     = $this->roleMap[$roleName] ?? 'guru-kafa';
         $view     = "manuals.{$slug}";
 
         // Log the download

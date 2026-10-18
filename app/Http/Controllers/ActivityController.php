@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
-use App\Models\School;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,29 +10,19 @@ use Illuminate\Support\Facades\Storage;
 
 class ActivityController extends Controller
 {
+    /** "Tahap" describes the event level only; every activity is owned by one school (tenant). */
+    private const TAHAP_OPTIONS = [
+        'sekolah' => 'Peringkat Sekolah',
+        'daerah'  => 'Peringkat Daerah',
+        'negeri'  => 'Peringkat Negeri',
+    ];
+
     public function index()
     {
         $user = Auth::user();
 
-        $activities = Activity::with('school', 'district')
-            ->when($user->hasRole('Super Admin'), fn($q) => $q)
-            ->when($user->hasRole('Penyelia KAFA'), function ($q) use ($user) {
-                $schoolIds = School::where('district_id', $user->district_id)->pluck('id');
-                $q->where(function ($q) use ($user, $schoolIds) {
-                    $q->whereIn('school_id', $schoolIds)
-                      ->orWhere(function ($q) use ($user) {
-                          $q->where('tahap', 'daerah')->where('district_id', $user->district_id);
-                      })
-                      ->orWhere('tahap', 'negeri');
-                });
-            })
-            ->when(
-                !$user->hasAnyRole(['Super Admin', 'Penyelia KAFA']),
-                fn($q) => $q->where(function ($q) use ($user) {
-                    $q->where('school_id', $user->school_id)
-                      ->orWhereIn('tahap', ['daerah', 'negeri']);
-                })
-            )
+        $activities = Activity::with('school')
+            ->when(!$user->isSuperAdmin(), fn($q) => $q->where('school_id', $user->school_id))
             ->latest()
             ->paginate(10);
 
@@ -42,15 +31,7 @@ class ActivityController extends Controller
 
     public function create()
     {
-        $user = Auth::user();
-
-        if ($user->hasRole('Super Admin')) {
-            $tahapOptions = ['sekolah' => 'Peringkat Sekolah', 'daerah' => 'Peringkat Daerah', 'negeri' => 'Peringkat Negeri'];
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $tahapOptions = ['daerah' => 'Peringkat Daerah'];
-        } else {
-            $tahapOptions = ['sekolah' => 'Peringkat Sekolah'];
-        }
+        $tahapOptions = self::TAHAP_OPTIONS;
 
         return view('activities.create', compact('tahapOptions'));
     }
@@ -66,18 +47,10 @@ class ActivityController extends Controller
         ]);
 
         $user = Auth::user();
-        $data = $request->only(['name', 'date', 'description', 'tahap']);
+        abort_unless($user->school_id, 403, 'Akaun anda belum dikaitkan dengan mana-mana sekolah.');
 
-        if ($data['tahap'] === 'sekolah') {
-            $data['school_id']   = $user->school_id;
-            $data['district_id'] = null;
-        } elseif ($data['tahap'] === 'daerah') {
-            $data['school_id']   = null;
-            $data['district_id'] = $user->district_id;
-        } else {
-            $data['school_id']   = null;
-            $data['district_id'] = null;
-        }
+        $data = $request->only(['name', 'date', 'description', 'tahap']);
+        $data['school_id'] = $user->school_id;
 
         if ($request->hasFile('photo')) {
             $data['photo_path'] = $request->file('photo')->store('activities', 'public');
@@ -90,18 +63,15 @@ class ActivityController extends Controller
 
     public function show(Activity $activity)
     {
+        $this->authorizeSchool($activity->school_id);
+
         $attendedStudents = $activity->students()
             ->with(['kafaClass', 'school', 'certificates' => fn($q) => $q->where('activity_id', $activity->id)])
             ->orderBy('name')
             ->get();
 
-        $user = Auth::user();
         $templates = \App\Models\CertificateTemplate::query()
-            ->when($user->hasRole('Penyelia KAFA'), fn($q) => $q->where('district_id', $user->district_id))
-            ->when(
-                !$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Penyelia KAFA']),
-                fn($q) => $q->where('school_id', $user->school_id)
-            )
+            ->where(fn($q) => $q->where('school_id', $activity->school_id)->orWhereNull('school_id'))
             ->orderBy('name')
             ->get();
 
@@ -110,24 +80,16 @@ class ActivityController extends Controller
 
     public function edit(Activity $activity)
     {
-        $user = Auth::user();
-        $this->authorizeEdit($activity, $user);
+        $this->authorizeSchool($activity->school_id);
 
-        if ($user->hasRole('Super Admin')) {
-            $tahapOptions = ['sekolah' => 'Peringkat Sekolah', 'daerah' => 'Peringkat Daerah', 'negeri' => 'Peringkat Negeri'];
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $tahapOptions = ['daerah' => 'Peringkat Daerah'];
-        } else {
-            $tahapOptions = ['sekolah' => 'Peringkat Sekolah'];
-        }
+        $tahapOptions = self::TAHAP_OPTIONS;
 
         return view('activities.edit', compact('activity', 'tahapOptions'));
     }
 
     public function update(Request $request, Activity $activity)
     {
-        $user = Auth::user();
-        $this->authorizeEdit($activity, $user);
+        $this->authorizeSchool($activity->school_id);
 
         $request->validate([
             'name'        => 'required|string|max:255',
@@ -138,17 +100,6 @@ class ActivityController extends Controller
         ]);
 
         $data = $request->only(['name', 'date', 'description', 'tahap']);
-
-        if ($data['tahap'] === 'sekolah') {
-            $data['school_id']   = $user->school_id;
-            $data['district_id'] = null;
-        } elseif ($data['tahap'] === 'daerah') {
-            $data['school_id']   = null;
-            $data['district_id'] = $user->district_id;
-        } else {
-            $data['school_id']   = null;
-            $data['district_id'] = null;
-        }
 
         if ($request->hasFile('photo')) {
             if ($activity->photo_path) {
@@ -164,8 +115,7 @@ class ActivityController extends Controller
 
     public function destroy(Activity $activity)
     {
-        $user = Auth::user();
-        $this->authorizeEdit($activity, $user);
+        $this->authorizeSchool($activity->school_id);
 
         if ($activity->photo_path) {
             Storage::disk('public')->delete($activity->photo_path);
@@ -177,28 +127,13 @@ class ActivityController extends Controller
 
     public function attendance(Activity $activity)
     {
-        if ($activity->tahap === 'sekolah') {
-            $students = Student::where('school_id', $activity->school_id)
-                ->with('kafaClass')
-                ->orderBy('name')
-                ->get()
-                ->groupBy(fn($s) => optional($s->kafaClass)->name ?? 'Tiada Kelas');
+        $this->authorizeSchool($activity->school_id);
 
-        } elseif ($activity->tahap === 'daerah') {
-            $schoolIds = School::where('district_id', $activity->district_id)->pluck('id');
-            $students = Student::whereIn('school_id', $schoolIds)
-                ->with(['kafaClass', 'school'])
-                ->orderBy('name')
-                ->get()
-                ->groupBy(fn($s) => optional($s->school)->name ?? 'Tiada Sekolah');
-
-        } else {
-            // negeri — semua pelajar, groupkan ikut sekolah
-            $students = Student::with(['kafaClass', 'school'])
-                ->orderBy('name')
-                ->get()
-                ->groupBy(fn($s) => optional($s->school)->name ?? 'Tiada Sekolah');
-        }
+        $students = Student::where('school_id', $activity->school_id)
+            ->with('kafaClass')
+            ->orderBy('name')
+            ->get()
+            ->groupBy(fn($s) => optional($s->kafaClass)->name ?? 'Tiada Kelas');
 
         $attendedStudentIds = $activity->students()->pluck('students.id')->toArray();
 
@@ -207,31 +142,14 @@ class ActivityController extends Controller
 
     public function saveAttendance(Request $request, Activity $activity)
     {
-        $activity->students()->sync($request->student_ids ?? []);
+        $this->authorizeSchool($activity->school_id);
+
+        // Only students of the activity's school may be attached.
+        $studentIds = Student::where('school_id', $activity->school_id)
+            ->whereIn('id', (array) $request->input('student_ids', []))
+            ->pluck('id');
+
+        $activity->students()->sync($studentIds);
         return redirect()->route('activities.index')->with('success', 'Kehadiran aktiviti berjaya dikemaskini.');
-    }
-
-    /**
-     * Guard: hanya pemilik tahap boleh edit/padam.
-     */
-    private function authorizeEdit(Activity $activity, $user): void
-    {
-        if ($user->hasRole('Super Admin')) return;
-
-        if ($user->hasRole('Penyelia KAFA')) {
-            abort_if(
-                $activity->tahap !== 'daerah' || (int)$activity->district_id !== (int)$user->district_id,
-                403,
-                'Anda tidak mempunyai kebenaran untuk mengubah aktiviti ini.'
-            );
-            return;
-        }
-
-        // Guru Besar / Guru KAFA
-        abort_if(
-            $activity->tahap !== 'sekolah' || (int)$activity->school_id !== (int)$user->school_id,
-            403,
-            'Anda tidak mempunyai kebenaran untuk mengubah aktiviti ini.'
-        );
     }
 }

@@ -12,6 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         // For MySQL, we use a raw statement to update the enum
         DB::statement("ALTER TABLE book_orders MODIFY COLUMN status ENUM('draft', 'submitted_by_school', 'approved_by_admin', 'processing_by_supplier', 'delivered_to_school', 'completed') DEFAULT 'draft'");
     }
@@ -21,6 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         DB::statement("ALTER TABLE book_orders MODIFY COLUMN status ENUM('draft', 'submitted_by_school', 'approved_by_admin', 'completed') DEFAULT 'draft'");
     }
 };

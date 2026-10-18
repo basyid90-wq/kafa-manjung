@@ -8,8 +8,6 @@
         <div>
             @role('Guru Besar')
             <h1 class="text-xl font-bold text-gray-900 dark:text-white">Semakan RPH Guru KAFA</h1>
-            @elserole('Penyelia KAFA')
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Semakan RPH Guru Besar</h1>
             @else
             <h1 class="text-xl font-bold text-gray-900 dark:text-white">Kelulusan RPH</h1>
             @endrole
@@ -36,7 +34,6 @@
             <h3 class="text-base font-semibold text-gray-700 dark:text-gray-300">Tiada RPH Menunggu Semakan</h3>
             @role('Guru Besar')
             <p class="text-sm text-gray-500">Tiada RPH dari Guru KAFA yang perlu disemak.</p>
-            <p class="text-xs text-gray-400 mt-1">RPH yang anda hantar sendiri akan disemak oleh Penyelia KAFA.</p>
             @else
             <p class="text-sm text-gray-500">Semua RPH guru telah disemak.</p>
             @endrole
@@ -79,7 +76,7 @@
                         <p class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Guru</p>
                         <p class="text-white font-semibold text-sm">{{ $rph->user->name ?? '—' }}</p>
                     </div>
-                    @hasanyrole('Penyelia KAFA|Super Admin|Pentadbir|Guru Besar')
+                    @hasanyrole('Super Admin|Guru Besar')
                     <div class="bg-white/10 rounded-lg px-3 py-2">
                         <p class="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">Sekolah</p>
                         <p class="text-white font-medium text-sm leading-tight">{{ $rph->school->name ?? '—' }}</p>
@@ -135,7 +132,7 @@
                 </a>
 
                 {{-- Approval Form --}}
-                @hasanyrole('Penyelia KAFA|Super Admin|Pentadbir|Guru Besar')
+                @hasanyrole('Super Admin|Guru Besar')
                 <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                     <form action="{{ route('rph_approvals.update', $rph) }}" method="POST">
                         @csrf @method('PUT')
@@ -174,7 +171,7 @@
                     <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    Anda dalam mod <strong class="ml-1">baca sahaja</strong>. Kelulusan RPH dilakukan oleh Penyelia KAFA.
+                    Anda dalam mod <strong class="ml-1">baca sahaja</strong>. Kelulusan RPH dilakukan oleh Guru Besar.
                 </div>
                 @endhasanyrole
             </div>

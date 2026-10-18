@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 
 class RphRecord extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
         'school_id', 'kafa_class_id', 'user_id',
         'date', 'hari', 'week', 'masa',

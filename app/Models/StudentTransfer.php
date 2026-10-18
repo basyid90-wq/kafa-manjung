@@ -10,6 +10,7 @@ class StudentTransfer extends Model
         'student_id',
         'from_school_id',
         'to_school_id',
+        'to_school_name',
         'reason',
         'status',
         'approved_by',

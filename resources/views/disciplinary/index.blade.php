@@ -8,7 +8,7 @@
             <h1 class="text-xl font-bold text-gray-900 dark:text-white">Rekod Disiplin Murid</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Senarai rekod pelanggaran disiplin murid</p>
         </div>
-        @role('Super Admin|Pentadbir|Guru KAFA')
+        @role('Super Admin|Guru KAFA')
         <a href="{{ route('disciplinary.create') }}"
            class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

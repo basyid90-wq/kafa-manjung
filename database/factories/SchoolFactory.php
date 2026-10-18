@@ -18,7 +18,6 @@ class SchoolFactory extends Factory
     public function definition(): array
     {
         return [
-            'district_id' => \App\Models\District::factory(),
             'name' => 'SK ' . fake()->city(),
             'code' => 'ABC' . fake()->unique()->numberBetween(1000, 9999),
         ];

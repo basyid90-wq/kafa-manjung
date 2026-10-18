@@ -18,7 +18,7 @@ class AttendanceController extends Controller
         $query = KafaClass::query();
 
         // FASA 5: Tapisan Keselamatan Global
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
+        if (!$user->hasAnyRole(['Super Admin'])) {
             $query->where('school_id', $user->school_id);
             // Guru hanya nampak kelas sendiri
             if ($user->hasRole('Guru KAFA')) {
@@ -57,7 +57,7 @@ class AttendanceController extends Controller
             if (!$student) continue;
             
             // FASA 5: Tapisan Keselamatan
-            if (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
+            if (!$user->hasAnyRole(['Super Admin'])) {
                 if ($student->school_id !== $user->school_id) continue;
                 
                 $class = KafaClass::find($student->kafa_class_id);
@@ -85,7 +85,7 @@ class AttendanceController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+        if (!$user->hasAnyRole(['Super Admin'])) {
             if ($kafaClass->school_id !== $user->school_id) abort(403);
         }
 
@@ -202,7 +202,7 @@ class AttendanceController extends Controller
         $user    = auth()->user();
         $student = Student::findOrFail($request->student_id);
 
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+        if (!$user->hasAnyRole(['Super Admin'])) {
             if ($student->school_id !== $user->school_id) abort(403);
         }
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Log Masuk') | APKM</title>
+    <title>@yield('title', 'Log Masuk') | eKafa Online</title>
     <link rel="shortcut icon" href="{{ asset('template/perak.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

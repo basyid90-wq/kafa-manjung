@@ -33,7 +33,7 @@
                 Kelas: {{ $c->display_name }}
             </h2>
             <div class="flex flex-wrap items-center gap-2">
-                @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+                @hasanyrole('Super Admin|Guru Besar|Guru KAFA')
                 <button type="button" onclick="tandaSemua({{ $c->id }})"
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,7 +57,7 @@
                     Cetak Kad QR
                 </a>
                 @endhasanyrole
-                @hasanyrole('Super Admin|Pentadbir|Penyelia KAFA|Guru Besar|Guru KAFA')
+                @hasanyrole('Super Admin|Guru Besar|Guru KAFA')
                 <button type="button"
                         data-class-id="{{ $c->id }}"
                         data-class-name="{{ $c->display_name }}"
@@ -85,7 +85,7 @@
                             <th class="px-5 py-3">No. MyKid</th>
                             <th class="px-5 py-3">Nama Murid</th>
                             <th class="px-5 py-3">Status Kehadiran</th>
-                            @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+                            @hasanyrole('Super Admin|Guru Besar|Guru KAFA')
                             <th class="px-5 py-3 text-center w-20">Cuti</th>
                             @endhasanyrole
                         </tr>
@@ -124,7 +124,7 @@
                                     @endforeach
                                 </div>
                             </td>
-                            @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+                            @hasanyrole('Super Admin|Guru Besar|Guru KAFA')
                             <td class="px-5 py-2.5 text-center">
                                 <button type="button"
                                         data-student-id="{{ $student->id }}"

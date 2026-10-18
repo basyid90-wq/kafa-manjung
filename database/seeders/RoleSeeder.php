@@ -2,24 +2,19 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
 use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
     public function run(): void
     {
+        // SaaS roles: platform owner, school owner (Sekolah plan), teacher, parent
         $roles = [
             'Super Admin',
-            'Pentadbir',
             'Guru Besar',
             'Guru KAFA',
-            'Penyelia KAFA',
-            'Bendahari Sekolah',
             'Ibu Bapa',
-            'Pembekal'
         ];
 
         foreach ($roles as $role) {

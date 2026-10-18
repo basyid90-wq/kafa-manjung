@@ -9,7 +9,6 @@ class School extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'district_id',
         'name',
         'code',
         'jenis_premis',
@@ -19,11 +18,6 @@ class School extends Model
         'logo',
         'attendance_cutoff_time',
     ];
-
-    public function district()
-    {
-        return $this->belongsTo(District::class);
-    }
 
     public function students()
     {

@@ -41,21 +41,8 @@
             @endif
             <div class="flex flex-wrap gap-3">
 
-                {{-- Daerah --}}
-                @if(in_array($authRole, ['Super Admin', 'Pentadbir']) && $districts->isNotEmpty())
-                <div class="min-w-[140px]">
-                    <select name="district_id" onchange="this.form.submit()"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                        <option value="">Semua Daerah</option>
-                        @foreach($districts as $d)
-                            <option value="{{ $d->id }}" {{ $filterDistrict == $d->id ? 'selected' : '' }}>{{ $d->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
-
                 {{-- Sekolah --}}
-                @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']) && $schools->isNotEmpty())
+                @if(in_array($authRole, ['Super Admin']) && $schools->isNotEmpty())
                 <div class="min-w-[180px]">
                     <select name="school_id" onchange="this.form.submit()"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -96,7 +83,7 @@
                     Cari
                 </button>
 
-                @if($search || $filterDistrict || $filterSchool || request('class_id') || request('show_archive') || $filterTahun)
+                @if($search || $filterSchool || request('class_id') || request('show_archive') || $filterTahun)
                 <a href="{{ route('students.index') }}"
                    class="px-3 py-2.5 text-sm text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 flex items-center" title="Reset penapis">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -120,7 +107,6 @@
     {{-- ── Tab Tahun ── --}}
     @php
         $baseParams = array_filter([
-            'district_id'  => $filterDistrict,
             'school_id'    => $filterSchool,
             'class_id'     => request('class_id'),
             'search'       => $search,
@@ -167,7 +153,7 @@
                             </th>
                             <th class="px-4 py-3 w-8">No</th>
                             <th class="px-4 py-3">Nama</th>
-                            @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']))
+                            @if(in_array($authRole, ['Super Admin']))
                             <th class="px-4 py-3">Sekolah</th>
                             @endif
                             <th class="px-4 py-3">Jantina</th>
@@ -196,7 +182,7 @@
                                     </div>
                                 </div>
                             </td>
-                            @if(in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']))
+                            @if(in_array($authRole, ['Super Admin']))
                             <td class="px-4 py-3">
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                                     {{ $student->school->name ?? '—' }}
@@ -236,7 +222,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ in_array($authRole, ['Super Admin', 'Pentadbir', 'Penyelia KAFA']) ? 8 : 7 }}"
+                            <td colspan="{{ in_array($authRole, ['Super Admin']) ? 8 : 7 }}"
                                 class="px-4 py-10 text-center text-gray-400">
                                 <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 @if($search)

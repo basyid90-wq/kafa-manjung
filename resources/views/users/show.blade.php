@@ -54,10 +54,6 @@
             <h2 class="text-sm font-bold text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700 pb-2 mb-4">Maklumat Penugasan</h2>
             <div class="space-y-3 text-sm">
                 <div class="flex gap-2">
-                    <span class="text-gray-400 w-32 shrink-0">Daerah</span>
-                    <span class="text-gray-700 dark:text-gray-300">{{ $user->district->name ?? 'Tiada' }}</span>
-                </div>
-                <div class="flex gap-2">
                     <span class="text-gray-400 w-32 shrink-0">Sekolah / KAFA</span>
                     <span class="text-gray-700 dark:text-gray-300">{{ $user->school->name ?? 'Tiada' }}</span>
                 </div>

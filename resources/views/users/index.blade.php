@@ -24,20 +24,14 @@
         @php
         $tabLabel = [
             'semua'         => 'Semua',
-            'Pentadbir'     => 'Pentadbir',
-            'Penyelia KAFA' => 'Penyelia',
             'Guru Besar'    => 'Guru Besar',
             'Guru KAFA'     => 'Guru KAFA',
-            'Pembekal'      => 'Pembekal',
             'Ibu Bapa'      => 'Ibu Bapa',
         ];
         $tabColor = [
             'semua'         => 'blue',
-            'Pentadbir'     => 'purple',
-            'Penyelia KAFA' => 'indigo',
             'Guru Besar'    => 'pink',
             'Guru KAFA'     => 'green',
-            'Pembekal'      => 'yellow',
             'Ibu Bapa'      => 'orange',
         ];
         $allTabs = array_merge(['semua'], $tabRoles);
@@ -123,21 +117,15 @@
                         $roleFirst = $user->roles->first()?->name ?? '';
                         $avatarColors = [
                             'Super Admin'   => 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-                            'Pentadbir'     => 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
-                            'Penyelia KAFA' => 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400',
                             'Guru Besar'    => 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400',
                             'Guru KAFA'     => 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
-                            'Pembekal'      => 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400',
                             'Ibu Bapa'      => 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
                         ];
                         $avatarClass = $avatarColors[$roleFirst] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
                         $roleBadgeColors = [
                             'Super Admin'   => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-                            'Pentadbir'     => 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-                            'Penyelia KAFA' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
                             'Guru Besar'    => 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400',
                             'Guru KAFA'     => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-                            'Pembekal'      => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
                             'Ibu Bapa'      => 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
                         ];
                     @endphp
@@ -165,17 +153,9 @@
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
                                     Ibu Bapa / Penjaga
                                 </span>
-                            @elseif($user->hasRole('Pembekal'))
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
-                                    Pembekal APKM
-                                </span>
-                            @elseif($user->hasAnyRole(['Super Admin', 'Pentadbir']))
+                            @elseif($user->hasRole('Super Admin'))
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-                                    Pejabat Agama
-                                </span>
-                            @elseif($user->district_id && !$user->school_id)
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
-                                    {{ $user->district->name ?? 'Daerah' }}
+                                    Pentadbir Platform
                                 </span>
                             @else
                                 <span class="text-gray-400 text-xs">—</span>

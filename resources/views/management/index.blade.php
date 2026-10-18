@@ -9,7 +9,7 @@
     </div>
 
     {{-- Developer --}}
-    @hasanyrole('Super Admin|Pentadbir')
+    @hasanyrole('Super Admin')
     <div class="mb-8">
         <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Developer</p>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
@@ -38,7 +38,7 @@
         <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Pengurusan Pelajar</p>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
 
-            @hasanyrole('Super Admin|Pentadbir')
+            @hasanyrole('Super Admin')
             <a href="{{ route('students.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,7 +57,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru KAFA')
+            @hasanyrole('Super Admin|Guru KAFA')
             <a href="{{ route('attendances.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,7 +68,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir')
+            @hasanyrole('Super Admin')
             <a href="{{ route('exams.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,7 +79,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru KAFA')
+            @hasanyrole('Super Admin|Guru KAFA')
             <a href="{{ route('exams.results.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,7 +90,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru Besar|Ibu Bapa')
+            @hasanyrole('Super Admin|Guru Besar|Ibu Bapa')
             <a href="{{ route('timetable.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -101,7 +101,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+            @hasanyrole('Super Admin|Guru Besar|Guru KAFA')
             <a href="{{ route('activities.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,7 +112,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru KAFA|Ibu Bapa')
+            @hasanyrole('Super Admin|Guru KAFA|Ibu Bapa')
             <a href="{{ route('disciplinary.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,7 +123,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru Besar')
+            @hasanyrole('Super Admin|Guru Besar')
             <a href="{{ route('reports.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,7 +141,7 @@
         <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Pengurusan Guru & Sekolah</p>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
 
-            @hasanyrole('Super Admin|Pentadbir|Guru Besar')
+            @hasanyrole('Super Admin|Guru Besar')
             <a href="{{ route('announcements.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-sky-600 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -152,7 +152,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru KAFA')
+            @hasanyrole('Super Admin|Guru KAFA')
             <a href="{{ route('rph.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,7 +163,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Bendahari Sekolah')
+            @hasanyrole('Super Admin')
             <a href="{{ route('financial.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -174,7 +174,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru Besar')
+            @hasanyrole('Super Admin|Guru Besar')
             <a href="{{ route('book_orders.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -193,7 +193,7 @@
         <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Admin KAFA</p>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
 
-            @hasanyrole('Super Admin|Pentadbir')
+            @hasanyrole('Super Admin')
             <a href="{{ route('books.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -204,7 +204,7 @@
             </a>
             @endhasanyrole
 
-            @hasanyrole('Super Admin|Pentadbir|Guru Besar')
+            @hasanyrole('Super Admin|Guru Besar')
             <a href="{{ route('rph_approvals.index') }}" class="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-center group">
                 <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
                     <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

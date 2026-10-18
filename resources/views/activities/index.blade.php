@@ -8,7 +8,7 @@
             <h1 class="text-xl font-bold text-gray-900 dark:text-white">Aktiviti & Program Sekolah</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Senarai aktiviti dan program yang telah dianjurkan</p>
         </div>
-        @role('Super Admin|Penyelia KAFA|Guru Besar|Guru KAFA')
+        @role('Super Admin|Guru Besar|Guru KAFA')
         <a href="{{ route('activities.create') }}"
            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,7 +82,7 @@
                 </p>
 
                 <div class="flex items-center gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
-                    @role('Super Admin|Pentadbir|Penyelia KAFA|Guru KAFA|Guru Besar')
+                    @role('Super Admin|Guru KAFA|Guru Besar')
                     <a href="{{ route('activities.show', $activity) }}"
                        class="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                        title="Lihat Butiran & Sijil">
@@ -92,7 +92,7 @@
                     </a>
                     @endrole
 
-                    @role('Super Admin|Penyelia KAFA|Guru KAFA|Guru Besar')
+                    @role('Super Admin|Guru KAFA|Guru Besar')
                     <a href="{{ route('activities.attendance', $activity) }}"
                        class="p-1.5 text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/20 rounded-lg transition-colors"
                        title="Penandaan Kehadiran">

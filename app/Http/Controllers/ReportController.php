@@ -22,12 +22,8 @@ class ReportController extends Controller
         
         $query = Student::with(['kafaClass', 'school']);
         
-        if ($user->hasRole('Guru Besar')) {
+        if (!$user->isSuperAdmin()) {
             $query->where('school_id', $user->school_id);
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $query->whereHas('school', function($q) use ($user) {
-                $q->where('district_id', $user->district_id);
-            });
         }
         
         if ($search) {
@@ -43,6 +39,7 @@ class ReportController extends Controller
 
     public function show(Student $student)
     {
+        $this->authorizeSchool($student->school_id);
         $student->load(['kafaClass', 'school', 'examResults.subject', 'examResults.exam', 'disciplinaryRecords', 'activities']);
         
         $totalDays = $student->attendances()->count();
@@ -71,9 +68,7 @@ class ReportController extends Controller
 
         $query = School::query();
 
-        if ($user->hasRole('Penyelia KAFA')) {
-            $query->where('district_id', $user->district_id);
-        } elseif ($user->hasRole('Guru Besar')) {
+        if (!$user->isSuperAdmin()) {
             $query->where('id', $user->school_id);
         }
 
@@ -142,9 +137,7 @@ class ReportController extends Controller
 
         if ($examId) {
             $schoolQuery = School::query();
-            if ($user->hasRole('Penyelia KAFA')) {
-                $schoolQuery->where('district_id', $user->district_id);
-            } elseif ($user->hasRole('Guru Besar')) {
+            if (!$user->isSuperAdmin()) {
                 $schoolQuery->where('id', $user->school_id);
             }
             $schools = $schoolQuery->get();
@@ -206,12 +199,7 @@ class ReportController extends Controller
         $user   = auth()->user();
         $examId = $request->get('exam_id');
 
-        if ($user->hasRole('Penyelia KAFA') && $school->district_id !== $user->district_id) {
-            abort(403);
-        }
-        if ($user->hasRole('Guru Besar') && $school->id !== $user->school_id) {
-            abort(403);
-        }
+        $this->authorizeSchool($school->id);
 
         $exam  = Exam::findOrFail($examId);
         $exams = Exam::orderBy('year', 'desc')->get();
@@ -291,8 +279,7 @@ class ReportController extends Controller
         $jumlahHari          = max(1, (int) $request->get('jumlah_hari_persekolahan', 20));
 
         $schoolQuery = School::query()
-            ->when($user->hasRole('Penyelia KAFA'), fn($q) => $q->where('district_id', $user->district_id))
-            ->when($user->hasRole('Guru Besar'), fn($q) => $q->where('id', $user->school_id))
+            ->when(!$user->isSuperAdmin(), fn($q) => $q->where('id', $user->school_id))
             ->orderBy('name');
 
         $schools = $schoolQuery->get();

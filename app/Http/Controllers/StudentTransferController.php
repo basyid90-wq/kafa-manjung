@@ -4,27 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\StudentTransfer;
 use App\Models\Student;
-use App\Models\School;
 use App\Models\KafaClass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
+/**
+ * "Pindah keluar": a student leaving the school is archived (status Pindah) in the
+ * origin tenant. Student data is never moved into another tenant's workspace —
+ * the receiving school registers the student in its own account.
+ */
 class StudentTransferController extends Controller
 {
     public function index()
     {
         $user = auth()->user();
-        $query = StudentTransfer::with(['student', 'fromSchool', 'toSchool', 'approver']);
+        $query = StudentTransfer::with(['student', 'fromSchool', 'approver']);
 
-        if ($user->hasRole('Guru Besar')) {
+        if (!$user->isSuperAdmin()) {
             $query->where('from_school_id', $user->school_id);
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $query->whereHas('fromSchool', function ($q) use ($user) {
-                $q->where('district_id', $user->district_id);
-            });
         }
-        // Super Admin sees all
 
         $transfers = $query->latest()->paginate(10);
         return view('student_transfers.index', compact('transfers'));
@@ -32,9 +30,11 @@ class StudentTransferController extends Controller
 
     public function getStudentsByClass($class_id)
     {
-        // Ambil murid berdasarkan kelas. Kita tidak tapis school_id di sini 
-        // kerana class_id itu sendiri sudah unik kepada sekolah tersebut.
-        $students = Student::where('kafa_class_id', $class_id)
+        $class = KafaClass::findOrFail($class_id);
+        $this->authorizeSchool($class->school_id);
+
+        $students = Student::where('kafa_class_id', $class->id)
+            ->where('status', '!=', 'Pindah')
             ->orderBy('name', 'asc')
             ->get(['id', 'name']);
 
@@ -49,95 +49,64 @@ class StudentTransferController extends Controller
 
         if ($request->student_id) {
             $student = Student::with('school')->findOrFail($request->student_id);
+            $this->authorizeSchool($student->school_id);
         } else {
-            // Jika Super Admin/Pentadbir, boleh nampak semua kelas. 
-            // Jika Guru Besar, hanya sekolah dia.
-            $query = KafaClass::query();
-            if ($user->hasRole('Guru Besar')) {
-                $query->where('school_id', $user->school_id);
-            }
-            $classes = $query->get();
+            $classes = KafaClass::query()
+                ->when(!$user->isSuperAdmin(), fn($q) => $q->where('school_id', $user->school_id))
+                ->orderBy('tahun')->orderBy('name')
+                ->get();
         }
 
-        // Bypass isolation for destination schools
-        $groupedSchools = School::with('district')
-            ->where('id', '!=', $user->school_id)
-            ->get()
-            ->groupBy(function ($school) {
-                return $school->district->name ?? 'Lain-lain';
-            });
-
-        return view('student_transfers.create', compact('student', 'classes', 'groupedSchools'));
+        return view('student_transfers.create', compact('student', 'classes'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'to_school_id' => 'required|exists:schools,id',
-            'reason' => 'nullable|string',
+            'student_id'     => 'required|exists:students,id',
+            'to_school_name' => 'required|string|max:255',
+            'reason'         => 'nullable|string',
+        ], [
+            'to_school_name.required' => 'Sila nyatakan nama sekolah destinasi.',
         ]);
 
         $student = Student::findOrFail($request->student_id);
+        $this->authorizeSchool($student->school_id);
 
-        StudentTransfer::create([
-            'student_id' => $request->student_id,
-            'from_school_id' => $student->school_id,
-            'to_school_id' => $request->to_school_id,
-            'reason' => $request->reason,
-            'status' => 'pending',
-        ]);
+        DB::transaction(function () use ($request, $student) {
+            StudentTransfer::create([
+                'student_id'     => $student->id,
+                'from_school_id' => $student->school_id,
+                'to_school_name' => $request->to_school_name,
+                'reason'         => $request->reason,
+                'status'         => 'approved',
+                'approved_by'    => auth()->id(),
+            ]);
 
-        return redirect()->route('student_transfers.index')->with('success', 'Permohonan pindah murid telah dihantar.');
+            $student->update([
+                'status'        => 'Pindah',
+                'kafa_class_id' => null,
+            ]);
+        });
+
+        return redirect()->route('student_transfers.index')->with('success', 'Murid telah direkod sebagai pindah keluar.');
     }
 
     public function update(Request $request, StudentTransfer $studentTransfer)
     {
-        $user = auth()->user();
-        
-        // Security check for Penyelia KAFA
-        if ($user->hasRole('Penyelia KAFA')) {
-            if ($studentTransfer->fromSchool->district_id !== $user->district_id) {
-                abort(403);
-            }
-        }
-
-        $request->validate([
-            'status' => 'required|in:approved,rejected',
-        ]);
-
-        DB::transaction(function () use ($request, $studentTransfer, $user) {
-            $studentTransfer->update([
-                'status' => $request->status,
-                'approved_by' => $user->id,
-            ]);
-
-            if ($request->status === 'approved') {
-                $student = $studentTransfer->student;
-                $student->update([
-                    'school_id' => $studentTransfer->to_school_id,
-                    'kafa_class_id' => null, // Reset class on transfer
-                ]);
-            }
-        });
-
-        return redirect()->route('student_transfers.index')->with('success', 'Status permohonan pindah telah dikemaskini.');
+        abort(404);
     }
 
     public function destroy(StudentTransfer $studentTransfer)
     {
-        $user = auth()->user();
-        
-        if ($studentTransfer->status !== 'pending') {
-            return back()->with('error', 'Hanya permohonan yang masih pending boleh dibatalkan.');
-        }
+        $this->authorizeSchool($studentTransfer->from_school_id);
 
-        // Only from the school that requested it
-        if ($user->hasRole('Guru Besar') && $studentTransfer->from_school_id !== $user->school_id) {
-            abort(403);
-        }
+        // Batal rekod pindah: murid kembali aktif (tanpa kelas)
+        DB::transaction(function () use ($studentTransfer) {
+            $studentTransfer->student?->update(['status' => 'Aktif']);
+            $studentTransfer->delete();
+        });
 
-        $studentTransfer->delete();
-        return redirect()->route('student_transfers.index')->with('success', 'Permohonan pindah telah dibatalkan.');
+        return redirect()->route('student_transfers.index')->with('success', 'Rekod pindah telah dibatalkan dan murid diaktifkan semula.');
     }
 }

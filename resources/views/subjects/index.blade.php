@@ -17,22 +17,10 @@
         </a>
     </div>
 
-    {{-- ── Filter (SA/Pentadbir/Penyelia) ── --}}
-    @role('Super Admin|Pentadbir|Penyelia KAFA')
+    {{-- ── Filter (Super Admin) ── --}}
+    @role('Super Admin')
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-5">
         <form action="{{ route('subjects.index') }}" method="GET" class="flex flex-wrap items-end gap-3">
-            @role('Super Admin|Pentadbir')
-            <div class="flex-1 min-w-[200px]">
-                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Penapis Daerah</label>
-                <select name="district_id" onchange="this.form.submit()"
-                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    <option value="">Semua Daerah</option>
-                    @foreach($districts as $district)
-                    <option value="{{ $district->id }}" {{ request('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            @endrole
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Penapis Sekolah</label>
                 <select name="school_id" onchange="this.form.submit()"
@@ -59,7 +47,7 @@
                         <th class="px-5 py-3 w-12">No</th>
                         <th class="px-5 py-3">Kod</th>
                         <th class="px-5 py-3">Mata Pelajaran</th>
-                        @role('Super Admin|Pentadbir|Penyelia KAFA')
+                        @role('Super Admin')
                         <th class="px-5 py-3">Sekolah</th>
                         @endrole
                         <th class="px-5 py-3 text-center w-28">Tindakan</th>
@@ -69,12 +57,8 @@
                     @forelse($subjects as $index => $subject)
                     @php
                         $canModify = false;
-                        if (auth()->user()->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+                        if (auth()->user()->hasAnyRole(['Super Admin'])) {
                             $canModify = true;
-                        } elseif (auth()->user()->hasRole('Penyelia KAFA')) {
-                            if ($subject->school && $subject->school->district_id == auth()->user()->district_id) {
-                                $canModify = true;
-                            }
                         } elseif (auth()->user()->hasAnyRole(['Guru Besar', 'Guru KAFA'])) {
                             if ($subject->school_id == auth()->user()->school_id && $subject->school_id !== null) {
                                 $canModify = true;
@@ -87,7 +71,7 @@
                             <code class="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded text-xs font-mono font-medium">{{ $subject->code }}</code>
                         </td>
                         <td class="px-5 py-3 font-medium text-gray-900 dark:text-white">{{ $subject->name }}</td>
-                        @role('Super Admin|Pentadbir|Penyelia KAFA')
+                        @role('Super Admin')
                         <td class="px-5 py-3">
                             @if($subject->school)
                                 <span class="text-xs text-gray-600 dark:text-gray-300">{{ $subject->school->name }}</span>

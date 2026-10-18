@@ -1,5 +1,7 @@
 ## Context
-- Project: KAFA Manjung (Educational Management System — Malaysia).
+- Project: **eKafa Online** — multi-tenant SaaS for KAFA schools in Malaysia (pivoted from the KAFA Manjung district system in Oct 2026; the old system is preserved at git tag `v1-jabatan`).
+- **Tenant = School.** Plans: Free (3 classes × 40 students), Personal (one teacher, own classes only), Sekolah (Guru Besar + teachers + parents). Billing: Bayarcash, monthly.
+- **Active branch:** `saas`. Do NOT push to `main` until the SaaS launch (main still holds the old jabatan deployment).
 - Framework: Laravel 12.x (PHP 8.2+), MVC structure.
 - UI: **Flowbite + Tailwind CSS** (migrated from HiStudy/Bootstrap 5 — completed May 2026).
 - **UI Language:** ALL labels, error messages, and system text MUST be in Bahasa Melayu.
@@ -54,10 +56,11 @@ git add <specific files changed>
 git commit -m "type: short description of what changed"
 ```
 
-### Step 4 — Push to remote main
+### Step 4 — Push to the SaaS branch
 ```bash
-git push origin feature/flowbite-ui:main
+git push origin saas
 ```
+> ⚠️ Do NOT push to `main` during the SaaS rebuild — `main` is the old jabatan system. Deployment target will be Hostinger (shared hosting + SSH); deploy steps will be documented once set up.
 
 ### Step 5 — Give user VPS commands only
 After push, tell the user to run ONLY these on VPS (do NOT repeat localhost commands):
@@ -86,14 +89,18 @@ php artisan view:clear && php artisan cache:clear
 
 | # | Role | Data Scope |
 |---|------|-----------|
-| 1 | Super Admin | Full access — all districts & schools |
-| 2 | Pentadbir | Own district only (`district_id`) |
-| 3 | Penyelia KAFA | Own district only (`district_id`) |
-| 4 | Guru Besar | Own school only (`school_id`) |
-| 5 | Guru KAFA | Own school + own class (`school_id` + `kafa_class_id`) |
-| 6 | Ibu Bapa | Own children only (`student_id`) |
+| 1 | Super Admin | Platform owner — all schools (tenants) |
+| 2 | Guru Besar | Own school only (`school_id`) — owner of a Sekolah-plan tenant |
+| 3 | Guru KAFA | Own school + own class (`school_id` + `kafa_class_id`) |
+| 4 | Ibu Bapa | Own children only (`student_id`) |
 
-**Rule:** Every query MUST be scoped by `school_id` or `district_id` based on the user's role. Never return cross-school or cross-district data without a role check.
+Removed in the SaaS pivot (do NOT reintroduce): Pentadbir, Penyelia KAFA, Pembekal, Bendahari Sekolah, the `districts` table and the book-ordering module.
+
+**Tenant isolation (MANDATORY):**
+- School-owned models use the `App\Models\Concerns\BelongsToSchool` trait — a global scope that limits Guru Besar / Guru KAFA to their own `school_id` (incl. route-model binding) and fills `school_id` on create. Add it to every new model that has a `school_id`.
+- In controllers, guard records with `$this->authorizeSchool($record->school_id)` (base `Controller`) or `$user->canAccessSchool($id)`. Never trust a `school_id`, `kafa_class_id`, `teacher_id` etc. from the request without checking it belongs to the user's school (`Rule::exists(...)->where('school_id', ...)`).
+- `Rule::exists` / `DB::table()` bypass the global scope — scope them manually.
+- Cover new modules in `tests/Feature/TenantIsolationTest.php`.
 
 ---
 
@@ -244,7 +251,7 @@ function switchTab(tab) {
 
 ## ⚙️ Backend Rules
 
-- **Data isolation:** Filter all queries by `school_id` or `district_id` per role.
+- **Data isolation:** Filter all queries by `school_id` (tenant). See "Tenant isolation" above.
 - **Delete:** Use `data-delete-form` + `data-name` for SweetAlert2 confirmation (handler is global in `layout-fb/layout.blade.php`).
 - **PDF display:** NEVER `window.open()` or `<iframe>`. ALWAYS `openPdfBlob(this, url)` (defined globally in `layout-fb/layout.blade.php`).
 - **Notifications:** Use `session('success')` or `session('error')`. SweetAlert2 handles display globally in `layout-fb/layout.blade.php`.

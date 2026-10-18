@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 
 class Exam extends Model
 {
+    use BelongsToSchool;
     use HasFactory;
     protected $fillable = ['school_id', 'name', 'year', 'term'];
 

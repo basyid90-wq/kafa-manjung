@@ -39,70 +39,37 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sasaran Role <span class="text-red-500">*</span></label>
                     <select name="target_role" required
                             class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <option value="Semua">Semua Guru</option>
                         @role('Super Admin')
-                        <option value="Semua">Semua Pengguna</option>
-                        <option value="Pentadbir">Pentadbir</option>
-                        <option value="Penyelia KAFA">Penyelia KAFA</option>
                         <option value="Guru Besar">Guru Besar</option>
-                        <option value="Guru KAFA">Guru KAFA</option>
-                        <option value="Pembekal">Pembekal</option>
                         @endrole
-                        @role('Pentadbir')
-                        <option value="Penyelia KAFA">Penyelia KAFA</option>
-                        <option value="Guru Besar">Guru Besar</option>
                         <option value="Guru KAFA">Guru KAFA</option>
-                        <option value="Pembekal">Pembekal</option>
-                        @endrole
-                        @role('Penyelia KAFA')
-                        <option value="Guru Besar">Guru Besar</option>
-                        <option value="Guru KAFA">Guru KAFA</option>
-                        <option value="Pembekal">Pembekal</option>
-                        @endrole
-                        @role('Guru Besar')
-                        <option value="Guru KAFA">Guru KAFA</option>
-                        @endrole
-                        @role('Pembekal')
-                        <option value="Penyelia KAFA">Penyelia KAFA</option>
-                        <option value="Guru Besar">Guru Besar</option>
-                        <option value="Guru KAFA">Guru KAFA</option>
-                        @endrole
                     </select>
                 </div>
+
+                @role('Super Admin')
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Skop Sasaran <span class="text-red-500">*</span></label>
                     <select name="target_scope" id="target_scope" required
                             class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="all">Semua</option>
-                        @if(auth()->user()->hasAnyRole(['Super Admin', 'Pentadbir', 'Penyelia KAFA']))
-                        <option value="district">Daerah Tertentu</option>
-                        @endif
+                        <option value="all">Semua Sekolah</option>
                         <option value="school">Sekolah Tertentu</option>
                     </select>
                 </div>
-
-                @if(auth()->user()->hasAnyRole(['Super Admin', 'Pentadbir']))
-                <div class="md:col-span-2 hidden" id="district_selection">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pilih Daerah</label>
-                    <select name="district_ids[]" multiple
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        @foreach($districts as $district)
-                        <option value="{{ $district->id }}">{{ $district->name }}</option>
-                        @endforeach
-                    </select>
-                    <p class="text-xs text-gray-400 mt-1">Tekan Ctrl untuk pilih lebih dari satu</p>
-                </div>
-                @endif
 
                 <div class="md:col-span-2 hidden" id="school_selection">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pilih Sekolah</label>
                     <select name="school_ids[]" multiple
                             class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                         @foreach($schools as $school)
-                        <option value="{{ $school->id }}">{{ $school->name }} @if($school->district)({{ $school->district->name }})@endif</option>
+                        <option value="{{ $school->id }}">{{ $school->name }}</option>
                         @endforeach
                     </select>
                     <p class="text-xs text-gray-400 mt-1">Tekan Ctrl untuk pilih lebih dari satu</p>
                 </div>
+                @else
+                <input type="hidden" name="target_scope" value="school">
+                @endrole
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Isi Kandungan <span class="text-red-500">*</span></label>
@@ -131,20 +98,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const targetScope     = document.getElementById('target_scope');
-    const districtSelection = document.getElementById('district_selection');
-    const schoolSelection   = document.getElementById('school_selection');
+    const schoolSelection = document.getElementById('school_selection');
+    if (!targetScope) return;
 
     targetScope.addEventListener('change', function() {
-        if (this.value === 'district') {
-            if (districtSelection) districtSelection.classList.remove('hidden');
-            schoolSelection.classList.add('hidden');
-        } else if (this.value === 'school') {
-            if (districtSelection) districtSelection.classList.add('hidden');
-            schoolSelection.classList.remove('hidden');
-        } else {
-            if (districtSelection) districtSelection.classList.add('hidden');
-            schoolSelection.classList.add('hidden');
-        }
+        schoolSelection.classList.toggle('hidden', this.value !== 'school');
     });
 });
 </script>

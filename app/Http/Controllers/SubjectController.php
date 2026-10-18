@@ -8,76 +8,46 @@ use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
+    /** Subjects with school_id NULL are platform defaults: visible to all, editable by Super Admin only. */
+    private function authorizeSubject(Subject $subject): void
+    {
+        $user = auth()->user();
+        if (!$user->isSuperAdmin() && (int) $subject->school_id !== (int) $user->school_id) {
+            abort(403);
+        }
+    }
+
     public function index(Request $request)
     {
         $user = auth()->user();
         $query = Subject::with('school');
 
-        // Filter based on District (for Admin)
-        if ($request->filled('district_id') && $user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            $query->where(function($q) use ($request) {
-                $q->whereHas('school', function ($sq) use ($request) {
-                    $sq->where('district_id', $request->district_id);
-                });
-            });
-        }
-
-        // Filter based on School
-        if ($request->filled('school_id')) {
+        if ($request->filled('school_id') && $user->isSuperAdmin()) {
             $query->where('school_id', $request->school_id);
         }
 
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            if ($user->hasRole('Penyelia KAFA')) {
-                $query->where(function($q) use ($user) {
-                    $q->whereHas('school', function ($sq) use ($user) {
-                        $sq->where('district_id', $user->district_id);
-                    })->orWhereNull('school_id');
-                });
-            } else {
-                $query->where(function($q) use ($user) {
-                    $q->where('school_id', $user->school_id)->orWhereNull('school_id');
-                });
-            }
+        if (!$user->isSuperAdmin()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('school_id', $user->school_id)->orWhereNull('school_id');
+            });
         }
 
-        // Sorting Logic
-        // Priority 1: GLOBAL (school_id IS NULL)
-        // Priority 2: School (school_id ASC)
-        // Priority 3: Subject Name (name ASC)
+        // Sorting: platform defaults first, then per school, then by name
         $query->orderByRaw('school_id IS NOT NULL')
               ->orderBy('school_id', 'asc')
               ->orderBy('name', 'asc');
 
         $subjects = $query->get();
 
-        // Dropdown Data
-        $districts = [];
-        $schools = [];
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            $districts = \App\Models\District::orderBy('name')->get();
-            $schoolsQuery = \App\Models\School::query();
-            if ($request->filled('district_id')) {
-                $schoolsQuery->where('district_id', $request->district_id);
-            }
-            $schools = $schoolsQuery->orderBy('name')->get();
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $schools = \App\Models\School::where('district_id', $user->district_id)->orderBy('name')->get();
-        }
+        $schools = $user->isSuperAdmin() ? School::orderBy('name')->get() : [];
 
-        return view('subjects.index', compact('subjects', 'districts', 'schools'));
+        return view('subjects.index', compact('subjects', 'schools'));
     }
 
     public function create()
     {
-        $user = auth()->user();
-        $schools = [];
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir', 'Penyelia KAFA'])) {
-            $schools = School::query()
-                ->when($user->hasRole('Penyelia KAFA'), fn($q) => $q->where('district_id', $user->district_id))
-                ->orderBy('name')
-                ->get();
-        }
+        $schools = auth()->user()->isSuperAdmin() ? School::orderBy('name')->get() : [];
+
         return view('subjects.create', compact('schools'));
     }
 
@@ -91,7 +61,7 @@ class SubjectController extends Controller
             'form_slot' => 'nullable|string|max:50',
         ]);
 
-        if ($user->hasRole(['Guru Besar', 'Guru KAFA'])) {
+        if (!$user->isSuperAdmin()) {
             $validated['school_id'] = $user->school_id;
         }
 
@@ -101,39 +71,17 @@ class SubjectController extends Controller
 
     public function edit(Subject $subject)
     {
-        $user = auth()->user();
+        $this->authorizeSubject($subject);
 
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            if ($user->hasRole('Penyelia KAFA') && $subject->school && $subject->school->district_id !== $user->district_id) {
-                abort(403);
-            }
-            if ($user->hasAnyRole(['Guru Besar', 'Guru KAFA']) && $subject->school_id !== $user->school_id) {
-                abort(403);
-            }
-        }
+        $schools = auth()->user()->isSuperAdmin() ? School::orderBy('name')->get() : [];
 
-        $schools = [];
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir', 'Penyelia KAFA'])) {
-            $schools = School::query()
-                ->when($user->hasRole('Penyelia KAFA'), fn($q) => $q->where('district_id', $user->district_id))
-                ->orderBy('name')
-                ->get();
-        }
         return view('subjects.edit', compact('subject', 'schools'));
     }
 
     public function update(Request $request, Subject $subject)
     {
         $user = auth()->user();
-
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            if ($user->hasRole('Penyelia KAFA') && $subject->school && $subject->school->district_id !== $user->district_id) {
-                abort(403);
-            }
-            if ($user->hasAnyRole(['Guru Besar', 'Guru KAFA']) && $subject->school_id !== $user->school_id) {
-                abort(403);
-            }
-        }
+        $this->authorizeSubject($subject);
 
         $validated = $request->validate([
             'name'      => 'required|string|max:255',
@@ -142,7 +90,7 @@ class SubjectController extends Controller
             'form_slot' => 'nullable|string|max:50',
         ]);
 
-        if ($user->hasRole(['Guru Besar', 'Guru KAFA'])) {
+        if (!$user->isSuperAdmin()) {
             $validated['school_id'] = $user->school_id;
         }
 
@@ -156,16 +104,7 @@ class SubjectController extends Controller
 
     public function destroy(Subject $subject)
     {
-        $user = auth()->user();
-
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            if ($user->hasRole('Penyelia KAFA') && $subject->school && $subject->school->district_id !== $user->district_id) {
-                abort(403);
-            }
-            if ($user->hasAnyRole(['Guru Besar', 'Guru KAFA']) && $subject->school_id !== $user->school_id) {
-                abort(403);
-            }
-        }
+        $this->authorizeSubject($subject);
 
         $subject->delete();
         return redirect()->route('subjects.index')->with('success', 'Mata pelajaran berjaya dipadam.');

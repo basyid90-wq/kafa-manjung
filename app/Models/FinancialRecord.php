@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 
 class FinancialRecord extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
         'school_id',
         'user_id',

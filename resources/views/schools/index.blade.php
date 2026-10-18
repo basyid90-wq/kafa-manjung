@@ -28,7 +28,6 @@
                     <tr>
                         <th class="px-5 py-3 w-12">No</th>
                         <th class="px-5 py-3">Nama Sekolah</th>
-                        <th class="px-5 py-3">Daerah</th>
                         <th class="px-5 py-3">Kod</th>
                         <th class="px-5 py-3">No. Telefon</th>
                         <th class="px-5 py-3 text-center w-24">Tindakan</th>
@@ -49,11 +48,6 @@
                                 </div>
                                 <p class="font-medium text-gray-900 dark:text-white">{{ $school->name }}</p>
                             </div>
-                        </td>
-                        <td class="px-5 py-3">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
-                                {{ $school->district->name }}
-                            </span>
                         </td>
                         <td class="px-5 py-3">
                             <code class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-mono">{{ $school->code }}</code>
@@ -88,7 +82,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-5 py-12 text-center">
+                        <td colspan="5" class="px-5 py-12 text-center">
                             <div class="flex flex-col items-center gap-2 text-gray-400">
                                 <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>

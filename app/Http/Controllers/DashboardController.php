@@ -60,43 +60,8 @@ class DashboardController extends Controller
             $data['storage_ok'] = is_writable(storage_path('app/public'));
             try { DB::connection()->getPdo(); } catch (\Exception $e) { $data['db_ok'] = false; }
 
-        } elseif ($role === 'Pentadbir') {
-            // ── Pentadbir ──
-            $data['user_counts'] = [
-                'Admin' => \App\Models\User::role(['Super Admin', 'Pentadbir'])->count(),
-                'Penyelia' => \App\Models\User::role('Penyelia KAFA')->count(),
-                'Guru Besar' => \App\Models\User::role('Guru Besar')->count(),
-                'Pembekal' => \App\Models\User::role('Pembekal')->count(),
-            ];
-
-            $data['districts'] = \App\Models\District::withCount(['schools'])->get()->map(function($district) {
-                $district->students_count = \App\Models\Student::whereHas('school', function($q) use ($district) {
-                    $q->where('district_id', $district->id);
-                })->count();
-                return $district;
-            });
-
-        } elseif ($role === 'Penyelia KAFA') {
-            // 2. Penyelia KAFA Logic (District Scope)
-            $districtId = $user->district_id;
-            $data['stats'] = [
-                'schools' => \App\Models\School::where('district_id', $districtId)->count(),
-                'guru_besar' => \App\Models\User::role('Guru Besar')->where('district_id', $districtId)->count(),
-                'guru_kafa' => \App\Models\User::role('Guru KAFA')->where('district_id', $districtId)->count(),
-                'classes' => \App\Models\KafaClass::whereHas('school', fn($q) => $q->where('district_id', $districtId))->count(),
-                'students' => \App\Models\Student::whereHas('school', fn($q) => $q->where('district_id', $districtId))->count(),
-            ];
-            
-            // Recent pending RPH in district
-            $data['pending_rphs'] = \App\Models\RphRecord::whereHas('school', fn($q) => $q->where('district_id', $districtId))
-                ->where('status', 'Pending')
-                ->with(['user', 'kafaClass'])
-                ->latest()
-                ->take(5)
-                ->get();
-
         } elseif ($role === 'Guru Besar') {
-            // 3. Guru Besar Logic (School Scope)
+            // Guru Besar (School Scope)
             $schoolId = $user->school_id;
             $data['stats'] = [
                 'guru_kafa' => \App\Models\User::role('Guru KAFA')->where('school_id', $schoolId)->count(),
@@ -113,7 +78,7 @@ class DashboardController extends Controller
                 ->get();
 
         } elseif ($role === 'Guru KAFA') {
-            // 4. Guru KAFA Logic
+            // Guru KAFA
             $data['stats'] = [
                 'classes_taught' => \App\Models\KafaClass::where('teacher_id', $user->id)->count(),
                 'students_supervised' => \App\Models\Student::whereHas('kafaClass', fn($q) => $q->where('teacher_id', $user->id))->count(),

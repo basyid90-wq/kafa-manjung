@@ -3,72 +3,60 @@
 namespace App\Http\Controllers;
 
 use App\Models\School;
-use App\Models\District;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SchoolController extends Controller
 {
+    // Guru Besar may only view/edit their own school; creating and deleting schools is Super Admin only.
+
+
+    private function rules(?School $school = null): array
+    {
+        return [
+            'name'                   => 'required|string|max:255',
+            'code'                   => 'nullable|string|max:50|unique:schools,code' . ($school ? ',' . $school->id : ''),
+            'jenis_premis'           => 'nullable|string|max:255',
+            'nama_guru_besar'        => 'nullable|string|max:255',
+            'no_telefon'             => 'nullable|string|max:20',
+            'alamat'                 => 'nullable|string',
+            'logo'                   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'attendance_cutoff_time' => 'nullable|date_format:H:i',
+        ];
+    }
+
     public function index()
     {
         $user = auth()->user();
-        $query = School::with('district');
+        $query = School::query();
 
-        if ($user->hasRole('Penyelia KAFA')) {
-            $query->where('district_id', $user->district_id);
-        } elseif ($user->hasRole('Guru Besar')) {
+        if (!$user->hasRole('Super Admin')) {
             $query->where('id', $user->school_id);
         }
 
-        $schools = $query->paginate(10);
+        $schools = $query->orderBy('name')->paginate(10);
         return view('schools.index', compact('schools'));
     }
 
     public function show(School $school)
     {
+        $this->authorizeSchool($school->id);
+
         return view('schools.show', compact('school'));
     }
 
     public function create()
     {
-        $user = auth()->user();
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses dinafikan.');
 
-        if ($user->hasRole('Guru Besar')) {
-            abort(403, 'Akses dinafikan. Guru Besar tidak dibenarkan menambah sekolah.');
-        }
-
-        if ($user->hasRole('Penyelia KAFA')) {
-            $districts = District::where('id', $user->district_id)->get();
-        } else {
-            $districts = District::all();
-        }
-
-        return view('schools.create', compact('districts'));
+        return view('schools.create');
     }
 
     public function store(Request $request)
     {
-        $user = auth()->user();
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses dinafikan.');
 
-        if ($user->hasRole('Guru Besar')) {
-            abort(403, 'Akses dinafikan.');
-        }
-
-        if ($user->hasRole('Penyelia KAFA')) {
-            $request->merge(['district_id' => $user->district_id]);
-        }
-
-        $request->validate([
-            'district_id' => 'required|exists:districts,id',
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:schools,code',
-            'jenis_premis' => 'nullable|string|max:255',
-            'nama_guru_besar' => 'nullable|string|max:255',
-            'no_telefon' => 'nullable|string|max:20',
-            'alamat' => 'nullable|string',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        $data = $request->all();
+        $data = $request->validate($this->rules());
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('logos', 'public');
@@ -81,48 +69,20 @@ class SchoolController extends Controller
 
     public function edit(School $school)
     {
-        $user = auth()->user();
+        $this->authorizeSchool($school->id);
 
-        if ($user->hasRole('Penyelia KAFA') && $school->district_id !== $user->district_id) {
-            abort(403);
-        }
-
-        if ($user->hasRole('Penyelia KAFA')) {
-            $districts = District::where('id', $user->district_id)->get();
-        } else {
-            $districts = District::all();
-        }
-
-        return view('schools.edit', compact('school', 'districts'));
+        return view('schools.edit', compact('school'));
     }
 
     public function update(Request $request, School $school)
     {
-        $user = auth()->user();
+        $this->authorizeSchool($school->id);
 
-        if ($user->hasRole('Penyelia KAFA')) {
-            if ($school->district_id !== $user->district_id) abort(403);
-            $request->merge(['district_id' => $user->district_id]);
-        }
-
-        $request->validate([
-            'district_id' => 'required|exists:districts,id',
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:schools,code,' . $school->id,
-            'jenis_premis' => 'nullable|string|max:255',
-            'nama_guru_besar' => 'nullable|string|max:255',
-            'no_telefon' => 'nullable|string|max:20',
-            'alamat' => 'nullable|string',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'attendance_cutoff_time' => 'nullable|date_format:H:i',
-        ]);
-
-        $data = $request->all();
+        $data = $request->validate($this->rules($school));
 
         if ($request->hasFile('logo')) {
-            // Delete old logo if exists
             if ($school->logo) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($school->logo);
+                Storage::disk('public')->delete($school->logo);
             }
             $data['logo'] = $request->file('logo')->store('logos', 'public');
         }
@@ -134,14 +94,10 @@ class SchoolController extends Controller
 
     public function destroy(School $school)
     {
-        $user = auth()->user();
-
-        if ($user->hasRole('Guru Besar') || ($user->hasRole('Penyelia KAFA') && $school->district_id !== $user->district_id)) {
-            abort(403, 'Akses dinafikan.');
-        }
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403, 'Akses dinafikan.');
 
         if ($school->logo) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($school->logo);
+            Storage::disk('public')->delete($school->logo);
         }
 
         $school->delete();

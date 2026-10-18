@@ -47,7 +47,7 @@
                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                @role('Super Admin|Pentadbir|Penyelia KAFA')
+                @role('Super Admin')
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sekolah <span class="text-gray-400 font-normal">(Kosongkan untuk Global)</span></label>
                     <select name="school_id"

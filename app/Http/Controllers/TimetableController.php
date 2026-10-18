@@ -21,16 +21,19 @@ class TimetableController extends Controller
         // 1. Determine School
         $schoolId = null;
         $schools = [];
-        if ($user->hasRole('Penyelia KAFA')) {
-            $schools = \App\Models\School::where('district_id', $user->district_id)->get();
+        if ($user->isSuperAdmin()) {
+            $schools = \App\Models\School::orderBy('name')->get();
             $schoolId = $request->get('school_id', $schools->first()?->id);
         } else {
             $schoolId = $user->school_id;
         }
 
-        // 2. Determine Classes
+        // 2. Determine Classes (requested class must belong to the selected school)
         $classes = KafaClass::where('school_id', $schoolId)->get();
         $classId = $request->get('kafa_class_id', $classes->first()?->id);
+        if ($classId && !$classes->contains('id', (int) $classId)) {
+            $classId = $classes->first()?->id;
+        }
         
         // 3. Get Slots
         $slots = TimeSlot::where('school_id', $schoolId)
@@ -69,7 +72,8 @@ class TimetableController extends Controller
         return view('timetable.create', compact('classes', 'subjects', 'teachers', 'slots', 'days'));
     }
 
-    public function store(Request $request)
+    /** Class, subject, teacher and slot must all belong to one school the user may access. */
+    private function validateEntry(Request $request): void
     {
         $request->validate([
             'kafa_class_id' => 'required|exists:kafa_classes,id',
@@ -78,6 +82,21 @@ class TimetableController extends Controller
             'time_slot_id' => 'required|exists:time_slots,id',
             'day_of_week' => 'required|string|in:Isnin,Selasa,Rabu,Khamis,Jumaat',
         ]);
+
+        $class = KafaClass::findOrFail($request->kafa_class_id);
+        $this->authorizeSchool($class->school_id);
+
+        $sameSchool = Subject::whereKey($request->subject_id)
+                ->where(fn($q) => $q->where('school_id', $class->school_id)->orWhereNull('school_id'))->exists()
+            && User::whereKey($request->user_id)->where('school_id', $class->school_id)->exists()
+            && TimeSlot::whereKey($request->time_slot_id)->where('school_id', $class->school_id)->exists();
+
+        abort_unless($sameSchool, 403);
+    }
+
+    public function store(Request $request)
+    {
+        $this->validateEntry($request);
 
         // Clash 1: Teacher Conflict (Guru sedang mengajar di kelas lain pada waktu yang sama)
         $teacherClash = Timetable::where('user_id', $request->user_id)
@@ -112,7 +131,7 @@ class TimetableController extends Controller
     public function edit($id)
     {
         $timetable = Timetable::with(['kafaClass', 'subject', 'teacher', 'timeSlot'])->findOrFail($id);
-        $user = auth()->user();
+        $this->authorizeSchool($timetable->kafaClass?->school_id);
         $schoolId = $timetable->kafaClass->school_id;
 
         $classes = KafaClass::where('school_id', $schoolId)->get();
@@ -129,14 +148,9 @@ class TimetableController extends Controller
     public function update(Request $request, $id)
     {
         $timetable = Timetable::findOrFail($id);
+        $this->authorizeSchool($timetable->kafaClass?->school_id);
 
-        $request->validate([
-            'kafa_class_id' => 'required|exists:kafa_classes,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'user_id' => 'required|exists:users,id',
-            'time_slot_id' => 'required|exists:time_slots,id',
-            'day_of_week' => 'required|string|in:Isnin,Selasa,Rabu,Khamis,Jumaat',
-        ]);
+        $this->validateEntry($request);
 
         // Teacher Conflict Check (exclude current record)
         $teacherClash = Timetable::where('user_id', $request->user_id)
@@ -178,6 +192,7 @@ class TimetableController extends Controller
     public function destroy($id)
     {
         $timetable = Timetable::findOrFail($id);
+        $this->authorizeSchool($timetable->kafaClass?->school_id);
         $classId = $timetable->kafa_class_id;
         $timetable->delete();
 
@@ -187,7 +202,8 @@ class TimetableController extends Controller
 
     public function printPdf($kafa_class_id)
     {
-        $kafaClass = KafaClass::with('school.district')->findOrFail($kafa_class_id);
+        $kafaClass = KafaClass::with('school')->findOrFail($kafa_class_id);
+        $this->authorizeSchool($kafaClass->school_id);
         $school = $kafaClass->school;
         $slots = TimeSlot::where('school_id', $school->id)->orderBy('start_time')->get();
         $days = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat'];

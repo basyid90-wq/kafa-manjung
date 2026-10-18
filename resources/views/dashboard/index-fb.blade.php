@@ -15,10 +15,6 @@
 
 @if($authRole === 'Super Admin')
     @include('dashboard.fb.superadmin')
-@elseif($authRole === 'Pentadbir')
-    @include('dashboard.fb.admin')
-@elseif($authRole === 'Penyelia KAFA')
-    @include('dashboard.fb.penyelia')
 @elseif($authRole === 'Guru Besar')
     @include('dashboard.fb.gurubesar')
 @elseif($authRole === 'Guru KAFA')

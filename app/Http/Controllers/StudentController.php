@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\KafaClass;
 use App\Models\School;
-use App\Models\District;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
@@ -18,16 +19,13 @@ class StudentController extends Controller
         $user     = auth()->user();
         $authRole = $user->getRoleNames()->first();
 
-        $filterDistrict = $request->input('district_id');
         $filterSchool   = $request->input('school_id');
         $filterTahun    = $request->input('tahun');
         $search         = $request->input('search');
 
         // ── Base scope (role isolation + archive) ──
-        $applyScope = function ($q) use ($user, $authRole, $request, $filterDistrict, $filterSchool) {
-            if ($authRole === 'Penyelia KAFA') {
-                $q->whereHas('school', fn($sq) => $sq->where('district_id', $user->district_id));
-            } elseif (!in_array($authRole, ['Super Admin', 'Pentadbir', 'Pembekal'])) {
+        $applyScope = function ($q) use ($user, $request, $filterSchool) {
+            if (!$user->isSuperAdmin()) {
                 $q->where('school_id', $user->school_id);
             }
             if (!$request->has('show_archive')) {
@@ -38,10 +36,7 @@ class StudentController extends Controller
                     ->orWhere('status', 'Pindah')
                     ->orWhereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) > 13'));
             }
-            if ($filterDistrict && in_array($authRole, ['Super Admin', 'Pentadbir'])) {
-                $q->whereHas('school', fn($sq) => $sq->where('district_id', $filterDistrict));
-            }
-            if ($filterSchool) {
+            if ($filterSchool && $user->isSuperAdmin()) {
                 $q->where('school_id', $filterSchool);
             }
         };
@@ -71,46 +66,23 @@ class StudentController extends Controller
         }
 
         $students = $query->orderBy('name')
-            ->paginate(15)
+            ->paginate(10)
             ->fragment('student-list-section')
             ->withQueryString();
 
         // ── Dropdown data ──
-        $districts = in_array($authRole, ['Super Admin', 'Pentadbir'])
-            ? District::orderBy('name')->get() : collect();
+        $schools = $user->isSuperAdmin() ? School::orderBy('name')->get() : collect();
 
-        if (in_array($authRole, ['Super Admin', 'Pentadbir'])) {
-            $schools = $filterDistrict
-                ? School::where('district_id', $filterDistrict)->orderBy('name')->get()
-                : School::orderBy('name')->get();
-        } elseif ($authRole === 'Penyelia KAFA') {
-            $schools = School::where('district_id', $user->district_id)->orderBy('name')->get();
-        } else {
-            $schools = collect();
-        }
+        $classes = KafaClass::query()
+            ->when(!$user->isSuperAdmin(), fn($q) => $q->where('school_id', $user->school_id))
+            ->when($user->isSuperAdmin() && $filterSchool, fn($q) => $q->where('school_id', $filterSchool))
+            ->orderBy('tahun')->orderBy('name')->get();
 
-        if ($filterSchool) {
-            $classes = KafaClass::where('school_id', $filterSchool)->orderBy('tahun')->orderBy('name')->get();
-        } elseif (in_array($authRole, ['Super Admin', 'Pentadbir'])) {
-            $classes = $filterDistrict
-                ? KafaClass::whereHas('school', fn($q) => $q->where('district_id', $filterDistrict))->orderBy('tahun')->orderBy('name')->get()
-                : KafaClass::orderBy('tahun')->orderBy('name')->get();
-        } elseif ($authRole === 'Penyelia KAFA') {
-            $classes = KafaClass::whereHas('school', fn($q) => $q->where('district_id', $user->district_id))->orderBy('tahun')->orderBy('name')->get();
-        } else {
-            $classes = KafaClass::where('school_id', $user->school_id)->orderBy('tahun')->orderBy('name')->get();
-        }
-
-        $importSchools = in_array($authRole, ['Super Admin', 'Pentadbir', 'Pembekal'])
-            ? School::orderBy('name')->get()
-            : ($authRole === 'Penyelia KAFA'
-                ? School::where('district_id', $user->district_id)->orderBy('name')->get()
-                : collect());
+        $importSchools = $schools;
 
         return view('students.index', compact(
-            'students', 'classes', 'importSchools',
-            'districts', 'schools',
-            'tahunCounts', 'filterTahun', 'filterDistrict', 'filterSchool',
+            'students', 'classes', 'importSchools', 'schools',
+            'tahunCounts', 'filterTahun', 'filterSchool',
             'search', 'authRole'
         ));
     }
@@ -121,10 +93,8 @@ class StudentController extends Controller
         $schools = null;
         $classes = collect();
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
-            $schools = \App\Models\School::all();
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $schools = \App\Models\School::where('district_id', $user->district_id)->get();
+        if ($user->isSuperAdmin()) {
+            $schools = School::orderBy('name')->get();
         } else {
             $classes = KafaClass::where('school_id', $user->school_id)->get();
         }
@@ -132,17 +102,20 @@ class StudentController extends Controller
         return view('students.create', compact('classes', 'schools'));
     }
 
-    public function store(Request $request)
+    /** Validation rules; class and MyKid uniqueness are scoped to the target school (tenant). */
+    private function rules($schoolId, bool $requiresSchool, ?Student $student = null): array
     {
-        $user = auth()->user();
-        $requiresSchool = $user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal', 'Penyelia KAFA']);
+        $mykidUnique = Rule::unique('students', 'mykid')->where('school_id', $schoolId);
+        if ($student) {
+            $mykidUnique->ignore($student->id);
+        }
 
-        $validated = $request->validate([
+        return [
             'school_id' => $requiresSchool ? 'required|exists:schools,id' : 'nullable',
-            'kafa_class_id' => 'nullable|exists:kafa_classes,id',
+            'kafa_class_id' => ['nullable', Rule::exists('kafa_classes', 'id')->where('school_id', $schoolId)],
             'name' => 'required|string|max:255',
             'jawi_name' => 'nullable|string|max:255',
-            'mykid' => 'required|string|max:20|unique:students,mykid',
+            'mykid' => ['required', 'string', 'max:20', $mykidUnique],
             'gender' => 'nullable|in:L,P',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'dob' => 'nullable|date',
@@ -173,20 +146,22 @@ class StudentController extends Controller
             'chronic_disease' => 'nullable|string',
             'allergies' => 'nullable|string',
             'emergency_contact' => 'nullable|string',
-        ]);
+        ];
+    }
+
+    public function store(Request $request)
+    {
+        $user = auth()->user();
+        $requiresSchool = $user->isSuperAdmin();
+        $schoolId = $requiresSchool ? $request->input('school_id') : $user->school_id;
+
+        $validated = $request->validate($this->rules($schoolId, $requiresSchool));
 
         if ($request->hasFile('profile_picture')) {
             $validated['profile_picture'] = $request->file('profile_picture')->store('students', 'public');
         }
 
-        $validated['school_id'] = $requiresSchool ? $validated['school_id'] : $user->school_id;
-
-        // Extra district check for Penyelia KAFA to prevent cross-district tampering
-        if ($user->hasRole('Penyelia KAFA')) {
-            $schoolInDistrict = School::where('id', $validated['school_id'])
-                ->where('district_id', $user->district_id)->exists();
-            if (!$schoolInDistrict) abort(403);
-        }
+        $validated['school_id'] = $schoolId;
 
         $student = Student::create($validated);
 
@@ -204,45 +179,18 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
-        $user = auth()->user();
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
-            if ($user->hasRole('Penyelia KAFA')) {
-                $schoolInDistrict = School::where('id', $student->school_id)
-                    ->where('district_id', $user->district_id)->exists();
-                if (!$schoolInDistrict) abort(403);
-            } else {
-                if ($student->school_id !== $user->school_id) abort(403);
-            }
-        }
+        $this->authorizeSchool($student->school_id);
+
         return view('students.show', compact('student'));
     }
 
     public function edit(Student $student)
     {
         $user = auth()->user();
+        $this->authorizeSchool($student->school_id);
 
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
-            if ($user->hasRole('Penyelia KAFA')) {
-                $schoolInDistrict = School::where('id', $student->school_id)
-                    ->where('district_id', $user->district_id)->exists();
-                if (!$schoolInDistrict) abort(403);
-            } else {
-                if ($student->school_id !== $user->school_id) abort(403);
-            }
-        }
-
-        $schools = null;
-        $classes = collect();
-
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
-            $schools = \App\Models\School::all();
-            $classes = KafaClass::where('school_id', $student->school_id)->get();
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $schools = \App\Models\School::where('district_id', $user->district_id)->get();
-            $classes = KafaClass::where('school_id', $student->school_id)->get();
-        } else {
-            $classes = KafaClass::where('school_id', $user->school_id)->get();
-        }
+        $schools = $user->isSuperAdmin() ? School::orderBy('name')->get() : null;
+        $classes = KafaClass::where('school_id', $student->school_id)->get();
 
         return view('students.edit', compact('student', 'classes', 'schools'));
     }
@@ -250,73 +198,21 @@ class StudentController extends Controller
     public function update(Request $request, Student $student)
     {
         $user = auth()->user();
+        $this->authorizeSchool($student->school_id);
 
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
-            if ($user->hasRole('Penyelia KAFA')) {
-                $schoolInDistrict = School::where('id', $student->school_id)
-                    ->where('district_id', $user->district_id)->exists();
-                if (!$schoolInDistrict) abort(403);
-            } else {
-                if ($student->school_id !== $user->school_id) abort(403);
-            }
-        }
+        $requiresSchool = $user->isSuperAdmin();
+        $schoolId = $requiresSchool ? $request->input('school_id') : $student->school_id;
 
-        $requiresSchool = $user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal', 'Penyelia KAFA']);
-
-        $validated = $request->validate([
-            'school_id' => $requiresSchool ? 'required|exists:schools,id' : 'nullable',
-            'kafa_class_id' => 'nullable|exists:kafa_classes,id',
-            'name' => 'required|string|max:255',
-            'jawi_name' => 'nullable|string|max:255',
-            'mykid' => 'required|string|max:20|unique:students,mykid,' . $student->id,
-            'gender' => 'nullable|in:L,P',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'dob' => 'nullable|date',
-            'age' => 'nullable|integer',
-            'birth_place' => 'nullable|string|max:255',
-            'race' => 'nullable|string|max:100',
-            'citizenship' => 'nullable|string|max:100',
-            'address' => 'nullable|string',
-            'oku_status' => 'nullable|string|max:100',
-            'registration_no' => 'nullable|string|max:100',
-            'session_year' => 'nullable|string|max:20',
-            'entry_date' => 'nullable|date',
-            'origin_school' => 'nullable|string|max:255',
-            'upkk_number' => 'nullable|string|max:100',
-            'status' => 'nullable|string|max:100',
-            'father_name' => 'nullable|string|max:255',
-            'father_ic' => 'nullable|string|max:20',
-            'father_phone' => 'nullable|string|max:20',
-            'father_job' => 'nullable|string|max:255',
-            'father_income' => 'nullable|numeric',
-            'mother_name' => 'nullable|string|max:255',
-            'mother_ic' => 'nullable|string|max:20',
-            'mother_phone' => 'nullable|string|max:20',
-            'mother_job' => 'nullable|string|max:255',
-            'mother_income' => 'nullable|numeric',
-            'dependents_count' => 'nullable|integer',
-            'parents_relationship_status' => 'nullable|string|max:100',
-            'chronic_disease' => 'nullable|string',
-            'allergies' => 'nullable|string',
-            'emergency_contact' => 'nullable|string',
-        ]);
+        $validated = $request->validate($this->rules($schoolId, $requiresSchool, $student));
 
         if ($request->hasFile('profile_picture')) {
             if ($student->profile_picture) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($student->profile_picture);
+                Storage::disk('public')->delete($student->profile_picture);
             }
             $validated['profile_picture'] = $request->file('profile_picture')->store('students', 'public');
         }
 
-        if ($requiresSchool) {
-            // Extra district check for Penyelia KAFA
-            if ($user->hasRole('Penyelia KAFA')) {
-                $schoolInDistrict = School::where('id', $validated['school_id'])
-                    ->where('district_id', $user->district_id)->exists();
-                if (!$schoolInDistrict) abort(403);
-            }
-            $student->school_id = $validated['school_id'];
-        }
+        $validated['school_id'] = $schoolId;
 
         $student->update($validated);
 
@@ -329,17 +225,7 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
-        $user = auth()->user();
-
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
-            if ($user->hasRole('Penyelia KAFA')) {
-                $schoolInDistrict = School::where('id', $student->school_id)
-                    ->where('district_id', $user->district_id)->exists();
-                if (!$schoolInDistrict) abort(403);
-            } else {
-                if ($student->school_id !== $user->school_id) abort(403);
-            }
-        }
+        $this->authorizeSchool($student->school_id);
 
         $student->delete();
         return redirect()->route('students.index')->with('success', 'Murid berjaya dipadam.');
@@ -350,7 +236,7 @@ class StudentController extends Controller
         $ic = preg_replace('/[^0-9]/', '', $ic ?? '');
         if (!$ic) return;
 
-        $email = $ic . '@ibubapa.apkm.my';
+        $email = $ic . '@ibubapa.ekafa.online';
         $user  = User::where('ic_number', $ic)->first();
 
         if (!$user) {
@@ -377,12 +263,7 @@ class StudentController extends Controller
 
     public function printQrCards(KafaClass $kafaClass)
     {
-        $user = auth()->user();
-
-        // Semak hak akses: sekolah sendiri sahaja (kecuali Super Admin/Pentadbir)
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            if ($kafaClass->school_id !== $user->school_id) abort(403);
-        }
+        $this->authorizeSchool($kafaClass->school_id);
 
         // Jana QR string untuk murid yang belum ada
         $kafaClass->students()->whereNull('qr_code_string')->each(function ($s) {
@@ -408,12 +289,7 @@ class StudentController extends Controller
 
         $query = Student::whereIn('id', $studentIds);
 
-        // Data Isolation Security Check
-        if ($user->hasRole('Penyelia KAFA')) {
-            $query->whereHas('school', function ($q) use ($user) {
-                $q->where('district_id', $user->district_id);
-            });
-        } elseif (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
+        if (!$user->isSuperAdmin()) {
             $query->where('school_id', $user->school_id);
         }
 

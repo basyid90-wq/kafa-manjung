@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-            @hasanyrole('Super Admin|Penyelia KAFA|Guru Besar|Guru KAFA')
+            @hasanyrole('Super Admin|Guru Besar|Guru KAFA')
             <button type="button" id="btnOpenSijil"
                     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 transition-colors">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

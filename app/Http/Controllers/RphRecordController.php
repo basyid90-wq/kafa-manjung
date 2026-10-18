@@ -5,23 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\RphRecord;
 use App\Models\RphPeriod;
 use App\Models\KafaClass;
-use App\Models\School;
 use App\Models\TimeSlot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class RphRecordController extends Controller
 {
+    /** A class used in an RPH must belong to the author's own school. */
+    private function ownClassRule()
+    {
+        return Rule::exists('kafa_classes', 'id')->where('school_id', auth()->user()->school_id);
+    }
+
+    /** Guru Besar records their own RPH without review; Guru KAFA submissions wait for the Guru Besar. */
+    private function initialStatus(): string
+    {
+        return auth()->user()->hasRole('Guru Besar') ? 'approved' : 'pending';
+    }
     public function index()
     {
         $user  = auth()->user();
         $query = RphRecord::with(['user', 'periods' => fn($q) => $q->where('period_no', 1)]);
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            // all records
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $query->whereHas('school', fn($q) => $q->where('district_id', $user->district_id));
-        } else {
+        if (!$user->isSuperAdmin()) {
             $query->where('school_id', $user->school_id);
             if ($user->hasRole('Guru KAFA')) {
                 $query->where('user_id', $user->id);
@@ -36,7 +43,7 @@ class RphRecordController extends Controller
     {
         $user  = auth()->user();
         $query = KafaClass::query();
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+        if (!$user->hasAnyRole(['Super Admin'])) {
             $query->where('school_id', $user->school_id);
         }
         $classes = $query->orderBy('tahun')->orderBy('name')->get();
@@ -50,7 +57,7 @@ class RphRecordController extends Controller
     {
         $user  = auth()->user();
         $query = KafaClass::query();
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+        if (!$user->hasAnyRole(['Super Admin'])) {
             $query->where('school_id', $user->school_id);
         }
         $classes = $query->orderBy('tahun')->orderBy('name')->get();
@@ -69,14 +76,14 @@ class RphRecordController extends Controller
             'date'                         => 'required|date',
             'hari'                         => 'required|string',
             'week'                         => 'required|integer|min:1|max:52',
-            'periods.1.kafa_class_id'      => 'required|exists:kafa_classes,id',
+            'periods.1.kafa_class_id'      => ['required', $this->ownClassRule()],
             'periods.1.topic_jawi'         => 'required|string',
             'periods.1.kemahiran_jawi'     => 'required|string',
             'periods.1.isi_pelajaran_jawi' => 'required|string',
             'periods.1.objective_jawi'     => 'required|string',
             'periods.1.aktiviti_jawi'      => 'required|string',
-            'periods.2.kafa_class_id'      => 'nullable|exists:kafa_classes,id',
-            'periods.3.kafa_class_id'      => 'nullable|exists:kafa_classes,id',
+            'periods.2.kafa_class_id'      => ['nullable', $this->ownClassRule()],
+            'periods.3.kafa_class_id'      => ['nullable', $this->ownClassRule()],
         ]);
 
         $p1 = $request->input('periods.1', []);
@@ -91,7 +98,7 @@ class RphRecordController extends Controller
                 'week'           => $request->week,
                 'topic_jawi'     => $p1['topic_jawi'] ?? null,
                 'class_type'     => 'biasa',
-                'status'         => 'pending',
+                'status'         => $this->initialStatus(),
             ]);
 
             foreach ([1, 2, 3] as $no) {
@@ -124,7 +131,7 @@ class RphRecordController extends Controller
             'date'             => 'required|date',
             'hari'             => 'required|string',
             'week'             => 'required|integer|min:1|max:52',
-            'kafa_class_id'    => 'required|exists:kafa_classes,id',
+            'kafa_class_id'    => ['required', $this->ownClassRule()],
             'combined_years'   => 'required|array|min:2|max:3',
             'combined_years.*' => 'integer|between:1,6',
             'periods'          => 'required|array',
@@ -140,7 +147,7 @@ class RphRecordController extends Controller
                 'week'           => $request->week,
                 'class_type'     => 'gabungan',
                 'combined_years' => $request->combined_years,
-                'status'         => 'pending',
+                'status'         => $this->initialStatus(),
             ]);
 
             foreach ([1, 2, 3] as $no) {
@@ -183,7 +190,7 @@ class RphRecordController extends Controller
                 'hari'           => $request->hari,
                 'week'           => $request->week,
                 'combined_years' => $request->combined_years,
-                'status'         => 'pending',
+                'status'         => $this->initialStatus(),
                 'review_comment' => null,
                 'reviewer_id'    => null,
             ]);
@@ -215,14 +222,7 @@ class RphRecordController extends Controller
 
     public function show(RphRecord $rph)
     {
-        $user = auth()->user();
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            if ($user->hasRole('Penyelia KAFA')) {
-                if (!School::where('id', $rph->school_id)->where('district_id', $user->district_id)->exists()) abort(403);
-            } else {
-                if ($rph->school_id !== $user->school_id) abort(403);
-            }
-        }
+        $this->authorizeSchool($rph->school_id);
         $rph->load(['periods.kafaClass', 'user', 'reviewer']);
         return view('rph.show', compact('rph'));
     }
@@ -261,14 +261,14 @@ class RphRecordController extends Controller
             'date'                         => 'required|date',
             'hari'                         => 'required|string',
             'week'                         => 'required|integer|min:1|max:52',
-            'periods.1.kafa_class_id'      => 'required|exists:kafa_classes,id',
+            'periods.1.kafa_class_id'      => ['required', $this->ownClassRule()],
             'periods.1.topic_jawi'         => 'required|string',
             'periods.1.kemahiran_jawi'     => 'required|string',
             'periods.1.isi_pelajaran_jawi' => 'required|string',
             'periods.1.objective_jawi'     => 'required|string',
             'periods.1.aktiviti_jawi'      => 'required|string',
-            'periods.2.kafa_class_id'      => 'nullable|exists:kafa_classes,id',
-            'periods.3.kafa_class_id'      => 'nullable|exists:kafa_classes,id',
+            'periods.2.kafa_class_id'      => ['nullable', $this->ownClassRule()],
+            'periods.3.kafa_class_id'      => ['nullable', $this->ownClassRule()],
         ]);
 
         $p1 = $request->input('periods.1', []);
@@ -280,7 +280,7 @@ class RphRecordController extends Controller
                 'hari'           => $request->hari,
                 'week'           => $request->week,
                 'topic_jawi'     => $p1['topic_jawi'] ?? null,
-                'status'         => 'pending',
+                'status'         => $this->initialStatus(),
                 'review_comment' => null,
                 'reviewer_id'    => null,
             ]);

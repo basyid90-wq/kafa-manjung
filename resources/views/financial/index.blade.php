@@ -5,14 +5,10 @@
 
     <div class="flex items-center justify-between mb-5">
         <div>
-            @role('Penyelia KAFA')
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Semakan Kewangan Daerah</h1>
-            @else
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Pengurusan Kewangan</h1>
-            @endrole
+                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Pengurusan Kewangan</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Rekod transaksi masuk dan keluar sekolah</p>
         </div>
-        @hasanyrole('Super Admin|Pentadbir|Bendahari Sekolah')
+        @hasanyrole('Super Admin|Guru Besar')
         <a href="{{ route('financial.create') }}"
            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,11 +32,7 @@
                     RM {{ number_format($balance, 2) }}
                 </p>
                 <p class="text-sm {{ $balance >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500' }}">
-                    @role('Penyelia KAFA')
-                    Jumlah Baki Keseluruhan Daerah
-                    @else
-                    Baki Semasa Akaun Sekolah
-                    @endrole
+                                        Baki Semasa Akaun Sekolah
                 </p>
             </div>
         </div>
@@ -54,9 +46,6 @@
                     <tr>
                         <th class="px-5 py-3 w-12">No</th>
                         <th class="px-5 py-3">Tarikh</th>
-                        @role('Penyelia KAFA')
-                        <th class="px-5 py-3">Sekolah</th>
-                        @endrole
                         <th class="px-5 py-3">Kategori</th>
                         <th class="px-5 py-3">Jenis</th>
                         <th class="px-5 py-3 text-right">Jumlah (RM)</th>
@@ -69,9 +58,6 @@
                     <tr class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <td class="px-5 py-3 text-gray-400 text-xs">{{ $loop->iteration }}</td>
                         <td class="px-5 py-3 text-xs">{{ $record->transaction_date }}</td>
-                        @role('Penyelia KAFA')
-                        <td class="px-5 py-3 text-sm text-gray-700 dark:text-gray-300">{{ $record->school->name ?? '—' }}</td>
-                        @endrole
                         <td class="px-5 py-3 text-gray-600 dark:text-gray-300">{{ $record->category->name }}</td>
                         <td class="px-5 py-3">
                             @if($record->transaction_type == 'in')
@@ -111,7 +97,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ auth()->user()->hasRole('Penyelia KAFA') ? 8 : 7 }}" class="px-5 py-12 text-center text-gray-400 text-sm">
+                        <td colspan="7" class="px-5 py-12 text-center text-gray-400 text-sm">
                             Tiada rekod transaksi.
                         </td>
                     </tr>

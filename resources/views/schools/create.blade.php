@@ -34,26 +34,6 @@
                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                @role('Penyelia KAFA')
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Daerah</label>
-                    <input type="text" value="{{ auth()->user()->district->name }}" disabled
-                           class="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
-                    <input type="hidden" name="district_id" value="{{ auth()->user()->district_id }}">
-                </div>
-                @else
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Daerah <span class="text-red-500">*</span></label>
-                    <select name="district_id" required
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="">-- Pilih Daerah --</option>
-                        @foreach($districts as $district)
-                        <option value="{{ $district->id }}" {{ old('district_id') == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endrole
-
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jenis Premis</label>
                     <select name="jenis_premis"

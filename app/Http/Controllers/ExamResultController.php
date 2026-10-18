@@ -62,7 +62,7 @@ class ExamResultController extends Controller
         $authUser  = auth()->user();
         $kafaClass = KafaClass::findOrFail($request->kafa_class_id);
 
-        if (!$authUser->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+        if (!$authUser->hasAnyRole(['Super Admin'])) {
             if ($kafaClass->school_id !== $authUser->school_id) {
                 abort(403, 'Capaian tidak dibenarkan.');
             }
@@ -95,7 +95,7 @@ class ExamResultController extends Controller
         $authUser  = auth()->user();
         $kafaClass = KafaClass::findOrFail($request->kafa_class_id);
 
-        if (!$authUser->hasAnyRole(['Super Admin', 'Pentadbir'])) {
+        if (!$authUser->hasAnyRole(['Super Admin'])) {
             if ($kafaClass->school_id !== $authUser->school_id) {
                 abort(403, 'Capaian tidak dibenarkan.');
             }
@@ -136,13 +136,13 @@ class ExamResultController extends Controller
         $authUser  = auth()->user();
         $kafaClass = KafaClass::findOrFail($request->kafa_class_id);
 
-        if (!$authUser->hasAnyRole(['Super Admin', 'Pentadbir']) && $kafaClass->school_id !== $authUser->school_id) {
+        if (!$authUser->hasAnyRole(['Super Admin']) && $kafaClass->school_id !== $authUser->school_id) {
             abort(403, 'Capaian tidak dibenarkan.');
         }
 
         foreach ($request->marks as $studentId => $mark) {
             $student = Student::find($studentId);
-            if (!$student || (!$authUser->hasAnyRole(['Super Admin', 'Pentadbir']) && $student->school_id !== $authUser->school_id)) {
+            if (!$student || (!$authUser->hasAnyRole(['Super Admin']) && $student->school_id !== $authUser->school_id)) {
                 continue;
             }
 

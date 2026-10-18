@@ -38,10 +38,6 @@
                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $school->code }}</p>
             </div>
             <div>
-                <p class="text-xs text-gray-400 mb-0.5">Daerah</p>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $school->district->name ?? '—' }}</p>
-            </div>
-            <div>
                 <p class="text-xs text-gray-400 mb-0.5">Jenis Premis</p>
                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $school->jenis_premis ?? '—' }}</p>
             </div>

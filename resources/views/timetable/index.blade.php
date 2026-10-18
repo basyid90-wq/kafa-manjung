@@ -26,7 +26,7 @@
                 Set Waktu Mengajar
             </a>
             @endrole
-            @role('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+            @role('Super Admin|Guru Besar|Guru KAFA')
             <a href="{{ route('timetable.create') }}"
                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -41,7 +41,7 @@
     {{-- ── Filter ── --}}
     <form action="{{ route('timetable.index') }}" method="GET" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-5">
         <div class="flex flex-wrap gap-3">
-            @role('Penyelia KAFA')
+            @role('Super Admin')
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">Pilih Sekolah</label>
                 <select name="school_id" onchange="this.form.submit()"
@@ -93,7 +93,7 @@
                                 <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-2 py-1.5 text-center">
                                     <p class="text-xs font-medium text-blue-700 dark:text-blue-300 leading-tight">{{ $item->subject->name }}</p>
                                     <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 leading-tight">{{ $item->teacher->name }}</p>
-                                    @role('Super Admin|Pentadbir|Guru Besar|Guru KAFA')
+                                    @role('Super Admin|Guru Besar|Guru KAFA')
                                     <div class="flex items-center justify-center gap-1 mt-1.5">
                                         <a href="{{ route('timetable.edit', $item->id) }}"
                                            class="p-0.5 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded transition-colors"

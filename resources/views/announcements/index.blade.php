@@ -33,7 +33,7 @@
             </a>
             @endrole
 
-            @role('Super Admin|Pentadbir|Penyelia KAFA|Guru Besar|Pembekal')
+            @role('Super Admin|Guru Besar')
             <a href="{{ route('announcements.create') }}"
                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

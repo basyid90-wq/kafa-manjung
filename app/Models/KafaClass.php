@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 
 class KafaClass extends Model
 {
+    use BelongsToSchool;
     use HasFactory;
 
     protected $fillable = ['school_id', 'name', 'tahun', 'teacher_id'];

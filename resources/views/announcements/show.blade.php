@@ -73,10 +73,6 @@
                 <span class="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium">
                     Sekolah: {{ $announcement->school->name }}
                 </span>
-                @elseif($announcement->district_id)
-                <span class="px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 font-medium">
-                    Daerah: {{ $announcement->district->name }}
-                </span>
                 @else
                 <span class="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium">Semua</span>
                 @endif

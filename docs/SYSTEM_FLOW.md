@@ -10,7 +10,7 @@
 ```
 Daerah (District)
 └── Sekolah (School)
-    ├── Pengguna (User) — Guru Besar, Guru KAFA, Penyelia
+    ├── Pengguna (User) — Guru Besar, Guru KAFA
     └── Kelas KAFA (KafaClass)
         ├── Murid (Student)
         │   ├── Kehadiran (Attendance)
@@ -22,9 +22,6 @@ Daerah (District)
         ├── RPH (RphRecord) → Kelulusan (RphApproval)
         ├── Jadual Waktu (Timetable → TimeSlot)
         └── Aktiviti (Activity)
-
-Buku (Book)
-└── Pesanan Buku (BookOrder) — oleh Pembekal/Sekolah
 
 Kewangan (Financial) — rekod bayaran sekolah
 
@@ -43,9 +40,9 @@ Laporan (Report) — agregat data semua modul di atas
 
 | # | Modul | Modul Berkaitan | Sebab Kaitan |
 |---|-------|-----------------|--------------|
-| 1 | **District** | School, User, Pentadbir | School milik District; User ada `district_id` |
+| 1 | ~~District~~ | — | Dibuang (pivot SaaS, Okt 2026). Sekolah = tenant. |
 | 2 | **School** | KafaClass, User, Student, Financial, BookOrder | Semua data terikat `school_id` |
-| 3 | **User** | Role, School, District | User ada role + school/district |
+| 3 | **User** | Role, School | User ada role + school_id |
 | 4 | **KafaClass** | Student, Attendance, Timetable, RPH | Kelas adalah unit utama operasi |
 | 5 | **Student** | KafaClass, Attendance, ExamResult, DisciplinaryRecord, Achievement, Transfer, Parent | Murid adalah entiti pusat sistem |
 | 6 | **Attendance** | Student, KafaClass | Kehadiran ikat murid + kelas |
@@ -56,11 +53,11 @@ Laporan (Report) — agregat data semua modul di atas
 | 11 | **RphApproval** | RphRecord, User (Guru Besar) | Kelulusan RPH oleh Guru Besar |
 | 12 | **Timetable** | TimeSlot, Subject, KafaClass | Jadual waktu ikat subjek + kelas |
 | 13 | **Book** | BookOrder | Buku boleh dipesan |
-| 14 | **BookOrder** | Book, School, Pembekal | Pesanan buku oleh sekolah kepada pembekal |
+| 14 | ~~BookOrder~~ | — | Dibuang (pivot SaaS) |
 | 15 | **Financial** | School | Rekod kewangan terikat sekolah |
 | 16 | **Disciplinary** | Student, School | Rekod disiplin per murid |
 | 17 | **Achievement** | Student, School | Pencapaian akademik/ko-k per murid |
-| 18 | **StudentTransfer** | Student, School (asal & baru) | Pemindahan murid antara sekolah |
+| 18 | **StudentTransfer** | Student, School (asal) | "Pindah keluar": murid diarkib (status Pindah), destinasi teks bebas — data tidak dipindah ke tenant lain |
 | 19 | **Certificate** | Student, CertificateTemplate | Jana sijil berdasarkan template |
 | 20 | **Announcement** | User (semua role) | Pengumuman boleh ditarget role tertentu |
 | 21 | **Report** | Student, Attendance, ExamResult, Financial | Laporan agregat pelbagai modul |
@@ -120,19 +117,6 @@ Guru Besar
 
 ---
 
-### Aliran 5 — Pesanan Buku
-```
-Pentadbir / Guru Besar
-  → Semak katalog Buku (Book)
-  → Buat Pesanan (BookOrder) — pilih buku + kuantiti
-
-Pembekal
-  → Semak senarai pesanan
-  → Kemaskini status penghantaran
-```
-**Modul terlibat:** Book → BookOrder → (Pembekal role)
-
----
 
 ### Aliran 6 — Jana Sijil
 ```

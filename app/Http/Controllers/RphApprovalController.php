@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\RphRecord;
-use App\Models\School;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -17,22 +16,11 @@ class RphApprovalController extends Controller
             ->with(['user', 'kafaClass', 'school', 'periods.kafaClass'])
             ->orderBy('date', 'asc');
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            // Super Admin: semua pending
-            // Pentadbir: hanya sekolah sendiri jika ada school_id
-            if ($user->hasRole('Pentadbir') && $user->school_id) {
-                $base->where('school_id', $user->school_id);
-            }
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            // Penyelia KAFA: semak RPH yang dihantar oleh Guru Besar
-            // dalam sekolah-sekolah di bawah daerah seliaannya
-            $base->whereHas('school', fn($q) => $q->where('district_id', $user->district_id))
-                 ->whereHas('user', fn($q) => $q->whereHas('roles', fn($r) => $r->where('name', 'Guru Besar')));
-        } elseif ($user->hasRole('Guru Besar')) {
+        if ($user->hasRole('Guru Besar') && !$user->isSuperAdmin()) {
             // Guru Besar: semak RPH yang dihantar oleh Guru KAFA dalam sekolah yang sama
             $base->where('school_id', $user->school_id)
                  ->whereHas('user', fn($q) => $q->whereHas('roles', fn($r) => $r->where('name', 'Guru KAFA')));
-        } else {
+        } elseif (!$user->isSuperAdmin()) {
             $base->whereRaw('0 = 1'); // role lain tiada akses
         }
 
@@ -45,22 +33,12 @@ class RphApprovalController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->hasRole('Penyelia KAFA')) {
-            $schoolInDistrict = School::where('id', $rph->school_id)
-                ->where('district_id', $user->district_id)->exists();
-            if (!$schoolInDistrict) abort(403);
-            // Penyelia hanya boleh semak RPH dari Guru Besar
-            $submitter = User::find($rph->user_id);
-            if (!$submitter || !$submitter->hasRole('Guru Besar')) abort(403);
-        } elseif ($user->hasRole('Guru Besar')) {
-            if ($rph->school_id !== $user->school_id) abort(403);
+        if (!$user->isSuperAdmin()) {
+            $this->authorizeSchool($rph->school_id);
             // Guru Besar hanya boleh semak RPH dari Guru KAFA
             $submitter = User::find($rph->user_id);
             if (!$submitter || !$submitter->hasRole('Guru KAFA')) abort(403);
-        } elseif ($user->hasRole('Pentadbir') && $user->school_id) {
-            if ($rph->school_id !== $user->school_id) abort(403);
         }
-        // Super Admin: tiada sekatan
 
         $request->validate([
             'status'         => 'required|in:approved,rejected,revision_needed',
@@ -86,11 +64,7 @@ class RphApprovalController extends Controller
         $query = RphRecord::where('status', '!=', 'pending')
             ->with(['user', 'school', 'reviewer', 'kafaClass']);
 
-        if ($user->hasRole('Penyelia KAFA')) {
-            $query->whereHas('school', fn($q) => $q->where('district_id', $user->district_id));
-        } elseif ($user->hasRole('Guru Besar')) {
-            $query->where('school_id', $user->school_id);
-        } elseif ($user->hasRole('Pentadbir') && $user->school_id) {
+        if (!$user->isSuperAdmin()) {
             $query->where('school_id', $user->school_id);
         }
 
@@ -107,7 +81,8 @@ class RphApprovalController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->hasRole('Super Admin') && $user->id !== $rph->reviewer_id) {
+        $this->authorizeSchool($rph->school_id);
+        if (!$user->isSuperAdmin() && $user->id !== $rph->reviewer_id) {
             abort(403, 'Anda hanya boleh membatalkan RPH yang anda luluskan sendiri.');
         }
 

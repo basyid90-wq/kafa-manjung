@@ -18,7 +18,7 @@ NEVER use <a target="_blank"> for PDF links
 NEVER use jQuery for new logic — Alpine.js only
 NEVER import new JS libraries without user approval
 NEVER enable CSS smooth scrolling globally
-NEVER return data without filtering by school_id or district_id (role-based)
+NEVER return data without filtering by school_id (tenant) — see BelongsToSchool trait
 NEVER delete a Student, School, or Subject record without checking dependent data first
 NEVER leave dd(), dump(), var_dump(), or console.log() in committed code
 ```
@@ -30,7 +30,7 @@ NEVER leave dd(), dump(), var_dump(), or console.log() in committed code
 ```
 ALWAYS use mPDF with: mode=utf-8, autoArabic=true, default_font=lateef
 ALWAYS use openPdfBlob(this, url) for PDF display buttons
-ALWAYS filter queries by school_id or district_id based on user role
+ALWAYS filter queries by school_id based on user role (tenant isolation)
 ALWAYS use @csrf in every form
 ALWAYS use SweetAlert2 via data-delete-form + data-name for delete actions
 ALWAYS paginate with ->paginate(10) — never more
@@ -91,7 +91,8 @@ Before editing any module, check `docs/SYSTEM_FLOW.md` for dependent modules.
 1. **Data Isolation:** Every query touching student/class/financial data MUST be scoped:
    - Guru KAFA → filter by `school_id` AND `kafa_class_id`
    - Guru Besar → filter by `school_id`
-   - Pentadbir / Penyelia KAFA → filter by `district_id`
+   - Ibu Bapa → own children only
+   - Models with `school_id` MUST use the `BelongsToSchool` trait; controllers guard with `$this->authorizeSchool()`
    - Super Admin → no filter required
 
 2. **Input Validation:** Every `store()` and `update()` method MUST call `$request->validate([...])`.
@@ -124,10 +125,11 @@ git add <specific files>
 git commit -m "type: description"
 ```
 
-**Step 4 — Push to remote main**
+**Step 4 — Push to the SaaS branch**
 ```bash
-git push origin claude/strange-jennings-fba0ae:main
+git push origin saas
 ```
+> ⚠️ Do NOT push to `main` during the SaaS rebuild — `main` is the old jabatan system. See CLAUDE.md (roles, tenant isolation).
 
 **Step 5 — Give user VPS commands only**
 Tell the user to run on VPS:
@@ -157,7 +159,7 @@ Only include `route:cache` if a new route was added. State why each command is n
 [ ] Did I read the module's dependencies in docs/SYSTEM_FLOW.md?
 [ ] Am I using Bootstrap 5 classes only (no Tailwind, no custom CSS)?
 [ ] If PDF is involved — am I using mPDF + openPdfBlob()?
-[ ] Is every query filtered by school_id or district_id?
+[ ] Is every query filtered by school_id (tenant)? Are request IDs checked against the user's school?
 [ ] Is there @csrf in every form?
 [ ] Will I update CHANGELOG.md after this edit?
 ```

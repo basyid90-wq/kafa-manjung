@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'APKM') | Sistem KAFA Perak</title>
+    <title>@yield('title', 'Dashboard') | eKafa Online</title>
     <link rel="shortcut icon" href="{{ asset('template/perak.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -24,9 +24,9 @@
                     </button>
                     {{-- Logo --}}
                     <a href="{{ route('dashboard') }}" class="flex ms-2 md:me-24 items-center gap-2">
-                        <img src="{{ asset('template/perak.png') }}" class="h-8" alt="Logo">
+                        <span class="w-8 h-8 rounded-lg bg-blue-600 text-white text-xs font-bold flex items-center justify-center">eK</span>
                         <span class="self-center text-sm font-semibold whitespace-nowrap dark:text-white leading-tight">
-                            APKM<br><span class="text-xs font-normal text-gray-500 dark:text-gray-300">Sistem KAFA Perak</span>
+                            eKafa Online<br><span class="text-xs font-normal text-gray-500 dark:text-gray-300">Pengurusan KAFA</span>
                         </span>
                     </a>
                 </div>

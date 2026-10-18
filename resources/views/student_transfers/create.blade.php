@@ -5,8 +5,8 @@
 
     <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Permohonan Pindah Murid</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Hantar permohonan pertukaran sekolah murid.</p>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Rekod Pindah Keluar Murid</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Rekodkan murid yang berpindah ke sekolah lain.</p>
         </div>
         <a href="{{ route('student_transfers.index') }}"
            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
@@ -75,23 +75,14 @@
             @endif
 
             <div>
-                <label for="to_school_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                <label for="to_school_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                     Sekolah Destinasi <span class="text-red-500">*</span>
                 </label>
-                <select name="to_school_id" id="to_school_id" required
-                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('to_school_id') border-red-500 @enderror">
-                    <option value="">-- Pilih Sekolah --</option>
-                    @foreach($groupedSchools as $districtName => $schools)
-                        <optgroup label="Daerah: {{ $districtName }}">
-                            @foreach($schools as $school)
-                                <option value="{{ $school->id }}" {{ old('to_school_id') == $school->id ? 'selected' : '' }}>
-                                    {{ $school->name }}
-                                </option>
-                            @endforeach
-                        </optgroup>
-                    @endforeach
-                </select>
-                @error('to_school_id')
+                <input type="text" name="to_school_name" id="to_school_name" required maxlength="255"
+                       value="{{ old('to_school_name') }}" placeholder="cth: KAFA Integrasi Sri Manjung"
+                       class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <p class="mt-1 text-xs text-gray-400">Rekod murid akan diarkibkan di sekolah ini. Sekolah baharu perlu mendaftar murid dalam akaun mereka sendiri.</p>
+                @error('to_school_name')
                 <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                 @enderror
             </div>
@@ -111,7 +102,7 @@
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
-                    Hantar Permohonan
+                    Simpan Rekod
                 </button>
                 <a href="{{ route('student_transfers.index') }}"
                    class="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
@@ -141,16 +132,12 @@
                 return response.json();
             })
             .then(function(data) {
-                var html = '<option value="">-- Pilih Murid --</option>';
-                if (data && data.length > 0) {
-                    data.forEach(function(student) {
-                        html += '<option value="' + student.id + '">' + student.name + '</option>';
-                    });
-                    studentSelect.disabled = false;
-                } else {
-                    html = '<option value="">Tiada murid ditemui</option>';
-                }
-                studentSelect.innerHTML = html;
+                studentSelect.innerHTML = '';
+                studentSelect.add(new Option(data && data.length > 0 ? '-- Pilih Murid --' : 'Tiada murid ditemui', ''));
+                (data || []).forEach(function(student) {
+                    studentSelect.add(new Option(student.name, student.id));
+                });
+                studentSelect.disabled = !(data && data.length > 0);
             })
             .catch(function(error) {
                 studentSelect.innerHTML = '<option value="">Ralat memuatkan data</option>';

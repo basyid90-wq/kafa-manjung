@@ -23,12 +23,6 @@ class StudentAchievementController extends Controller
 
     public function index(Request $request)
     {
-        $user = auth()->user();
-
-        if ($user->hasAnyRole(['Penyelia KAFA', 'Pentadbir'])) {
-            return $this->indexPenyelia($request);
-        }
-
         return $this->indexGuru($request);
     }
 
@@ -77,67 +71,11 @@ class StudentAchievementController extends Controller
         return view('achievements.index', compact('records', 'classes', 'years', 'completionStats'));
     }
 
-    private function indexPenyelia(Request $request)
-    {
-        $user        = auth()->user();
-        $selectedYear = (int) $request->get('academic_year', date('Y'));
-
-        $schoolsQuery = \App\Models\School::query();
-
-        if ($user->hasRole('Penyelia KAFA')) {
-            $schoolsQuery->where('district_id', $user->district_id);
-        }
-
-        $schools = $schoolsQuery->withCount([
-            'students as students_count',
-            'achievementRecords as achievements_count' => fn($q) => $q->where('academic_year', $selectedYear),
-        ])->orderBy('name')->get();
-
-        // Ranking: sort by achievement % descending
-        $schools = $schools->sortByDesc(function ($s) {
-            return $s->students_count > 0 ? ($s->achievements_count / $s->students_count) : 0;
-        })->values();
-
-        // Summary stats
-        $totalSchools   = $schools->count();
-        $totalStudents  = $schools->sum('students_count');
-        $totalRecorded  = $schools->sum('achievements_count');
-        $overallPct     = $totalStudents > 0 ? round(($totalRecorded / $totalStudents) * 100, 1) : 0;
-        $belumRekod     = $schools->where('achievements_count', 0)->count();
-
-        $summary = compact('totalSchools', 'totalStudents', 'totalRecorded', 'overallPct', 'belumRekod');
-
-        // Top 10 students for selected year
-        $topStudentsQuery = StudentAchievementRecord::with(['student', 'school'])
-            ->where('academic_year', $selectedYear);
-
-        if ($user->hasRole('Penyelia KAFA')) {
-            $topStudentsQuery->whereHas('school', fn($q) => $q->where('district_id', $user->district_id));
-        }
-
-        $topStudents = $topStudentsQuery->get()->map(function ($rec) {
-            $midSum = ExamResult::where('student_id', $rec->student_id)
-                ->where('exam_id', $rec->midyear_exam_id)
-                ->where('is_absent', false)->sum('marks');
-            $endSum = ExamResult::where('student_id', $rec->student_id)
-                ->where('exam_id', $rec->endyear_exam_id)
-                ->where('is_absent', false)->sum('marks');
-            $rec->total_marks = $midSum + $endSum;
-            return $rec;
-        })->sortByDesc('total_marks')->take(10)->values();
-
-        $years = range(date('Y'), 2024);
-
-        return view('achievements.index_penyelia', compact('schools', 'topStudents', 'summary', 'selectedYear', 'years'));
-    }
-
     public function schoolList(\App\Models\School $school, Request $request)
     {
         $user = auth()->user();
 
-        if ($user->hasRole('Penyelia KAFA') && $school->district_id !== $user->district_id) {
-            abort(403, 'Akses tidak dibenarkan.');
-        }
+        $this->authorizeSchool($school->id);
 
         $query = StudentAchievementRecord::with(['student', 'kafaClass', 'school'])
             ->where('school_id', $school->id);
@@ -409,19 +347,7 @@ class StudentAchievementController extends Controller
 
     private function authorizeRecordAccess(StudentAchievementRecord $achievement, $user): void
     {
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            return;
-        }
-
-        if ($user->hasRole('Penyelia KAFA')) {
-            $school = \App\Models\School::find($achievement->school_id);
-            if (!$school || $school->district_id !== $user->district_id) {
-                abort(403, 'Akses tidak dibenarkan.');
-            }
-            return;
-        }
-
-        if ($achievement->school_id !== $user->school_id) {
+        if (!$user->canAccessSchool($achievement->school_id)) {
             abort(403, 'Akses tidak dibenarkan.');
         }
     }

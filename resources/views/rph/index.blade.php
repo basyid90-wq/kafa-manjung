@@ -9,7 +9,7 @@
             <h1 class="text-xl font-bold text-gray-900 dark:text-white">Rekod Pengajaran Harian (RPH)</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Senarai RPH yang telah dicipta</p>
         </div>
-        @role('Guru KAFA|Penyelia KAFA|Super Admin|Pentadbir|Guru Besar')
+        @role('Guru KAFA|Super Admin|Guru Besar')
         <a href="{{ route('rph.create') }}"
            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

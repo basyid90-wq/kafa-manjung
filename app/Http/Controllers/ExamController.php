@@ -13,7 +13,7 @@ class ExamController extends Controller
         $query = Exam::query();
 
         // FASA 5: Tapisan Keselamatan Global
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Pembekal'])) {
+        if (!$user->hasAnyRole(['Super Admin'])) {
             $query->where('school_id', $user->school_id);
         }
 
@@ -32,11 +32,11 @@ class ExamController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'year' => 'required|integer|min:2000|max:2099',
-            'school_id' => $user->hasAnyRole(['Super Admin', 'Pentadbir']) ? 'required|exists:schools,id' : 'nullable',
+            'school_id' => $user->hasAnyRole(['Super Admin']) ? 'required|exists:schools,id' : 'nullable',
         ]);
 
         Exam::create([
-            'school_id' => $user->hasAnyRole(['Super Admin', 'Pentadbir']) ? $request->school_id : $user->school_id,
+            'school_id' => $user->hasAnyRole(['Super Admin']) ? $request->school_id : $user->school_id,
             'name' => $request->name,
             'year' => $request->year,
             'term' => $request->input('term', 'lain'),
@@ -75,7 +75,7 @@ class ExamController extends Controller
     private function authorizeSchoolAccess(Exam $exam): void
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir']) && $exam->school_id !== $user->school_id) {
+        if (!$user->hasAnyRole(['Super Admin']) && $exam->school_id !== $user->school_id) {
             abort(403, 'Anda tidak dibenarkan mengakses peperiksaan ini.');
         }
     }

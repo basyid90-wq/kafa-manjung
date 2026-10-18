@@ -6,18 +6,16 @@
 
 ## 🔒 1. Data Isolation (KRITIKAL)
 
-Setiap query MESTI dihadkan mengikut role pengguna. Kegagalan ini boleh bocorkan data sekolah/daerah lain.
+Setiap query MESTI dihadkan mengikut role pengguna. Kegagalan ini boleh bocorkan data pelanggan (sekolah) lain.
 
 | Role | Filter Wajib | Contoh |
 |---|---|---|
 | Super Admin | Tiada (akses penuh) | — |
-| Pentadbir | `district_id` | `->where('district_id', auth()->user()->district_id)` |
-| Penyelia KAFA | `district_id` | sama seperti Pentadbir |
 | Guru Besar | `school_id` | `->where('school_id', auth()->user()->school_id)` |
 | Guru KAFA | `school_id` + `kafa_class_id` | `->where('school_id', ...)->where('kafa_class_id', ...)` |
 | Ibu Bapa | `student_id` (anak sendiri) | `->where('parent_id', auth()->id())` |
 
-**Semak:** Adakah setiap Controller method ada filter role sebelum return data?
+**Semak:** Adakah setiap Controller method ada filter role sebelum return data? Model baharu dengan `school_id` WAJIB guna trait `BelongsToSchool`; rekod dari request disemak dengan `$this->authorizeSchool()`.
 
 ---
 

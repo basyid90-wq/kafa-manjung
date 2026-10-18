@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToSchool;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Announcement extends Model
 {
+    use BelongsToSchool;
+
+    /** school_id NULL = shared with every tenant. */
+    protected bool $sharedWhenSchoolIsNull = true;
     use SoftDeletes;
 
     protected $fillable = [
@@ -15,7 +20,6 @@ class Announcement extends Model
         'content',
         'user_id',
         'school_id',
-        'district_id',
         'is_global',
         'target_role',
         'target_scope',
@@ -40,11 +44,6 @@ class Announcement extends Model
     public function school()
     {
         return $this->belongsTo(School::class);
-    }
-
-    public function district()
-    {
-        return $this->belongsTo(District::class);
     }
 
     // Pivot: Users yang disasarkan oleh hebahan ini

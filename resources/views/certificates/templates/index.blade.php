@@ -54,7 +54,7 @@
                         </td>
                         <td class="px-5 py-3 text-gray-600 dark:text-gray-300">{{ ucfirst($t->layout_style) }}</td>
                         <td class="px-5 py-3 text-xs text-gray-500 dark:text-gray-400">
-                            {{ $t->school->name ?? $t->district->name ?? '—' }}
+                            {{ $t->school->name ?? 'Templat Platform' }}
                         </td>
                         <td class="px-5 py-3 text-center">
                             <form method="POST"

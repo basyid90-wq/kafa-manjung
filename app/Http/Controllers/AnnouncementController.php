@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use App\Models\User;
 use App\Models\School;
-use App\Models\District;
 use App\Notifications\NewAnnouncementNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -23,12 +22,12 @@ class AnnouncementController extends Controller
 
         // Super Admin sees ALL announcements (including homepage)
         if ($user->hasRole('Super Admin')) {
-            $query->with(['user', 'school', 'district']);
+            $query->with(['user', 'school']);
         } else {
             // Other users only see targeted announcements (exclude homepage)
             $query->forUser($user)
                 ->where('is_homepage', false)
-                ->with(['user', 'school', 'district']);
+                ->with(['user', 'school']);
         }
 
         $announcements = $query->latest()->paginate(10);
@@ -61,34 +60,16 @@ class AnnouncementController extends Controller
         $user = Auth::user();
 
         // Check role permission
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir', 'Penyelia KAFA', 'Guru Besar', 'Pembekal'])) {
+        if (!$user->hasAnyRole(['Super Admin', 'Guru Besar'])) {
             abort(403);
         }
 
-        // Get available options based on role
-        $districts = [];
-        $schools = [];
+        // Guru Besar can only target their own school
+        $schools = $user->isSuperAdmin()
+            ? School::orderBy('name')->get()
+            : School::where('id', $user->school_id)->get();
 
-        if ($user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            $districts = District::all();
-            $schools = School::with('district')->get();
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $schools = School::where('district_id', $user->district_id)->get();
-        } elseif ($user->hasRole('Guru Besar')) {
-            // Guru Besar only sees their school
-            $schools = School::where('id', $user->school_id)->get();
-        } elseif ($user->hasRole('Pembekal')) {
-            // Pembekal can see schools that have ordered from them
-            $schools = School::whereHas('bookOrders', function($q) use ($user) {
-                $q->whereHas('items', function($q2) use ($user) {
-                    $q2->whereHas('book', function($q3) use ($user) {
-                        $q3->where('supplier_id', $user->id);
-                    });
-                });
-            })->get();
-        }
-
-        return view('announcements.create', compact('districts', 'schools'));
+        return view('announcements.create', compact('schools'));
     }
 
     public function createHomepage()
@@ -109,10 +90,8 @@ class AnnouncementController extends Controller
             'title' => 'required|string|max:255',
             'category' => 'nullable|string|max:100',
             'content' => 'required|string',
-            'target_role' => 'required|string',
-            'target_scope' => 'required|in:all,district,school,specific',
-            'district_ids' => 'nullable|array',
-            'district_ids.*' => 'exists:districts,id',
+            'target_role' => 'required|in:Semua,Guru Besar,Guru KAFA',
+            'target_scope' => 'required|in:all,school',
             'school_ids' => 'nullable|array',
             'school_ids.*' => 'exists:schools,id',
         ]);
@@ -126,10 +105,9 @@ class AnnouncementController extends Controller
                 'content' => $request->content,
                 'user_id' => $user->id,
                 'school_id' => $user->school_id,
-                'district_id' => $user->district_id,
                 'is_global' => false,
                 'target_role' => $request->target_role,
-                'target_scope' => $request->target_scope,
+                'target_scope' => $user->isSuperAdmin() ? $request->target_scope : 'school',
                 'is_homepage' => false,
             ]);
 
@@ -279,36 +257,11 @@ class AnnouncementController extends Controller
             $query->role($request->target_role);
         }
 
-        // Filter by scope
-        switch ($request->target_scope) {
-            case 'all':
-                // All users with that role (already filtered above)
-                break;
-
-            case 'district':
-                if ($request->has('district_ids') && !empty($request->district_ids)) {
-                    $query->whereIn('district_id', $request->district_ids);
-                } else {
-                    // Default to user's district if not specified
-                    $query->where('district_id', $user->district_id);
-                }
-                break;
-
-            case 'school':
-                if ($request->has('school_ids') && !empty($request->school_ids)) {
-                    $query->whereIn('school_id', $request->school_ids);
-                } else {
-                    // Default to user's school if not specified
-                    $query->where('school_id', $user->school_id);
-                }
-                break;
-
-            case 'specific':
-                // Specific users (can be extended later)
-                if ($request->has('school_ids') && !empty($request->school_ids)) {
-                    $query->whereIn('school_id', $request->school_ids);
-                }
-                break;
+        // Tenants may only reach their own school; Super Admin may target all or selected schools
+        if (!$user->isSuperAdmin()) {
+            $query->where('school_id', $user->school_id);
+        } elseif ($request->target_scope === 'school' && !empty($request->school_ids)) {
+            $query->whereIn('school_id', $request->school_ids);
         }
 
         return $query->get();

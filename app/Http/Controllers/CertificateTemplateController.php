@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\CertificateTemplate;
-use App\Models\District;
 use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,15 +13,11 @@ class CertificateTemplateController extends Controller
     public function index()
     {
         $user  = Auth::user();
-        $query = CertificateTemplate::with(['district', 'school']);
+        $query = CertificateTemplate::with('school');
 
-        if ($user->hasRole('Super Admin') || $user->hasRole('Pentadbir')) {
-            // see all
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $query->where('district_id', $user->district_id);
-        } else {
-            // Guru Besar / Guru KAFA — school level only
-            $query->where('school_id', $user->school_id);
+        // Tenants see their own templates plus platform templates (school_id NULL)
+        if (!$user->isSuperAdmin()) {
+            $query->where(fn($q) => $q->where('school_id', $user->school_id)->orWhereNull('school_id'));
         }
 
         $templates = $query->latest()->paginate(10);
@@ -34,18 +29,11 @@ class CertificateTemplateController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->hasRole('Super Admin') || $user->hasRole('Pentadbir')) {
-            $districts = District::orderBy('name')->get();
-            $schools   = School::orderBy('name')->get();
-        } elseif ($user->hasRole('Penyelia KAFA')) {
-            $districts = District::where('id', $user->district_id)->get();
-            $schools   = School::where('district_id', $user->district_id)->orderBy('name')->get();
-        } else {
-            $districts = collect();
-            $schools   = School::where('id', $user->school_id)->get();
-        }
+        $schools = $user->isSuperAdmin()
+            ? School::orderBy('name')->get()
+            : School::where('id', $user->school_id)->get();
 
-        return view('certificates.templates.create', compact('districts', 'schools'));
+        return view('certificates.templates.create', compact('schools'));
     }
 
     public function store(Request $request)
@@ -54,26 +42,19 @@ class CertificateTemplateController extends Controller
 
         $request->validate([
             'name'              => 'required|string|max:255',
-            'level'             => 'required|in:daerah,sekolah',
             'layout_style'      => 'required|in:center,bottom,left,right',
             'background'        => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
             'signature'         => 'nullable|image|mimes:jpeg,png|max:2048',
             'include_signature' => 'nullable|boolean',
+            'school_id'         => 'nullable|exists:schools,id',
         ]);
 
-        $data = $request->only(['name', 'level', 'layout_style']);
+        $data = $request->only(['name', 'layout_style']);
+        $data['level'] = 'sekolah';
         $data['include_signature'] = $request->boolean('include_signature');
 
-        // Enforce scope
-        if ($user->hasRole('Penyelia KAFA') || $user->hasRole('Super Admin') || $user->hasRole('Pentadbir')) {
-            $data['district_id'] = $request->district_id ?? $user->district_id;
-            if ($request->level === 'sekolah') {
-                $data['school_id'] = $request->school_id;
-            }
-        } else {
-            $data['school_id'] = $user->school_id;
-            $data['level']     = 'sekolah';
-        }
+        // Super Admin may publish a platform template (no school); tenants always own theirs
+        $data['school_id'] = $user->isSuperAdmin() ? $request->school_id : $user->school_id;
 
         if ($request->hasFile('background')) {
             $data['background_path'] = $request->file('background')->store('certificates/backgrounds', 'public');
@@ -90,6 +71,11 @@ class CertificateTemplateController extends Controller
 
     public function destroy(CertificateTemplate $certificatesTemplate)
     {
+        $user = Auth::user();
+        if (!$user->isSuperAdmin() && (int) $certificatesTemplate->school_id !== (int) $user->school_id) {
+            abort(403, 'Anda tidak dibenarkan memadam templat ini.');
+        }
+
         if ($certificatesTemplate->background_path) {
             Storage::disk('public')->delete($certificatesTemplate->background_path);
         }

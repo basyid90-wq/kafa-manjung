@@ -19,17 +19,7 @@ class RphPdfController extends Controller
 
     public function download(RphRecord $rph)
     {
-        $user = auth()->user();
-
-        if (!$user->hasAnyRole(['Super Admin', 'Pentadbir'])) {
-            if ($user->hasRole('Penyelia KAFA')) {
-                if (!School::where('id', $rph->school_id)->where('district_id', $user->district_id)->exists()) {
-                    abort(403);
-                }
-            } else {
-                if ($rph->school_id !== $user->school_id) abort(403);
-            }
-        }
+        $this->authorizeSchool($rph->school_id);
 
         $rph->load(['user', 'school', 'reviewer', 'periods.kafaClass']);
 

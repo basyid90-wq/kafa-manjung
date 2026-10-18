@@ -27,7 +27,6 @@ class User extends Authenticatable
         'ic_number',
         'phone',
         'password',
-        'district_id',
         'school_id',
     ];
 
@@ -54,13 +53,23 @@ class User extends Authenticatable
         ];
     }
 
-    public function district()
-    {
-        return $this->belongsTo(District::class);
-    }
-
     public function school()
     {
         return $this->belongsTo(School::class);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('Super Admin');
+    }
+
+    /** Tenant check: Super Admin sees every school, everyone else only their own. */
+    public function canAccessSchool($schoolId): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $schoolId !== null && $this->school_id !== null && (int) $schoolId === (int) $this->school_id;
     }
 }

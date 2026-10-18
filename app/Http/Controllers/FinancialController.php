@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\FinancialRecord;
 use App\Models\AccountCategory;
-use App\Models\School;
 use App\Services\FinancialService;
 use Illuminate\Http\Request;
 
@@ -21,28 +20,12 @@ class FinancialController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->hasRole('Penyelia KAFA')) {
-            $districtId = $user->district_id;
-            $records = FinancialRecord::whereHas('school', function ($q) use ($districtId) {
-                    $q->where('district_id', $districtId);
-                })
-                ->with(['category', 'user', 'school'])
-                ->latest('transaction_date')
-                ->paginate(15);
+        $records = FinancialRecord::where('school_id', $user->school_id)
+            ->with(['category', 'user'])
+            ->latest('transaction_date')
+            ->paginate(10);
 
-            $balance = FinancialRecord::whereHas('school', function ($q) use ($districtId) {
-                    $q->where('district_id', $districtId);
-                })
-                ->selectRaw("SUM(CASE WHEN transaction_type = 'in' THEN amount ELSE -amount END) as total")
-                ->value('total') ?? 0;
-        } else {
-            $records = FinancialRecord::where('school_id', $user->school_id)
-                ->with(['category', 'user'])
-                ->latest('transaction_date')
-                ->paginate(15);
-
-            $balance = $this->financialService->calculateBalance($user->school_id);
-        }
+        $balance = $this->financialService->calculateBalance($user->school_id);
 
         return view('financial.index', compact('records', 'balance'));
     }
@@ -55,6 +38,8 @@ class FinancialController extends Controller
 
     public function store(Request $request)
     {
+        abort_unless(auth()->user()->school_id, 403, 'Akaun anda belum dikaitkan dengan mana-mana sekolah.');
+
         $request->validate([
             'amount' => 'required|numeric|min:0.01',
             'transaction_type' => 'required|in:in,out',
@@ -81,16 +66,7 @@ class FinancialController extends Controller
 
     public function export(FinancialRecord $record)
     {
-        $user = auth()->user();
-
-        if ($user->hasRole('Penyelia KAFA')) {
-            $schoolInDistrict = School::where('id', $record->school_id)
-                ->where('district_id', $user->district_id)
-                ->exists();
-            if (!$schoolInDistrict) abort(403);
-        } elseif ($user->hasRole('Bendahari Sekolah') && $record->school_id !== $user->school_id) {
-            abort(403);
-        }
+        $this->authorizeSchool($record->school_id);
 
         return $this->financialService->exportToPdfTemplate($record);
     }
