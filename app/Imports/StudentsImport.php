@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Student;
 use App\Models\KafaClass;
+use App\Models\School;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -13,13 +14,16 @@ class StudentsImport implements ToArray
     public int   $totalRows    = 0;
     public int   $successCount = 0;
     public int   $noClassCount = 0;
+    public int   $overLimitCount = 0;
     public array $results      = [];
 
     private int $schoolId;
+    private ?School $school;
 
     public function __construct(int $schoolId)
     {
         $this->schoolId = $schoolId;
+        $this->school   = School::find($schoolId);
     }
 
     /**
@@ -96,11 +100,20 @@ class StudentsImport implements ToArray
             $classRaw  = trim((string) ($raw('class') ?? ''));
             $kafaClass = $classRaw !== '' ? $this->resolveClass($classRaw) : null;
 
+            // ── Plan limit: class full → import without class ────────────
+            if ($kafaClass && $this->school) {
+                $existingId = Student::where('school_id', $this->schoolId)->where('mykid', $mykid)->value('id');
+                if ($this->school->studentPlacesLeft($kafaClass->id, $existingId) === 0) {
+                    $kafaClass = null;
+                    $this->overLimitCount++;
+                }
+            }
+
             // ── Upsert student ───────────────────────────────────────────
+            // Keyed by school + MyKid: an import never touches another tenant's student
             $student = Student::updateOrCreate(
-                ['mykid' => $mykid],
+                ['school_id' => $this->schoolId, 'mykid' => $mykid],
                 [
-                    'school_id'      => $this->schoolId,
                     'kafa_class_id'  => $kafaClass?->id,
                     'name'           => strtoupper(trim((string) $nameRaw)),
                     'dob'            => $this->parseDate($raw('dob')),

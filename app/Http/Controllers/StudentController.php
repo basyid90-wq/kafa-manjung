@@ -24,17 +24,20 @@ class StudentController extends Controller
         $search         = $request->input('search');
 
         // ── Base scope (role isolation + archive) ──
-        $applyScope = function ($q) use ($user, $request, $filterSchool) {
+        // Murid berumur 14 tahun ke atas diarkibkan (portable: no MySQL-only date functions)
+        $archiveDob = now()->subYears(14)->toDateString();
+
+        $applyScope = function ($q) use ($user, $request, $filterSchool, $archiveDob) {
             if (!$user->isSuperAdmin()) {
                 $q->where('school_id', $user->school_id);
             }
             if (!$request->has('show_archive')) {
                 $q->whereNotIn('status', ['Berhenti', 'Pindah'])
-                  ->where(fn($sq) => $sq->whereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) <= 13')->orWhereNull('dob'));
+                  ->where(fn($sq) => $sq->where('dob', '>', $archiveDob)->orWhereNull('dob'));
             } else {
                 $q->where(fn($sq) => $sq->where('status', 'Berhenti')
                     ->orWhere('status', 'Pindah')
-                    ->orWhereRaw('TIMESTAMPDIFF(YEAR, dob, CURDATE()) > 13'));
+                    ->orWhere('dob', '<=', $archiveDob));
             }
             if ($filterSchool && $user->isSuperAdmin()) {
                 $q->where('school_id', $filterSchool);
@@ -112,7 +115,17 @@ class StudentController extends Controller
 
         return [
             'school_id' => $requiresSchool ? 'required|exists:schools,id' : 'nullable',
-            'kafa_class_id' => ['nullable', Rule::exists('kafa_classes', 'id')->where('school_id', $schoolId)],
+            'kafa_class_id' => ['nullable', Rule::exists('kafa_classes', 'id')->where('school_id', $schoolId),
+                function ($attribute, $value, $fail) use ($schoolId, $student) {
+                    // Plan limit: students per class (a student already in the class may stay)
+                    if (!$value || ($student && (int) $student->kafa_class_id === (int) $value)) {
+                        return;
+                    }
+                    $school = School::find($schoolId);
+                    if ($school && $school->studentPlacesLeft((int) $value) === 0) {
+                        $fail('Kelas ini telah penuh mengikut had pakej ' . $school->planLabel() . ' (' . $school->limit('max_students_per_class') . ' murid). Naik taraf pakej untuk menambah murid.');
+                    }
+                }],
             'name' => 'required|string|max:255',
             'jawi_name' => 'nullable|string|max:255',
             'mykid' => ['required', 'string', 'max:20', $mykidUnique],
@@ -170,9 +183,11 @@ class StudentController extends Controller
             'qr_code_string' => 'KAFA-' . $student->school_id . '-' . $student->id . '-' . strtoupper(Str::random(8)),
         ]);
 
-        // Auto-daftar akaun Ibu Bapa / Penjaga
-        $this->handleParentAccountCreation($request->father_ic, $request->father_name, $request->father_phone);
-        $this->handleParentAccountCreation($request->mother_ic, $request->mother_name, $request->mother_phone);
+        // Auto-daftar akaun Ibu Bapa / Penjaga (hanya jika pakej sekolah ada Portal Ibu Bapa)
+        if ($student->school?->allows('portal_ibu_bapa')) {
+            $this->handleParentAccountCreation($request->father_ic, $request->father_name, $request->father_phone);
+            $this->handleParentAccountCreation($request->mother_ic, $request->mother_name, $request->mother_phone);
+        }
 
         return redirect()->route('students.index')->with('success', 'Murid berjaya ditambah.');
     }
@@ -216,9 +231,11 @@ class StudentController extends Controller
 
         $student->update($validated);
 
-        // Auto-kemaskini / cipta akaun Ibu Bapa / Penjaga
-        $this->handleParentAccountCreation($request->father_ic, $request->father_name, $request->father_phone);
-        $this->handleParentAccountCreation($request->mother_ic, $request->mother_name, $request->mother_phone);
+        // Auto-kemaskini / cipta akaun Ibu Bapa / Penjaga (hanya jika pakej sekolah ada Portal Ibu Bapa)
+        if ($student->school?->allows('portal_ibu_bapa')) {
+            $this->handleParentAccountCreation($request->father_ic, $request->father_name, $request->father_phone);
+            $this->handleParentAccountCreation($request->mother_ic, $request->mother_name, $request->mother_phone);
+        }
 
         return redirect()->route('students.index', request()->query())->with('success', 'Maklumat murid berjaya dikemaskini.');
     }

@@ -136,7 +136,7 @@
                             </div>
                             <div class="hidden sm:block text-left leading-tight">
                                 <p class="text-xs font-semibold text-gray-800 dark:text-white max-w-[100px] truncate">{{ auth()->user()->name }}</p>
-                                <p class="text-[10px] text-gray-400">{{ auth()->user()->getRoleNames()->first() }}</p>
+                                <p class="text-[10px] text-gray-400">{{ auth()->user()->roleLabel() }}</p>
                             </div>
                             <svg class="w-3 h-3 text-gray-400 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -216,6 +216,17 @@
                         <span class="ms-3 text-sm">Pengurusan Pentadbiran</span>
                     </a>
                 </li>
+                @if(auth()->user()->school)
+                <li>
+                    <a href="{{ route('subscription.index') }}"
+                       class="flex items-center p-2 rounded-lg group transition-colors
+                           {{ request()->routeIs('subscription.index') ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                        <span class="ms-3 text-sm">Langganan</span>
+                        <span class="ms-auto px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">{{ auth()->user()->school->planLabel() }}</span>
+                    </a>
+                </li>
+                @endif
                 @endunless
 
                 {{-- ── Ibu Bapa Portal ── --}}
@@ -579,9 +590,11 @@
     });
     </script>
 
-    {{-- Chatbot widget — visible for all authenticated users --}}
+    {{-- Chatbot widget — only when the workspace plan includes the AI assistant --}}
     @auth
+    @if(auth()->user()->canUse('chatbot'))
     <x-chatbot-widget />
+    @endif
     @endauth
 </body>
 </html>

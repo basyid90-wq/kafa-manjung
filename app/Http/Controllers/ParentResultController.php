@@ -14,7 +14,7 @@ class ParentResultController extends Controller
         $user = auth()->user();
         
         // Find students linked to this parent
-        $children = Student::where('parent_id', $user->id)->get();
+        $children = Student::where('parent_id', $user->id)->whereHas('school', fn($q) => $q->withModule('portal_ibu_bapa'))->get();
         
         return view('parent.results.index', compact('children'));
     }
@@ -25,6 +25,7 @@ class ParentResultController extends Controller
         if ($student->parent_id !== auth()->id()) {
             abort(403);
         }
+        abort_unless($student->school?->allows('portal_ibu_bapa'), 403, 'Portal Ibu Bapa belum diaktifkan oleh sekolah anak anda.');
 
         $exams = Exam::whereHas('results', function($q) use ($student) {
             $q->where('student_id', $student->id);
@@ -38,6 +39,7 @@ class ParentResultController extends Controller
         if ($student->parent_id !== auth()->id()) {
             abort(403);
         }
+        abort_unless($student->school?->allows('portal_ibu_bapa'), 403, 'Portal Ibu Bapa belum diaktifkan oleh sekolah anak anda.');
 
         $results = ExamResult::where('student_id', $student->id)
             ->where('exam_id', $exam->id)

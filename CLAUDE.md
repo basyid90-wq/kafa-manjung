@@ -102,6 +102,14 @@ Removed in the SaaS pivot (do NOT reintroduce): Pentadbir, Penyelia KAFA, Pembek
 - `Rule::exists` / `DB::table()` bypass the global scope — scope them manually.
 - Cover new modules in `tests/Feature/TenantIsolationTest.php`.
 
+**Plan gating (MANDATORY for new modules):**
+- Plans, limits and module→plan mapping live in `config/plans.php` (Free < Personal < Sekolah). Change limits there, never hard-code them.
+- Gate every module route with `->middleware('plan:<module_key>')`; locked modules redirect to `/langganan` (upsell). The Pengurusan grid locks tiles automatically from the route's `plan:` middleware.
+- In code use `$user->canUse('module')`, `$school->allows('module')`, `$school->limit('max_classes')`, `$school->canAddClass()`, `$school->studentPlacesLeft($classId)`.
+- `schools.plan / plan_expires_at / type / owner_id` are NOT mass-assignable — change them only via the Super Admin plan editor or the billing flow (`forceFill`).
+- Workspace owner = role **Guru Besar**, also for Personal workspaces (shown as "Guru (Personal)" via `$user->roleLabel()`). School-only features are locked by plan, not by role.
+- Cover new gates in `tests/Feature/PlanGatingTest.php`.
+
 ---
 
 ## 🏷️ Naming Conventions

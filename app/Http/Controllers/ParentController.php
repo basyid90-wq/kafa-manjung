@@ -26,6 +26,7 @@ class ParentController extends Controller
                     $q->where('father_ic', $ic)
                       ->orWhere('mother_ic', $ic);
                 })
+                ->whereHas('school', fn($q) => $q->withModule('portal_ibu_bapa'))
                 ->orderBy('name')
                 ->get();
         }
@@ -42,6 +43,7 @@ class ParentController extends Controller
         if (!$ic || ($student->father_ic !== $ic && $student->mother_ic !== $ic)) {
             abort(403, 'Akses tidak dibenarkan.');
         }
+        abort_unless($student->school?->allows('portal_ibu_bapa'), 403, 'Portal Ibu Bapa belum diaktifkan oleh sekolah anak anda.');
 
         $student->load(['school', 'kafaClass']);
 

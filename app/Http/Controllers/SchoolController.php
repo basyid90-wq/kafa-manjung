@@ -87,9 +87,36 @@ class SchoolController extends Controller
             $data['logo'] = $request->file('logo')->store('logos', 'public');
         }
 
+        if (auth()->user()->isSuperAdmin() && $request->has('plan')) {
+            $this->updatePlan($request, $school);
+        }
+
         $school->update($data);
 
         return redirect()->route('schools.index')->with('success', 'Sekolah berjaya dikemaskini.');
+    }
+
+    /** Super Admin only: manual plan activation (until online billing takes over). */
+    private function updatePlan(Request $request, School $school): void
+    {
+        $plan = $request->validate([
+            'type'            => 'required|in:' . implode(',', array_keys(config('plans.types'))),
+            'plan'            => 'required|in:' . implode(',', array_keys(config('plans.plans'))),
+            'plan_expires_at' => 'nullable|date',
+            'owner_id'        => ['nullable', \Illuminate\Validation\Rule::exists('users', 'id')->where('school_id', $school->id)],
+        ]);
+
+        if (!in_array($plan['plan'], config("plans.types.{$plan['type']}.plans"), true)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'plan' => 'Pakej ini tidak sah untuk jenis akaun ' . config("plans.types.{$plan['type']}.label") . '.',
+            ]);
+        }
+
+        if ($plan['plan'] === 'free') {
+            $plan['plan_expires_at'] = null;
+        }
+
+        $school->forceFill($plan)->save();
     }
 
     public function destroy(School $school)

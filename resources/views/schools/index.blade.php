@@ -29,6 +29,7 @@
                         <th class="px-5 py-3 w-12">No</th>
                         <th class="px-5 py-3">Nama Sekolah</th>
                         <th class="px-5 py-3">Kod</th>
+                        <th class="px-5 py-3">Pakej</th>
                         <th class="px-5 py-3">No. Telefon</th>
                         <th class="px-5 py-3 text-center w-24">Tindakan</th>
                     </tr>
@@ -51,6 +52,15 @@
                         </td>
                         <td class="px-5 py-3">
                             <code class="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-mono">{{ $school->code }}</code>
+                        </td>
+                        <td class="px-5 py-3">
+                            @php $planColor = ['free' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300', 'personal' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', 'sekolah' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'][$school->effectivePlan()]; @endphp
+                            <span class="px-2.5 py-0.5 text-xs font-medium rounded-full {{ $planColor }}">{{ $school->planLabel() }}</span>
+                            @if($school->isPlanExpired())
+                            <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Tamat</span>
+                            @elseif($school->plan_expires_at)
+                            <p class="text-xs text-gray-400 mt-0.5">hingga {{ $school->plan_expires_at->format('d/m/Y') }}</p>
+                            @endif
                         </td>
                         <td class="px-5 py-3 text-gray-600 dark:text-gray-300">
                             {{ $school->no_telefon ?? '—' }}
@@ -82,7 +92,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-5 py-12 text-center">
+                        <td colspan="6" class="px-5 py-12 text-center">
                             <div class="flex flex-col items-center gap-2 text-gray-400">
                                 <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>

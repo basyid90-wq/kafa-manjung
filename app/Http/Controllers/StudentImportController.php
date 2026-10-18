@@ -63,7 +63,12 @@ class StudentImportController extends Controller
             'details'      => $import->results,
         ]);
 
-        return redirect()->route('students.import_summary');
+        $redirect = redirect()->route('students.import_summary');
+        if ($import->overLimitCount > 0) {
+            $redirect->with('error', $import->overLimitCount . ' murid diimport tanpa kelas kerana kelas telah mencapai had pakej anda.');
+        }
+
+        return $redirect;
     }
 
     public function summary()

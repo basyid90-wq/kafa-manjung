@@ -14,7 +14,7 @@ class DisciplinaryController extends Controller
         $user = Auth::user();
         
         if ($user->hasRole('Ibu Bapa')) {
-            $studentIds = Student::where('parent_id', $user->id)->pluck('id');
+            $studentIds = Student::where('parent_id', $user->id)->whereHas('school', fn($q) => $q->withModule('portal_ibu_bapa'))->pluck('id');
             $records = DisciplinaryRecord::whereIn('student_id', $studentIds)
                 ->with(['student', 'reporter'])
                 ->latest()

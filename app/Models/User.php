@@ -72,4 +72,46 @@ class User extends Authenticatable
 
         return $schoolId !== null && $this->school_id !== null && (int) $schoolId === (int) $this->school_id;
     }
+
+    /** Whether the user's workspace plan includes a module (Super Admin: always). */
+    public function canUse(string $module): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($this->hasRole('Ibu Bapa') && !$this->hasAnyRole(['Guru Besar', 'Guru KAFA'])) {
+            return $this->hasPortalChildren();
+        }
+
+        return (bool) $this->school?->allows($module);
+    }
+
+    /** Parent portal is open only for children enrolled in a school whose plan includes it. */
+    public function hasPortalChildren(): bool
+    {
+        $ic = preg_replace('/[^0-9]/', '', $this->ic_number ?? '');
+
+        return Student::query()
+            ->where(function ($q) use ($ic) {
+                $q->where('parent_id', $this->id);
+                if ($ic) {
+                    $q->orWhere('father_ic', $ic)->orWhere('mother_ic', $ic);
+                }
+            })
+            ->whereHas('school', fn ($q) => $q->withModule('portal_ibu_bapa'))
+            ->exists();
+    }
+
+    /** Role name as shown in the UI; the owner of a personal workspace is a teacher, not a headmaster. */
+    public function roleLabel(): string
+    {
+        $role = $this->getRoleNames()->first() ?? '';
+
+        if ($role === 'Guru Besar' && $this->school?->isPersonal()) {
+            return 'Guru (Personal)';
+        }
+
+        return $role;
+    }
 }

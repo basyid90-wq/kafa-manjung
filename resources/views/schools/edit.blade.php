@@ -95,6 +95,51 @@
             </div>
         </div>
 
+        @role('Super Admin')
+        {{-- ── Langganan (Super Admin sahaja) ── --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mt-5">
+            <h2 class="text-sm font-bold text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700 pb-2 mb-4">Langganan</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jenis Akaun</label>
+                    <select name="type"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        @foreach(config('plans.types') as $key => $type)
+                        <option value="{{ $key }}" {{ old('type', $school->type) === $key ? 'selected' : '' }}>{{ $type['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pakej</label>
+                    <select name="plan"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        @foreach(config('plans.plans') as $key => $plan)
+                        <option value="{{ $key }}" {{ old('plan', $school->plan) === $key ? 'selected' : '' }}>{{ $plan['label'] }}</option>
+                        @endforeach
+                    </select>
+                    @error('plan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tarikh Tamat Pakej</label>
+                    <input type="date" name="plan_expires_at"
+                           value="{{ old('plan_expires_at', $school->plan_expires_at?->format('Y-m-d')) }}"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <p class="text-xs text-gray-400 mt-1">Kosongkan untuk pakej tanpa tarikh tamat. Diabaikan untuk pakej Percuma.</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pemilik Akaun</label>
+                    <select name="owner_id"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">— Tiada —</option>
+                        @foreach($school->users()->role('Guru Besar')->orderBy('name')->get() as $owner)
+                        <option value="{{ $owner->id }}" {{ (int) old('owner_id', $school->owner_id) === $owner->id ? 'selected' : '' }}>{{ $owner->name }} ({{ $owner->email }})</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+        @endrole
+
         <div class="flex justify-end gap-3 mt-5">
             <a href="{{ route('schools.index') }}"
                class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">

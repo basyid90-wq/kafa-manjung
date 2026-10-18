@@ -15,8 +15,10 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Local demo data: two tenant schools so tenant isolation can be checked by hand.
- * Demo logins (local only): gurubesar@demo.test / guru@demo.test / gurubesar2@demo.test — password: password
+ * Local demo data — three tenants covering every plan (password for all: password):
+ *   KAFA Demo 1  (Sekolah plan) : gurubesar@demo.test, guru@demo.test
+ *   KAFA Demo 2  (Percuma)      : gurubesar2@demo.test, guru2@demo.test
+ *   Ruang Ustazah Demo (Personal): personal@demo.test
  */
 class DemoSeeder extends Seeder
 {
@@ -29,6 +31,7 @@ class DemoSeeder extends Seeder
                 ['code' => "DEMO-{$n}"],
                 ['name' => "KAFA Demo {$n}", 'jenis_premis' => 'Surau']
             );
+            $school->forceFill(['type' => 'sekolah', 'plan' => $n === 1 ? 'sekolah' : 'free', 'plan_expires_at' => $n === 1 ? now()->addYear() : null])->save();
 
             $suffix = $n === 1 ? '' : (string) $n;
             $gb = User::firstOrCreate(
@@ -36,6 +39,7 @@ class DemoSeeder extends Seeder
                 ['name' => "Guru Besar Demo {$n}", 'password' => Hash::make('password'), 'email_verified_at' => now(), 'school_id' => $school->id]
             );
             $gb->assignRole('Guru Besar');
+            $school->forceFill(['owner_id' => $gb->id])->save();
 
             $teacher = User::firstOrCreate(
                 ['email' => "guru{$suffix}@demo.test"],
@@ -84,6 +88,19 @@ class DemoSeeder extends Seeder
                     }
                 });
             }
+        }
+
+        // Personal workspace: one teacher, owner role = Guru Besar (shown as "Guru (Personal)")
+        $ruang = School::firstOrCreate(['code' => 'DEMO-P'], ['name' => 'Ruang Ustazah Demo']);
+        $ustazah = User::firstOrCreate(
+            ['email' => 'personal@demo.test'],
+            ['name' => 'Ustazah Demo', 'password' => Hash::make('password'), 'email_verified_at' => now(), 'school_id' => $ruang->id]
+        );
+        $ustazah->assignRole('Guru Besar');
+        $ruang->forceFill(['type' => 'personal', 'plan' => 'personal', 'plan_expires_at' => now()->addMonth(), 'owner_id' => $ustazah->id])->save();
+        if (!KafaClass::where('school_id', $ruang->id)->exists()) {
+            $class = KafaClass::factory()->create(['school_id' => $ruang->id, 'tahun' => 4, 'teacher_id' => $ustazah->id]);
+            Student::factory(12)->create(['school_id' => $ruang->id, 'kafa_class_id' => $class->id]);
         }
     }
 }

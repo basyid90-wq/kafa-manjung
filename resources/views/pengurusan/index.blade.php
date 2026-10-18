@@ -14,12 +14,44 @@
      * $title   = category heading
      * $modules = array of ['label' => '', 'route' => '', 'icon' => svg-path, 'color' => tailwind-color]
      */
-    $section = function(string $title, array $modules) {
+    // Plan gate per tile: URL → module key, read from each route's "plan:" middleware
+    $planByUrl = [];
+    foreach (\Illuminate\Support\Facades\Route::getRoutes() as $r) {
+        if (!$r->getName() || !in_array('GET', $r->methods()) || str_contains($r->uri(), '{')) continue;
+        foreach ($r->gatherMiddleware() as $mw) {
+            if (is_string($mw) && str_starts_with($mw, 'plan:')) {
+                $planByUrl[route($r->getName())] = substr($mw, 5);
+            }
+        }
+    }
+    $authUser = auth()->user();
+
+    $section = function(string $title, array $modules) use ($planByUrl, $authUser) {
         $out = '<div class="mb-8">';
         $out .= '<p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">'.$title.'</p>';
         $out .= '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">';
         foreach ($modules as $m) {
             $c = $m['color'] ?? 'blue';
+            $module = $planByUrl[$m['route']] ?? null;
+            if ($module && !$authUser->canUse($module)) {
+                // Locked tile: stays visible (upsell) and leads to the subscription page
+                $planName = e(config('plans.plans.' . config("plans.modules.{$module}.plan") . '.label'));
+                $out .= '<a href="'.route('subscription.index', ['modul' => $module]).'" title="Tersedia dalam pakej '.$planName.'"
+                           class="relative flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-gray-800/50
+                                  border border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-gray-400 transition-all">
+                    <span class="absolute right-2 inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-700" style="top:.5rem">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        '.$planName.'
+                    </span>
+                    <div class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="'.$m['icon'].'"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-medium text-gray-400 dark:text-gray-500 text-center leading-tight">'.$m['label'].'</span>
+                </a>';
+                continue;
+            }
             $out .= '<a href="'.$m['route'].'"
                        class="flex flex-col items-center justify-center gap-3 p-4 bg-white dark:bg-gray-800
                               border border-gray-200 dark:border-gray-700 rounded-xl

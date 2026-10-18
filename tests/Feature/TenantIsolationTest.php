@@ -26,6 +26,7 @@ class TenantIsolationTest extends TestCase
         $this->seed(RoleSeeder::class);
 
         $this->schoolA = School::factory()->create();
+        $this->schoolA->forceFill(['plan' => 'sekolah'])->save(); // all modules, so only tenant rules apply
         $this->schoolB = School::factory()->create();
 
         $this->guruBesarA = User::factory()->create(['school_id' => $this->schoolA->id]);

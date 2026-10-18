@@ -69,7 +69,15 @@ class KafaClassController extends Controller
 
     public function store(Request $request)
     {
-        KafaClass::create($this->validated($request, auth()->user()));
+        $data = $this->validated($request, auth()->user());
+
+        $school = School::find($data['school_id']);
+        if ($school && !auth()->user()->isSuperAdmin() && !$school->canAddClass()) {
+            return redirect()->route('subscription.index')->with('error',
+                'Had ' . $school->limit('max_classes') . ' kelas untuk pakej ' . $school->planLabel() . ' telah dicapai. Naik taraf pakej untuk menambah kelas.');
+        }
+
+        KafaClass::create($data);
 
         return redirect()->route('kafa_classes.index')->with('success', 'Kelas berjaya ditambah.');
     }
