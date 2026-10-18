@@ -212,27 +212,27 @@ php artisan view:cache
 | 151 | 2026-05-10 | `app/Http/Controllers/ChatbotController.php` | Tambah method deactivateProvider() — matikan provider tanpa perlu aktifkan yang lain | ⏳ Belum Push |
 | 152 | 2026-05-10 | `resources/views/super-admin/chatbot-settings.blade.php` | Tukar "Sedang Aktif" static label kepada butang "Matikan" merah dengan confirm dialog | ⏳ Belum Push |
 | 153 | 2026-06-25 | `resources/views/auth/login.blade.php` | Redesign penuh login page jadi landing page moden: Hero + Features grid + Login form + Footer. Guna Tailwind CSS + Alpine.js sahaja, buang semua inline style & jQuery | ✅ Sudah Push |
-| 154 | 2026-10-18 | `database/migrations/2026_10_18_000001_saas_remove_district_and_book_modules.php` | Migrasi pivot SaaS: buang jadual districts/books/book_orders, kolum district_id, role lama; MyKid unik per sekolah; pindah murid guna to_school_name | ⏳ Belum Push |
-| 155 | 2026-10-18 | `database/migrations/2026_04_18_060456_update_book_orders_statuses.php` | Langkau ALTER MySQL-only bila bukan MySQL (ujian SQLite boleh jalan semula) | ⏳ Belum Push |
-| 156 | 2026-10-18 | `app/Models/Concerns/BelongsToSchool.php` | BARU: global scope tenant — Guru Besar/Guru KAFA hanya nampak data sekolah sendiri, school_id auto-isi | ⏳ Belum Push |
-| 157 | 2026-10-18 | `app/Models/*.php (13 model)` | Pasang trait BelongsToSchool; buang relasi district(); User tambah isSuperAdmin() & canAccessSchool() | ⏳ Belum Push |
-| 158 | 2026-10-18 | `app/Http/Controllers/Controller.php` | Tambah helper authorizeSchool() untuk semakan tenant | ⏳ Belum Push |
-| 159 | 2026-10-18 | `app/Http/Controllers/{Book,BookOrder,District,Role}Controller.php` | Dipadam — modul jabatan (buku, daerah, peranan) dibuang | ⏳ Belum Push |
-| 160 | 2026-10-18 | `app/Http/Controllers/UserController.php` | Buang role lama; FIX IDOR — Guru Besar hanya urus Guru KAFA sekolah sendiri | ⏳ Belum Push |
-| 161 | 2026-10-18 | `app/Http/Controllers/SchoolController.php` | Buang daerah; FIX IDOR — Guru Besar hanya lihat/edit sekolah sendiri | ⏳ Belum Push |
-| 162 | 2026-10-18 | `app/Http/Controllers/KafaClassController.php` | Buang Penyelia; FIX get-teachers/get-classes bocor data sekolah lain; guru mesti dari sekolah sama | ⏳ Belum Push |
-| 163 | 2026-10-18 | `app/Http/Controllers/StudentController.php` | Buang daerah; kelas & MyKid diskop ikut sekolah; authorizeSchool pada semua tindakan | ⏳ Belum Push |
-| 164 | 2026-10-18 | `app/Http/Controllers/TimetableController.php` | FIX IDOR edit/update/destroy/printPdf; kelas/subjek/guru/slot mesti dari sekolah sama | ⏳ Belum Push |
-| 165 | 2026-10-18 | `app/Http/Controllers/AnnouncementController.php` | Buang daerah; Guru Besar hanya boleh hebah kepada sekolah sendiri (sebelum ini boleh hantar ke semua pengguna) | ⏳ Belum Push |
-| 166 | 2026-10-18 | `app/Http/Controllers/ActivityController.php` | Aktiviti sentiasa milik sekolah; kehadiran aktiviti hanya murid sekolah sendiri (sebelum ini peringkat negeri senarai SEMUA murid) | ⏳ Belum Push |
-| 167 | 2026-10-18 | `app/Http/Controllers/StudentTransferController.php` | Tukar jadi "pindah keluar" — murid diarkib, destinasi teks bebas; tiada lagi pemindahan data ke tenant lain | ⏳ Belum Push |
-| 168 | 2026-10-18 | `app/Http/Controllers/{Financial,CertificateTemplate,Subject,Report,RphApproval,RphRecord,RphPdf,StudentAchievement,StudentImport,Dashboard,Manual,Chatbot}Controller.php` | Buang cabang Pentadbir/Penyelia/Pembekal/Bendahari; tambah semakan tenant; RPH Guru Besar auto-lulus; Kewangan diurus Guru Besar | ⏳ Belum Push |
-| 169 | 2026-10-18 | `routes/web.php` | Buang laluan buku/daerah/peranan; senarai role tinggal Super Admin, Guru Besar, Guru KAFA, Ibu Bapa | ⏳ Belum Push |
-| 170 | 2026-10-18 | `resources/views/** (≈40 fail)` | Buang medan/penapis daerah & blok role lama; padam view buku, daerah, peranan, dashboard lama, manual role lama; grid Pengurusan disusun semula | ⏳ Belum Push |
-| 171 | 2026-10-18 | `resources/views/layout-fb/{layout,auth}.blade.php` | Jenama baharu: eKafa Online (buang logo & teks Perak/APKM) | ⏳ Belum Push |
-| 172 | 2026-10-18 | `database/seeders/*` | Seeder SaaS: 4 role; Super Admin dari .env (buang kata laluan hard-coded); DemoSeeder 2 sekolah (local sahaja); padam CleanUpSeeder & SchoolSeeder | ⏳ Belum Push |
-| 173 | 2026-10-18 | `tests/Feature/TenantIsolationTest.php` | BARU: 9 ujian isolasi tenant | ⏳ Belum Push |
-| 174 | 2026-10-18 | `CLAUDE.md, AGENTS.md, docs/SECURITY.md, docs/SYSTEM_FLOW.md, .env.example` | Dokumen dikemas kini untuk SaaS: role baharu, peraturan tenant, push ke branch saas (bukan main) | ⏳ Belum Push |
+| 154 | 2026-10-18 | `database/migrations/2026_10_18_000001_saas_remove_district_and_book_modules.php` | Migrasi pivot SaaS: buang jadual districts/books/book_orders, kolum district_id, role lama; MyKid unik per sekolah; pindah murid guna to_school_name | ✅ Sudah Push |
+| 155 | 2026-10-18 | `database/migrations/2026_04_18_060456_update_book_orders_statuses.php` | Langkau ALTER MySQL-only bila bukan MySQL (ujian SQLite boleh jalan semula) | ✅ Sudah Push |
+| 156 | 2026-10-18 | `app/Models/Concerns/BelongsToSchool.php` | BARU: global scope tenant — Guru Besar/Guru KAFA hanya nampak data sekolah sendiri, school_id auto-isi | ✅ Sudah Push |
+| 157 | 2026-10-18 | `app/Models/*.php (13 model)` | Pasang trait BelongsToSchool; buang relasi district(); User tambah isSuperAdmin() & canAccessSchool() | ✅ Sudah Push |
+| 158 | 2026-10-18 | `app/Http/Controllers/Controller.php` | Tambah helper authorizeSchool() untuk semakan tenant | ✅ Sudah Push |
+| 159 | 2026-10-18 | `app/Http/Controllers/{Book,BookOrder,District,Role}Controller.php` | Dipadam — modul jabatan (buku, daerah, peranan) dibuang | ✅ Sudah Push |
+| 160 | 2026-10-18 | `app/Http/Controllers/UserController.php` | Buang role lama; FIX IDOR — Guru Besar hanya urus Guru KAFA sekolah sendiri | ✅ Sudah Push |
+| 161 | 2026-10-18 | `app/Http/Controllers/SchoolController.php` | Buang daerah; FIX IDOR — Guru Besar hanya lihat/edit sekolah sendiri | ✅ Sudah Push |
+| 162 | 2026-10-18 | `app/Http/Controllers/KafaClassController.php` | Buang Penyelia; FIX get-teachers/get-classes bocor data sekolah lain; guru mesti dari sekolah sama | ✅ Sudah Push |
+| 163 | 2026-10-18 | `app/Http/Controllers/StudentController.php` | Buang daerah; kelas & MyKid diskop ikut sekolah; authorizeSchool pada semua tindakan | ✅ Sudah Push |
+| 164 | 2026-10-18 | `app/Http/Controllers/TimetableController.php` | FIX IDOR edit/update/destroy/printPdf; kelas/subjek/guru/slot mesti dari sekolah sama | ✅ Sudah Push |
+| 165 | 2026-10-18 | `app/Http/Controllers/AnnouncementController.php` | Buang daerah; Guru Besar hanya boleh hebah kepada sekolah sendiri (sebelum ini boleh hantar ke semua pengguna) | ✅ Sudah Push |
+| 166 | 2026-10-18 | `app/Http/Controllers/ActivityController.php` | Aktiviti sentiasa milik sekolah; kehadiran aktiviti hanya murid sekolah sendiri (sebelum ini peringkat negeri senarai SEMUA murid) | ✅ Sudah Push |
+| 167 | 2026-10-18 | `app/Http/Controllers/StudentTransferController.php` | Tukar jadi "pindah keluar" — murid diarkib, destinasi teks bebas; tiada lagi pemindahan data ke tenant lain | ✅ Sudah Push |
+| 168 | 2026-10-18 | `app/Http/Controllers/{Financial,CertificateTemplate,Subject,Report,RphApproval,RphRecord,RphPdf,StudentAchievement,StudentImport,Dashboard,Manual,Chatbot}Controller.php` | Buang cabang Pentadbir/Penyelia/Pembekal/Bendahari; tambah semakan tenant; RPH Guru Besar auto-lulus; Kewangan diurus Guru Besar | ✅ Sudah Push |
+| 169 | 2026-10-18 | `routes/web.php` | Buang laluan buku/daerah/peranan; senarai role tinggal Super Admin, Guru Besar, Guru KAFA, Ibu Bapa | ✅ Sudah Push |
+| 170 | 2026-10-18 | `resources/views/** (≈40 fail)` | Buang medan/penapis daerah & blok role lama; padam view buku, daerah, peranan, dashboard lama, manual role lama; grid Pengurusan disusun semula | ✅ Sudah Push |
+| 171 | 2026-10-18 | `resources/views/layout-fb/{layout,auth}.blade.php` | Jenama baharu: eKafa Online (buang logo & teks Perak/APKM) | ✅ Sudah Push |
+| 172 | 2026-10-18 | `database/seeders/*` | Seeder SaaS: 4 role; Super Admin dari .env (buang kata laluan hard-coded); DemoSeeder 2 sekolah (local sahaja); padam CleanUpSeeder & SchoolSeeder | ✅ Sudah Push |
+| 173 | 2026-10-18 | `tests/Feature/TenantIsolationTest.php` | BARU: 9 ujian isolasi tenant | ✅ Sudah Push |
+| 174 | 2026-10-18 | `CLAUDE.md, AGENTS.md, docs/SECURITY.md, docs/SYSTEM_FLOW.md, .env.example` | Dokumen dikemas kini untuk SaaS: role baharu, peraturan tenant, push ke branch saas (bukan main) | ✅ Sudah Push |
 ---
 
 > Format status: ⏳ Belum Push &nbsp;|&nbsp; ✅ Sudah Push
