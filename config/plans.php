@@ -23,8 +23,8 @@ return [
         'personal' => [
             'label'                  => 'Personal',
             'rank'                   => 1,
-            'max_classes'            => 6,
-            'max_students_per_class' => 50,
+            'max_classes'            => null,
+            'max_students_per_class' => null,
         ],
         'sekolah' => [
             'label'                  => 'Sekolah',

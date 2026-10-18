@@ -248,6 +248,7 @@ php artisan view:cache
 | 187 | 2026-10-18 | `database/seeders/DemoSeeder.php` | Demo 3 tenant: Sekolah berbayar, Sekolah Percuma, Guru Personal | ✅ Sudah Push |
 | 188 | 2026-10-18 | `tests/Feature/PlanGatingTest.php, tests/Feature/TenantIsolationTest.php` | BARU: 11 ujian pakej & had; ujian tenant dikemas kini | ✅ Sudah Push |
 | 189 | 2026-10-18 | `CLAUDE.md` | Peraturan wajib pakej (plan gating) untuk modul baharu | ✅ Sudah Push |
+| 190 | 2026-10-18 | `config/plans.php` | Pakej Personal kini tanpa had kelas & murid (keputusan pemilik) | ✅ Sudah Push |
 
 ---
 
