@@ -249,20 +249,20 @@ php artisan view:cache
 | 188 | 2026-10-18 | `tests/Feature/PlanGatingTest.php, tests/Feature/TenantIsolationTest.php` | BARU: 11 ujian pakej & had; ujian tenant dikemas kini | ✅ Sudah Push |
 | 189 | 2026-10-18 | `CLAUDE.md` | Peraturan wajib pakej (plan gating) untuk modul baharu | ✅ Sudah Push |
 | 190 | 2026-10-18 | `config/plans.php` | Pakej Personal kini tanpa had kelas & murid (keputusan pemilik) | ✅ Sudah Push |
-| 191 | 2026-10-18 | `app/Http/Controllers/Auth/RegisteredUserController.php, routes/auth.php, resources/views/auth/register.blade.php` | BARU: daftar sendiri di /daftar — pilih Sekolah atau Guru (Personal), cipta ruang kerja Percuma, honeypot + had kadar | ⏳ Belum Push |
-| 192 | 2026-10-18 | `app/Models/User.php, routes/web.php, app/Providers/AppServiceProvider.php` | Pengesahan e-mel diwajibkan (MustVerifyEmail + middleware verified); e-mel pengesahan & set semula kata laluan dalam BM | ⏳ Belum Push |
-| 193 | 2026-10-18 | `resources/views/auth/{verify-email,forgot-password,reset-password,confirm-password}.blade.php, resources/views/layout-fb/auth-card.blade.php` | Halaman auth ditulis semula dalam BM dengan layout Flowbite (ganti Breeze) | ⏳ Belum Push |
-| 194 | 2026-10-18 | `resources/views/legal/{terms,privacy}.blade.php` | BARU: draf Terma Perkhidmatan & Notis Privasi (PDPA) — perlu semakan pemilik | ⏳ Belum Push |
-| 195 | 2026-10-18 | `lang/ms/{auth,passwords,validation}.php, config/app.php, .env.example` | BARU: terjemahan BM; locale lalai ms | ⏳ Belum Push |
-| 196 | 2026-10-18 | `app/Http/Controllers/DashboardController.php, resources/views/dashboard/fb/gurubesar.blade.php` | Senarai semak onboarding (profil, kelas, murid, slot masa, jemput guru); FIX senarai RPH menunggu (status pending); sembunyi kad guru untuk Personal | ⏳ Belum Push |
-| 197 | 2026-10-18 | `database/migrations/2026_10_18_000003_create_invitations_table.php, app/Models/Invitation.php, app/Notifications/TeacherInvitation.php` | BARU: jemputan guru melalui e-mel (token disimpan sebagai hash, sah 7 hari) | ⏳ Belum Push |
-| 198 | 2026-10-18 | `app/Http/Controllers/InvitationController.php, resources/views/invitations/*` | BARU: hantar/batal jemputan (pakej Sekolah) dan terima jemputan — akaun baharu atau gabung akaun sedia ada | ⏳ Belum Push |
-| 199 | 2026-10-18 | `app/Services/WorkspaceMerger.php` | BARU: gabung ruang kerja Personal ke sekolah (semua data ikut guru; disekat jika MyKid bertindih) | ⏳ Belum Push |
-| 200 | 2026-10-18 | `app/Http/Controllers/UserController.php, resources/views/users/index.blade.php` | Butang & modal Jemput Guru, senarai jemputan menunggu; pengguna dicipta admin terus disahkan | ⏳ Belum Push |
-| 201 | 2026-10-18 | `database/migrations/2026_10_18_000004_make_school_code_nullable.php` | Kod sekolah tidak wajib (akaun daftar sendiri) | ⏳ Belum Push |
-| 202 | 2026-10-18 | `resources/views/auth/login.blade.php` | Butang "Mula Sekarang" ke /daftar, pautan "Daftar percuma", Lupa Kata Laluan melalui e-mel | ⏳ Belum Push |
-| 203 | 2026-10-18 | `tests/Feature/Auth/*, tests/Feature/{InvitationTest,ExampleTest,ProfileTest}.php` | BARU: 7 ujian pendaftaran + 8 ujian jemputan/gabung; ujian lama dibetulkan (6 kegagalan lama selesai, 2 dilangkau kerana padam akaun sendiri dimatikan) | ⏳ Belum Push |
-| 204 | 2026-10-18 | `CLAUDE.md` | Peraturan daftar sendiri, pengesahan e-mel, jemputan dan BM | ⏳ Belum Push |
+| 191 | 2026-10-18 | `app/Http/Controllers/Auth/RegisteredUserController.php, routes/auth.php, resources/views/auth/register.blade.php` | BARU: daftar sendiri di /daftar — pilih Sekolah atau Guru (Personal), cipta ruang kerja Percuma, honeypot + had kadar | ✅ Sudah Push |
+| 192 | 2026-10-18 | `app/Models/User.php, routes/web.php, app/Providers/AppServiceProvider.php` | Pengesahan e-mel diwajibkan (MustVerifyEmail + middleware verified); e-mel pengesahan & set semula kata laluan dalam BM | ✅ Sudah Push |
+| 193 | 2026-10-18 | `resources/views/auth/{verify-email,forgot-password,reset-password,confirm-password}.blade.php, resources/views/layout-fb/auth-card.blade.php` | Halaman auth ditulis semula dalam BM dengan layout Flowbite (ganti Breeze) | ✅ Sudah Push |
+| 194 | 2026-10-18 | `resources/views/legal/{terms,privacy}.blade.php` | BARU: draf Terma Perkhidmatan & Notis Privasi (PDPA) — perlu semakan pemilik | ✅ Sudah Push |
+| 195 | 2026-10-18 | `lang/ms/{auth,passwords,validation}.php, config/app.php, .env.example` | BARU: terjemahan BM; locale lalai ms | ✅ Sudah Push |
+| 196 | 2026-10-18 | `app/Http/Controllers/DashboardController.php, resources/views/dashboard/fb/gurubesar.blade.php` | Senarai semak onboarding (profil, kelas, murid, slot masa, jemput guru); FIX senarai RPH menunggu (status pending); sembunyi kad guru untuk Personal | ✅ Sudah Push |
+| 197 | 2026-10-18 | `database/migrations/2026_10_18_000003_create_invitations_table.php, app/Models/Invitation.php, app/Notifications/TeacherInvitation.php` | BARU: jemputan guru melalui e-mel (token disimpan sebagai hash, sah 7 hari) | ✅ Sudah Push |
+| 198 | 2026-10-18 | `app/Http/Controllers/InvitationController.php, resources/views/invitations/*` | BARU: hantar/batal jemputan (pakej Sekolah) dan terima jemputan — akaun baharu atau gabung akaun sedia ada | ✅ Sudah Push |
+| 199 | 2026-10-18 | `app/Services/WorkspaceMerger.php` | BARU: gabung ruang kerja Personal ke sekolah (semua data ikut guru; disekat jika MyKid bertindih) | ✅ Sudah Push |
+| 200 | 2026-10-18 | `app/Http/Controllers/UserController.php, resources/views/users/index.blade.php` | Butang & modal Jemput Guru, senarai jemputan menunggu; pengguna dicipta admin terus disahkan | ✅ Sudah Push |
+| 201 | 2026-10-18 | `database/migrations/2026_10_18_000004_make_school_code_nullable.php` | Kod sekolah tidak wajib (akaun daftar sendiri) | ✅ Sudah Push |
+| 202 | 2026-10-18 | `resources/views/auth/login.blade.php` | Butang "Mula Sekarang" ke /daftar, pautan "Daftar percuma", Lupa Kata Laluan melalui e-mel | ✅ Sudah Push |
+| 203 | 2026-10-18 | `tests/Feature/Auth/*, tests/Feature/{InvitationTest,ExampleTest,ProfileTest}.php` | BARU: 7 ujian pendaftaran + 8 ujian jemputan/gabung; ujian lama dibetulkan (6 kegagalan lama selesai, 2 dilangkau kerana padam akaun sendiri dimatikan) | ✅ Sudah Push |
+| 204 | 2026-10-18 | `CLAUDE.md` | Peraturan daftar sendiri, pengesahan e-mel, jemputan dan BM | ✅ Sudah Push |
 
 ---
 
