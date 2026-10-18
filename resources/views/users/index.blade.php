@@ -9,13 +9,102 @@
             <h1 class="text-xl font-bold text-gray-900 dark:text-white">Pengurusan Pengguna</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Senarai semua pengguna sistem mengikut peranan</p>
         </div>
+        <div class="flex items-center gap-2">
+        @if(auth()->user()->school_id)
+        <button type="button" onclick="document.getElementById('inviteModal').classList.remove('hidden')"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Jemput Guru
+        </button>
+        @endif
         <a href="{{ route('users.create') }}"
-           class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+           class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
             Tambah Pengguna
         </a>
+        </div>
+    </div>
+
+    {{-- ── Jemputan belum diterima ── --}}
+    @if($invitations->isNotEmpty())
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+        <div class="px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Jemputan Belum Diterima</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+                    <tr>
+                        <th class="px-5 py-3 text-left w-12">No</th>
+                        <th class="px-5 py-3 text-left">Nama</th>
+                        <th class="px-5 py-3 text-left">E-mel</th>
+                        <th class="px-5 py-3 text-left">Status</th>
+                        <th class="px-5 py-3 text-center w-24">Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    @foreach($invitations as $inv)
+                    <tr>
+                        <td class="px-5 py-3 text-gray-400 text-xs">{{ $loop->iteration }}</td>
+                        <td class="px-5 py-3 text-gray-900 dark:text-white">{{ $inv->name }}</td>
+                        <td class="px-5 py-3 text-gray-600 dark:text-gray-300">{{ $inv->email }}</td>
+                        <td class="px-5 py-3">
+                            @if($inv->isPending())
+                            <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">Menunggu (hingga {{ $inv->expires_at->format('d/m/Y') }})</span>
+                            @else
+                            <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">Tamat tempoh</span>
+                            @endif
+                        </td>
+                        <td class="px-5 py-3">
+                            <div class="flex items-center justify-center">
+                                <form action="{{ route('invitations.destroy', $inv) }}" method="POST" data-delete-form data-name="jemputan {{ $inv->email }}">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" title="Batal Jemputan"
+                                            class="p-1.5 text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
+    {{-- ── Modal: Jemput Guru ── --}}
+    <div id="inviteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg mx-4">
+            <form action="{{ route('invitations.store') }}" method="POST">
+                @csrf
+                <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Jemput Guru KAFA</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Guru akan menerima e-mel untuk mencipta kata laluan sendiri. Jika guru sudah ada akaun Personal, data kelasnya akan digabungkan ke sekolah ini.</p>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Guru <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" required maxlength="255"
+                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">E-mel Guru <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" required maxlength="255"
+                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+                <div class="px-5 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                    <button type="button" onclick="document.getElementById('inviteModal').classList.add('hidden')"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Batal</button>
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">Hantar Jemputan</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     {{-- ── Role Tabs ── --}}

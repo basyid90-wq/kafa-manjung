@@ -1,10 +1,44 @@
 {{-- ── Guru Besar Dashboard ── --}}
+@if(!empty($data['onboarding']))
+@php $doneCount = collect($data['onboarding'])->where('done', true)->count(); @endphp
+<div class="bg-white dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-800 p-5 mb-6">
+    <div class="flex items-center justify-between mb-3">
+        <div>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">Mulakan dengan eKafa Online</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $doneCount }} daripada {{ count($data['onboarding']) }} langkah selesai</p>
+        </div>
+    </div>
+    <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mb-4">
+        <div class="h-2 rounded-full bg-blue-600" style="width: {{ round($doneCount / count($data['onboarding']) * 100) }}%"></div>
+    </div>
+    <ul class="space-y-2">
+        @foreach($data['onboarding'] as $step)
+        <li>
+            <a href="{{ $step['url'] }}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                @if($step['done'])
+                <span class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </span>
+                <span class="text-sm text-gray-400 line-through">{{ $step['label'] }}</span>
+                @else
+                <span class="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
+                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $step['label'] }}</span>
+                @if(!empty($step['plan']))
+                <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-700">{{ $step['plan'] }}</span>
+                @endif
+                @endif
+            </a>
+        </li>
+        @endforeach
+    </ul>
+</div>
+@endif
 @php
-$cards = [
-    ['title'=>'Guru KAFA',    'count'=>$data['stats']['guru_kafa'], 'bg'=>'bg-blue-100 dark:bg-blue-900/30',  'color'=>'text-blue-600 dark:text-blue-400',  'icon'=>'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
+$cards = array_values(array_filter([
+    auth()->user()->school?->isPersonal() ? null : ['title'=>'Guru KAFA',    'count'=>$data['stats']['guru_kafa'], 'bg'=>'bg-blue-100 dark:bg-blue-900/30',  'color'=>'text-blue-600 dark:text-blue-400',  'icon'=>'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
     ['title'=>'Jumlah Kelas', 'count'=>$data['stats']['classes'],   'bg'=>'bg-purple-100 dark:bg-purple-900/30','color'=>'text-purple-600 dark:text-purple-400','icon'=>'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'],
     ['title'=>'Jumlah Murid', 'count'=>$data['stats']['students'],  'bg'=>'bg-green-100 dark:bg-green-900/30', 'color'=>'text-green-600 dark:text-green-400', 'icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'],
-];
+]));
 @endphp
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -23,6 +57,7 @@ $cards = [
     @endforeach
 </div>
 
+@if(auth()->user()->canUse('kelulusan_rph'))
 <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
     <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
         <h2 class="text-base font-semibold text-gray-900 dark:text-white">Permohonan RPH Terkini</h2>
@@ -52,3 +87,4 @@ $cards = [
         </table>
     </div>
 </div>
+@endif

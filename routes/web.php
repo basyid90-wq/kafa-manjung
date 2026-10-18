@@ -18,6 +18,14 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('home');
 
+// Halaman undang-undang (awam)
+Route::view('/terma', 'legal.terms')->name('legal.terms');
+Route::view('/privasi', 'legal.privacy')->name('legal.privacy');
+
+// Jemputan guru — pautan awam dari e-mel (penerima mungkin belum ada akaun)
+Route::get('/jemputan/{token}', [\App\Http\Controllers\InvitationController::class, 'show'])->name('invitations.show');
+Route::post('/jemputan/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])->middleware('throttle:10,1')->name('invitations.accept');
+
 // Public routes — boleh akses tanpa login (dari login page)
 Route::post('announcements/{announcement}/increment-view', [AnnouncementController::class, 'incrementView'])
     ->name('announcements.increment-view');
@@ -34,7 +42,7 @@ Route::get('/waktu-solat', function (\Illuminate\Http\Request $req) {
     }
 })->name('waktu.solat');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // 1. Dashboard & Profile
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -45,6 +53,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:Super Admin|Guru Besar'])->group(function () {
         Route::resource('schools', SchoolController::class);
         Route::resource('users', UserController::class)->middleware('plan:pengguna');
+        Route::post('invitations', [\App\Http\Controllers\InvitationController::class, 'store'])->middleware(['plan:pengguna', 'throttle:20,1'])->name('invitations.store');
+        Route::delete('invitations/{invitation}', [\App\Http\Controllers\InvitationController::class, 'destroy'])->middleware('plan:pengguna')->name('invitations.destroy');
         Route::resource('time_slots', TimeSlotController::class);
     });
 

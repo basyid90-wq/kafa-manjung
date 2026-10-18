@@ -74,7 +74,11 @@ class UserController extends Controller
 
         $users = $query->orderBy('name')->paginate(10)->withQueryString();
 
-        return view('users.index', compact('users', 'roleCounts', 'tabRoles', 'filterRole', 'search', 'authRole'));
+        $invitations = $authUser->school_id
+            ? \App\Models\Invitation::where('school_id', $authUser->school_id)->whereNull('accepted_at')->latest()->get()
+            : collect();
+
+        return view('users.index', compact('users', 'roleCounts', 'tabRoles', 'filterRole', 'search', 'authRole', 'invitations'));
     }
 
     public function show(User $user)
@@ -122,6 +126,8 @@ class UserController extends Controller
             'password'  => Hash::make($validated['password']),
             'school_id' => $validated['school_id'] ?? null,
         ]);
+        // Created by an admin who vouches for the address; no self-verification needed
+        $newUser->forceFill(['email_verified_at' => now()])->save();
 
         $newUser->syncRoles($validated['roles']);
 

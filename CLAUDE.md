@@ -110,6 +110,11 @@ Removed in the SaaS pivot (do NOT reintroduce): Pentadbir, Penyelia KAFA, Pembek
 - Workspace owner = role **Guru Besar**, also for Personal workspaces (shown as "Guru (Personal)" via `$user->roleLabel()`). School-only features are locked by plan, not by role.
 - Cover new gates in `tests/Feature/PlanGatingTest.php`.
 
+**Sign-up, verification & invites:**
+- Self-signup at `/daftar` creates a Free workspace (school row) owned by the new user (role Guru Besar). Staff must verify their e-mail (`verified` middleware on the main route group) — production needs working `MAIL_*` settings.
+- Teachers join via `/jemputan/{token}` (InvitationController; only the sha256 of the token is stored). A Personal-workspace owner who accepts is merged into the school by `App\Services\WorkspaceMerger` (blocked while MyKid duplicates exist).
+- App locale is `ms`; translations live in `lang/ms/`. Every new validation attribute should get a Malay name in `lang/ms/validation.php`.
+
 ---
 
 ## 🏷️ Naming Conventions

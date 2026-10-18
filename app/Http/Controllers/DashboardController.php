@@ -69,9 +69,27 @@ class DashboardController extends Controller
                 'students' => \App\Models\Student::where('school_id', $schoolId)->count(),
             ];
 
+            // Onboarding checklist for new workspaces (hidden once every step is done)
+            $school = $user->school;
+            $steps = [
+                ['label' => 'Lengkapkan profil sekolah', 'done' => (bool) ($school?->alamat || $school?->logo || $school?->no_telefon), 'url' => $school ? route('schools.edit', $school) : '#'],
+                ['label' => 'Tambah kelas pertama',      'done' => $data['stats']['classes'] > 0,  'url' => route('kafa_classes.create')],
+                ['label' => 'Daftar murid',              'done' => $data['stats']['students'] > 0, 'url' => route('students.create')],
+                ['label' => 'Tetapkan slot masa',        'done' => \App\Models\TimeSlot::where('school_id', $schoolId)->exists(), 'url' => route('time_slots.index')],
+            ];
+            if ($school && !$school->isPersonal()) {
+                $steps[] = [
+                    'label' => 'Jemput guru KAFA',
+                    'done'  => $data['stats']['guru_kafa'] > 0 || \App\Models\Invitation::where('school_id', $schoolId)->exists(),
+                    'url'   => $user->canUse('pengguna') ? route('users.index') : route('subscription.index', ['modul' => 'pengguna']),
+                    'plan'  => $user->canUse('pengguna') ? null : 'Pakej Sekolah',
+                ];
+            }
+            $data['onboarding'] = collect($steps)->every('done') ? null : $steps;
+
             // 5 Latest Pending RPH for this school
             $data['pending_rphs'] = \App\Models\RphRecord::where('school_id', $schoolId)
-                ->where('status', 'Pending')
+                ->where('status', 'pending')
                 ->with(['user', 'kafaClass'])
                 ->latest()
                 ->take(5)

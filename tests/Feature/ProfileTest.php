@@ -63,6 +63,7 @@ class ProfileTest extends TestCase
 
     public function test_user_can_delete_their_account(): void
     {
+        $this->markTestSkipped('Padam akaun sendiri dimatikan: pemilik akaun memiliki ruang kerja sekolah; penutupan akaun melalui sokongan.');
         $user = User::factory()->create();
 
         $response = $this
@@ -81,6 +82,7 @@ class ProfileTest extends TestCase
 
     public function test_correct_password_must_be_provided_to_delete_account(): void
     {
+        $this->markTestSkipped('Padam akaun sendiri dimatikan: pemilik akaun memiliki ruang kerja sekolah; penutupan akaun melalui sokongan.');
         $user = User::factory()->create();
 
         $response = $this
