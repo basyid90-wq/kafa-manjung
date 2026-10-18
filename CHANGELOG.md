@@ -233,21 +233,21 @@ php artisan view:cache
 | 172 | 2026-10-18 | `database/seeders/*` | Seeder SaaS: 4 role; Super Admin dari .env (buang kata laluan hard-coded); DemoSeeder 2 sekolah (local sahaja); padam CleanUpSeeder & SchoolSeeder | ✅ Sudah Push |
 | 173 | 2026-10-18 | `tests/Feature/TenantIsolationTest.php` | BARU: 9 ujian isolasi tenant | ✅ Sudah Push |
 | 174 | 2026-10-18 | `CLAUDE.md, AGENTS.md, docs/SECURITY.md, docs/SYSTEM_FLOW.md, .env.example` | Dokumen dikemas kini untuk SaaS: role baharu, peraturan tenant, push ke branch saas (bukan main) | ✅ Sudah Push |
-| 175 | 2026-10-18 | `database/migrations/2026_10_18_000002_add_subscription_plan_to_schools.php` | BARU: kolum type, plan, plan_expires_at, owner_id pada schools (tenant = ruang kerja berlangganan) | ⏳ Belum Push |
-| 176 | 2026-10-18 | `config/plans.php` | BARU: definisi pakej Percuma/Personal/Sekolah, had (3 kelas × 40 murid untuk Percuma) dan peta modul → pakej | ⏳ Belum Push |
-| 177 | 2026-10-18 | `app/Models/School.php` | Logik pakej: effectivePlan() dengan tempoh tangguh, allows(), limit(), canAddClass(), studentPlacesLeft(), scopeWithModule() | ⏳ Belum Push |
-| 178 | 2026-10-18 | `app/Models/User.php` | Tambah canUse(), hasPortalChildren(), roleLabel() ("Guru (Personal)") | ⏳ Belum Push |
-| 179 | 2026-10-18 | `app/Http/Middleware/EnsurePlanAllows.php, bootstrap/app.php` | BARU: middleware plan:<modul> — modul berkunci dihala ke halaman Langganan | ⏳ Belum Push |
-| 180 | 2026-10-18 | `routes/web.php` | 58 laluan dikunci ikut pakej; tambah laluan /langganan | ⏳ Belum Push |
-| 181 | 2026-10-18 | `app/Http/Controllers/SubscriptionController.php, resources/views/subscription/index.blade.php` | BARU: halaman Langganan — pakej semasa, penggunaan kelas/murid, perbandingan pakej, butang naik taraf (WhatsApp sementara Bayarcash belum siap) | ⏳ Belum Push |
-| 182 | 2026-10-18 | `resources/views/pengurusan/index.blade.php` | Jubin modul berkunci kekal dipapar (lencana pakej + mangga) dan menghala ke Langganan | ⏳ Belum Push |
-| 183 | 2026-10-18 | `resources/views/layout-fb/layout.blade.php, resources/views/dashboard/index-fb.blade.php` | Menu Langganan + lencana pakej; label role "Guru (Personal)"; widget Chatbot hanya untuk pakej yang ada modul AI | ⏳ Belum Push |
-| 184 | 2026-10-18 | `app/Http/Controllers/SchoolController.php, resources/views/schools/{edit,index}.blade.php` | Super Admin boleh aktifkan pakej (jenis, pakej, tarikh tamat, pemilik); senarai sekolah papar lencana pakej | ⏳ Belum Push |
-| 185 | 2026-10-18 | `app/Http/Controllers/{KafaClass,Student,StudentImport}Controller.php, app/Imports/StudentsImport.php` | Had pakej: bilangan kelas & murid sekelas; FIX import kini dikunci ikut school_id + MyKid (tidak lagi sentuh murid sekolah lain); penapis umur murid mudah alih (tiada TIMESTAMPDIFF) | ⏳ Belum Push |
-| 186 | 2026-10-18 | `app/Http/Controllers/{Parent,ParentResult,Disciplinary}Controller.php` | Portal Ibu Bapa hanya untuk anak di sekolah berpakej Sekolah; akaun ibu bapa hanya dicipta jika pakej membenarkan | ⏳ Belum Push |
-| 187 | 2026-10-18 | `database/seeders/DemoSeeder.php` | Demo 3 tenant: Sekolah berbayar, Sekolah Percuma, Guru Personal | ⏳ Belum Push |
-| 188 | 2026-10-18 | `tests/Feature/PlanGatingTest.php, tests/Feature/TenantIsolationTest.php` | BARU: 11 ujian pakej & had; ujian tenant dikemas kini | ⏳ Belum Push |
-| 189 | 2026-10-18 | `CLAUDE.md` | Peraturan wajib pakej (plan gating) untuk modul baharu | ⏳ Belum Push |
+| 175 | 2026-10-18 | `database/migrations/2026_10_18_000002_add_subscription_plan_to_schools.php` | BARU: kolum type, plan, plan_expires_at, owner_id pada schools (tenant = ruang kerja berlangganan) | ✅ Sudah Push |
+| 176 | 2026-10-18 | `config/plans.php` | BARU: definisi pakej Percuma/Personal/Sekolah, had (3 kelas × 40 murid untuk Percuma) dan peta modul → pakej | ✅ Sudah Push |
+| 177 | 2026-10-18 | `app/Models/School.php` | Logik pakej: effectivePlan() dengan tempoh tangguh, allows(), limit(), canAddClass(), studentPlacesLeft(), scopeWithModule() | ✅ Sudah Push |
+| 178 | 2026-10-18 | `app/Models/User.php` | Tambah canUse(), hasPortalChildren(), roleLabel() ("Guru (Personal)") | ✅ Sudah Push |
+| 179 | 2026-10-18 | `app/Http/Middleware/EnsurePlanAllows.php, bootstrap/app.php` | BARU: middleware plan:<modul> — modul berkunci dihala ke halaman Langganan | ✅ Sudah Push |
+| 180 | 2026-10-18 | `routes/web.php` | 58 laluan dikunci ikut pakej; tambah laluan /langganan | ✅ Sudah Push |
+| 181 | 2026-10-18 | `app/Http/Controllers/SubscriptionController.php, resources/views/subscription/index.blade.php` | BARU: halaman Langganan — pakej semasa, penggunaan kelas/murid, perbandingan pakej, butang naik taraf (WhatsApp sementara Bayarcash belum siap) | ✅ Sudah Push |
+| 182 | 2026-10-18 | `resources/views/pengurusan/index.blade.php` | Jubin modul berkunci kekal dipapar (lencana pakej + mangga) dan menghala ke Langganan | ✅ Sudah Push |
+| 183 | 2026-10-18 | `resources/views/layout-fb/layout.blade.php, resources/views/dashboard/index-fb.blade.php` | Menu Langganan + lencana pakej; label role "Guru (Personal)"; widget Chatbot hanya untuk pakej yang ada modul AI | ✅ Sudah Push |
+| 184 | 2026-10-18 | `app/Http/Controllers/SchoolController.php, resources/views/schools/{edit,index}.blade.php` | Super Admin boleh aktifkan pakej (jenis, pakej, tarikh tamat, pemilik); senarai sekolah papar lencana pakej | ✅ Sudah Push |
+| 185 | 2026-10-18 | `app/Http/Controllers/{KafaClass,Student,StudentImport}Controller.php, app/Imports/StudentsImport.php` | Had pakej: bilangan kelas & murid sekelas; FIX import kini dikunci ikut school_id + MyKid (tidak lagi sentuh murid sekolah lain); penapis umur murid mudah alih (tiada TIMESTAMPDIFF) | ✅ Sudah Push |
+| 186 | 2026-10-18 | `app/Http/Controllers/{Parent,ParentResult,Disciplinary}Controller.php` | Portal Ibu Bapa hanya untuk anak di sekolah berpakej Sekolah; akaun ibu bapa hanya dicipta jika pakej membenarkan | ✅ Sudah Push |
+| 187 | 2026-10-18 | `database/seeders/DemoSeeder.php` | Demo 3 tenant: Sekolah berbayar, Sekolah Percuma, Guru Personal | ✅ Sudah Push |
+| 188 | 2026-10-18 | `tests/Feature/PlanGatingTest.php, tests/Feature/TenantIsolationTest.php` | BARU: 11 ujian pakej & had; ujian tenant dikemas kini | ✅ Sudah Push |
+| 189 | 2026-10-18 | `CLAUDE.md` | Peraturan wajib pakej (plan gating) untuk modul baharu | ✅ Sudah Push |
 
 ---
 
