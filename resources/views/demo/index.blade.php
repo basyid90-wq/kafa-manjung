@@ -1116,7 +1116,7 @@
                     <thead class="bg-gray-50 text-left text-xs uppercase text-gray-500"><tr><th class="px-4 py-2.5">No</th><th class="px-4 py-2.5">Subjek</th><th class="px-4 py-2.5 text-center">Markah</th><th class="px-4 py-2.5 text-center">Gred</th></tr></thead>
                     <tbody class="divide-y divide-gray-100">
                         <template x-for="(r, j) in lmRows" :key="r.n">
-                            <tr><td class="px-4 py-2 text-gray-500" x-text="j + 1"></td><td class="px-4 py-2 text-gray-900" x-text="r.n"></td><td class="px-4 py-2 text-center font-semibold" x-text="r.m === null || r.m === '' ? '—' : r.m"></td><td class="px-4 py-2 text-center"><span class="rounded-full px-2 py-0.5 text-xs font-bold" :class="gradeCls(r.m === null || r.m === '' ? 'E' : grade(r.m))" x-text="r.m === null || r.m === '' ? '—' : grade(r.m)"></span></td></tr>
+                            <tr><td class="px-4 py-2 text-gray-500" x-text="j + 1"></td><td class="px-4 py-2 text-gray-900" x-text="r.n"></td><td class="px-4 py-2 text-center font-semibold" x-text="r.m === null || r.m === '' ? '—' : r.m"></td><td class="px-4 py-2 text-center"><span class="rounded-full px-2 py-0.5 text-xs font-bold" :class="gradeCls(r.m === null || r.m === '' ? '' : grade(r.m))" x-text="r.m === null || r.m === '' ? '—' : grade(r.m)"></span></td></tr>
                         </template>
                     </tbody>
                 </table>
@@ -2386,8 +2386,10 @@ function demoApp() {
         rm(n) { return 'RM' + Number(n || 0).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); },
         initials(name) { return String(name || '').replace(/^(Ustazah|Ustaz)\s+/, '').split(' ').filter(function (w) { return w && ['bin', 'binti', '(dipadam)'].indexOf(w) < 0; }).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase(); },
         dob(k) { return parseInt(k.slice(4, 6), 10) + ' ' + BULAN[parseInt(k.slice(2, 4), 10) - 1] + ' ' + (2000 + parseInt(k.slice(0, 2), 10)); },
-        grade(m) { return m >= 80 ? 'A' : m >= 65 ? 'B' : m >= 50 ? 'C' : m >= 40 ? 'D' : 'E'; },
-        gradeCls(g) { return { A: 'bg-green-100 text-green-700', B: 'bg-blue-100 text-blue-700', C: 'bg-amber-100 text-amber-800', D: 'bg-orange-100 text-orange-800', E: 'bg-red-100 text-red-700' }[g] || 'bg-gray-100 text-gray-500'; },
+        // Same scale as config/grading.php (via ExamService), highest grade first.
+        gradeScale: @json(app(\App\Services\ExamService::class)->gradeScale()),
+        grade(m) { var s = this.gradeScale; for (var i = 0; i < s.length; i++) { if (m >= s[i].min) return s[i].grade; } return s[s.length - 1].grade; },
+        gradeCls(g) { return { A: 'bg-green-100 text-green-700', B: 'bg-blue-100 text-blue-700', C: 'bg-amber-100 text-amber-800', D: 'bg-red-100 text-red-700' }[g] || 'bg-gray-100 text-gray-500'; },
         statusCls(st) { return { Draf: 'bg-gray-100 text-gray-700', Dihantar: 'bg-amber-100 text-amber-800', Diluluskan: 'bg-green-100 text-green-700', Dikembalikan: 'bg-red-100 text-red-700' }[st]; },
         toast(msg, type) {
             var id = Date.now() + Math.random(), self = this;
@@ -2585,9 +2587,10 @@ function demoApp() {
             return { total: mine, avg: this.avgOf(s.id, e), rank: rank, of: mates.length };
         },
         ulasan(avg) {
-            if (avg >= 80) return 'Tahniah! Prestasi cemerlang dalam semua subjek. Teruskan usaha dan kekalkan disiplin yang baik.';
-            if (avg >= 65) return 'Prestasi baik. Tingkatkan lagi latihan bacaan dan hafazan di rumah untuk mencapai gred A.';
-            if (avg >= 50) return 'Prestasi sederhana. Perlu lebih fokus semasa PdP dan buat ulang kaji bersama ibu bapa.';
+            var g = this.grade(avg);
+            if (g === 'A') return 'Tahniah! Prestasi cemerlang dalam semua subjek. Teruskan usaha dan kekalkan disiplin yang baik.';
+            if (g === 'B') return 'Prestasi baik. Tingkatkan lagi latihan bacaan dan hafazan di rumah untuk mencapai gred A.';
+            if (g === 'C') return 'Prestasi sederhana. Perlu lebih fokus semasa PdP dan buat ulang kaji bersama ibu bapa.';
             return 'Memerlukan bimbingan tambahan. Guru akan mengadakan kelas pemulihan — mohon kerjasama ibu bapa.';
         },
 

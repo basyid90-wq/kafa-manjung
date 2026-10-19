@@ -18,7 +18,7 @@ class ExamResultFactory extends Factory
     public function definition(): array
     {
         $marks = fake()->numberBetween(30, 100);
-        $grade = $marks >= 80 ? 'A' : ($marks >= 60 ? 'B' : ($marks >= 40 ? 'C' : 'D'));
+        $grade = app(\App\Services\ExamService::class)->calculateGrade($marks);
         
         return [
             'student_id' => \App\Models\Student::factory(),

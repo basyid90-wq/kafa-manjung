@@ -3,7 +3,6 @@
     $user        = auth()->user();
     $examService = app(\App\Services\ExamService::class);
     $barColors   = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#DB2777', '#0891B2', '#65A30D'];
-    $gradeCls    = ['A' => 'ek-badge-green', 'B' => 'ek-badge-blue', 'C' => 'ek-badge-yellow', 'D' => 'ek-badge-red'];
 @endphp
 
 <div class="mt-6 grid gap-6 xl:grid-cols-3">
@@ -81,7 +80,7 @@
                 <span class="w-28 shrink-0 truncate text-sm text-gray-700 sm:w-36">{{ $s->name }}</span>
                 <span class="h-2.5 flex-1 rounded-full bg-gray-100"><span class="block h-2.5 rounded-full" style="width:{{ (int) $s->avg }}%;background:{{ $barColors[$j % count($barColors)] }}"></span></span>
                 <span class="w-10 shrink-0 text-right text-sm font-semibold text-gray-900">{{ (int) $s->avg }}</span>
-                <span class="ek-badge {{ $gradeCls[$g] ?? 'ek-badge-gray' }} w-7 justify-center px-0 text-[10px] font-bold">{{ $g }}</span>
+                <span class="ek-badge {{ $examService->badgeClass($g) }} w-7 justify-center px-0 text-[10px] font-bold">{{ $g }}</span>
             </li>
             @endforeach
         </ul>

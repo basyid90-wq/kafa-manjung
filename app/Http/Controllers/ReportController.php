@@ -6,33 +6,37 @@ use App\Models\School;
 use App\Models\Attendance;
 use App\Models\Exam;
 use App\Models\ExamResult;
+use App\Models\KafaClass;
 use App\Models\RphRecord;
 use App\Models\Student;
 use App\Models\StudentTransfer;
 use App\Models\User;
+use App\Services\ExamService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class ReportController extends Controller
 {
+    public function __construct(private ExamService $examService) {}
+
     public function index(Request $request)
     {
         $user = auth()->user();
         $search = $request->get('search');
-        
+
         $query = Student::with(['kafaClass', 'school']);
-        
+
         if (!$user->isSuperAdmin()) {
             $query->where('school_id', $user->school_id);
         }
-        
+
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('mykid', 'like', "%{$search}%");
             });
         }
-        
+
         $students = $query->paginate(10);
         return view('reports.index', compact('students'));
     }
@@ -41,11 +45,11 @@ class ReportController extends Controller
     {
         $this->authorizeSchool($student->school_id);
         $student->load(['kafaClass', 'school', 'examResults.subject', 'examResults.exam', 'disciplinaryRecords', 'activities']);
-        
+
         $totalDays = $student->attendances()->count();
         $presentDays = $student->attendances()->whereIn('status', ['Hadir', 'Lewat'])->count();
         $percentage = $totalDays > 0 ? round(($presentDays / $totalDays) * 100, 1) : 0;
-        
+
         $data = [
             'attendance' => [
                 'total_days' => $totalDays,
@@ -60,284 +64,282 @@ class ReportController extends Controller
         return view('reports.show', compact('student', 'data'));
     }
 
+    /**
+     * School-level reports cover one school: the user's own school, or for
+     * Super Admin the school picked in the filter (null until one is picked).
+     *
+     * @return array{0: ?School, 1: \Illuminate\Support\Collection}
+     */
+    private function reportSchool(Request $request): array
+    {
+        $user = auth()->user();
+
+        if ($user->isSuperAdmin()) {
+            $schools = School::orderBy('name')->get(['id', 'name']);
+            $school  = $request->filled('school_id') ? School::find($request->integer('school_id')) : null;
+            return [$school, $schools];
+        }
+
+        $this->authorizeSchool($user->school_id);
+        return [School::findOrFail($user->school_id), collect()];
+    }
+
     public function attendance(Request $request)
     {
-        $user  = auth()->user();
-        $month = (int) $request->get('month', date('n'));
-        $year  = (int) $request->get('year',  date('Y'));
+        $month = min(12, max(1, (int) $request->get('month', date('n'))));
+        $year  = (int) $request->get('year', date('Y'));
 
-        $query = School::query();
+        [$school, $schools] = $this->reportSchool($request);
 
-        if (!$user->isSuperAdmin()) {
-            $query->where('id', $user->school_id);
+        $classRows   = collect();
+        $monthly     = collect();
+        $lowStudents = collect();
+        $summary     = null;
+
+        if ($school) {
+            $present   = ['Hadir', 'Lewat'];
+            $monthBase = fn () => Attendance::where('school_id', $school->id)
+                ->whereYear('date', $year)->whereMonth('date', $month);
+
+            // Status counts and recorded days per class for the month
+            $statusCounts = $monthBase()
+                ->selectRaw('kafa_class_id, status, COUNT(*) as total')
+                ->groupBy('kafa_class_id', 'status')
+                ->get();
+            $countsByClass = $statusCounts->groupBy('kafa_class_id');
+            $daysByClass   = $monthBase()
+                ->selectRaw('kafa_class_id, COUNT(DISTINCT date) as days')
+                ->groupBy('kafa_class_id')
+                ->pluck('days', 'kafa_class_id');
+
+            $classes = KafaClass::where('school_id', $school->id)
+                ->with('teacher:id,name')
+                ->withCount(['students as active_students' => fn ($q) => $q->where('status', 'Aktif')])
+                ->orderBy('tahun')->orderBy('name')
+                ->get();
+
+            $classRows = $classes->map(function ($class) use ($countsByClass, $daysByClass, $present) {
+                $counts = ($countsByClass[$class->id] ?? collect())->pluck('total', 'status');
+                $total  = (int) $counts->sum();
+                $hadir  = (int) $counts->only($present)->sum();
+
+                return [
+                    'name'        => $class->display_name,
+                    'teacher'     => $class->teacher->name ?? null,
+                    'students'    => $class->active_students,
+                    'days'        => (int) ($daysByClass[$class->id] ?? 0),
+                    'hadir'       => (int) ($counts['Hadir'] ?? 0),
+                    'lewat'       => (int) ($counts['Lewat'] ?? 0),
+                    'tidak_hadir' => (int) ($counts['Tidak Hadir'] ?? 0),
+                    'cuti_sakit'  => (int) ($counts['Cuti Sakit'] ?? 0),
+                    'total'       => $total,
+                    'peratus'     => $total > 0 ? round($hadir / $total * 100, 1) : null,
+                ];
+            });
+
+            $monthTotal   = (int) $statusCounts->sum('total');
+            $monthPresent = (int) $statusCounts->whereIn('status', $present)->sum('total');
+
+            // Students below 70% attendance this month (lowest first)
+            $perStudent = $monthBase()
+                ->selectRaw("student_id, COUNT(*) as total, SUM(CASE WHEN status IN ('Hadir', 'Lewat') THEN 1 ELSE 0 END) as hadir")
+                ->groupBy('student_id')
+                ->get()
+                ->map(fn ($r) => $r->setAttribute('peratus', $r->total > 0 ? round($r->hadir / $r->total * 100, 1) : 0))
+                ->filter(fn ($r) => $r->peratus < 70)
+                ->sortBy('peratus');
+            $studentNames = Student::whereIn('id', $perStudent->take(10)->pluck('student_id'))
+                ->with('kafaClass:id,name,tahun')->get()->keyBy('id');
+            $lowStudents = $perStudent->take(10)->map(fn ($r) => [
+                'name'    => $studentNames->get($r->student_id)?->name ?? '—',
+                'class'   => $studentNames->get($r->student_id)?->kafaClass?->display_name,
+                'hadir'   => (int) $r->hadir,
+                'total'   => (int) $r->total,
+                'peratus' => $r->peratus,
+            ])->values();
+
+            // Monthly trend for the whole year
+            $byDate = Attendance::where('school_id', $school->id)
+                ->whereYear('date', $year)
+                ->selectRaw('date, status, COUNT(*) as total')
+                ->groupBy('date', 'status')
+                ->get();
+            $monthly = collect(range(1, 12))->mapWithKeys(function ($m) use ($byDate, $present) {
+                $rows  = $byDate->filter(fn ($r) => Carbon::parse($r->date)->month === $m);
+                $total = (int) $rows->sum('total');
+                $hadir = (int) $rows->whereIn('status', $present)->sum('total');
+                return [$m => [
+                    'days'    => $rows->pluck('date')->unique()->count(),
+                    'peratus' => $total > 0 ? round($hadir / $total * 100, 1) : null,
+                ]];
+            });
+
+            $transfers = fn ($column) => StudentTransfer::where($column, $school->id)
+                ->where('status', 'Diluluskan')
+                ->whereYear('updated_at', $year)->whereMonth('updated_at', $month)
+                ->count();
+
+            $summary = [
+                'students'     => Student::where('school_id', $school->id)->where('status', 'Aktif')->count(),
+                'peratus'      => $monthTotal > 0 ? round($monthPresent / $monthTotal * 100, 1) : null,
+                'days'         => $monthBase()->distinct()->count('date'),
+                'low_students' => $perStudent->count(),
+                'masuk'        => $transfers('to_school_id'),
+                'keluar'       => $transfers('from_school_id'),
+            ];
         }
 
-        $schools = $query->orderBy('name')->get();
-
-        foreach ($schools as $school) {
-            // Murid masuk ke sekolah ini bulan tersebut (transfer diluluskan)
-            $murid_masuk = StudentTransfer::where('to_school_id', $school->id)
-                ->where('status', 'Diluluskan')
-                ->whereMonth('updated_at', $month)
-                ->whereYear('updated_at', $year)
-                ->count();
-
-            // Murid keluar dari sekolah ini bulan tersebut
-            $murid_keluar = StudentTransfer::where('from_school_id', $school->id)
-                ->where('status', 'Diluluskan')
-                ->whereMonth('updated_at', $month)
-                ->whereYear('updated_at', $year)
-                ->count();
-
-            // Bilangan murid aktif semasa (terkini)
-            $bil_terkini = Student::where('school_id', $school->id)
-                ->where('status', 'Aktif')
-                ->count();
-
-            // Anggaran bilangan bulan lepas
-            $bil_bulan_lepas = max(0, $bil_terkini - $murid_masuk + $murid_keluar);
-
-            // Kehadiran sebenar (Hadir + Lewat)
-            $kedatangan_sebenar = Attendance::where('school_id', $school->id)
-                ->whereMonth('date', $month)
-                ->whereYear('date', $year)
-                ->whereIn('status', ['Hadir', 'Lewat'])
-                ->count();
-
-            // Total rekod (Hadir + Lewat + Tidak Hadir) sebagai penyebut peratus
-            $total_records = Attendance::where('school_id', $school->id)
-                ->whereMonth('date', $month)
-                ->whereYear('date', $year)
-                ->count();
-
-            $peratus = $total_records > 0
-                ? round(($kedatangan_sebenar / $total_records) * 100, 1)
-                : 0;
-
-            $school->bil_bulan_lepas    = $bil_bulan_lepas;
-            $school->murid_masuk        = $murid_masuk;
-            $school->murid_keluar       = $murid_keluar;
-            $school->bil_terkini        = $bil_terkini;
-            $school->kedatangan_sebenar = $kedatangan_sebenar;
-            $school->peratus_kehadiran  = $peratus;
-            $school->status_color       = $peratus >= 85 ? 'success' : ($peratus >= 70 ? 'warning' : 'danger');
-            $school->status_label       = $peratus >= 85 ? 'Cemerlang' : ($peratus >= 70 ? 'Memuaskan' : 'Perlu Perhatian');
-        }
-
-        return view('reports.attendance', compact('schools', 'month', 'year'));
+        return view('reports.attendance', compact(
+            'school', 'schools', 'month', 'year', 'classRows', 'monthly', 'lowStudents', 'summary'
+        ));
     }
 
     public function exams(Request $request)
     {
-        $user = auth()->user();
-        $examId = $request->get('exam_id');
-        $exams = Exam::orderBy('year', 'desc')->get();
-        $schools = collect();
-        $districtTotals = null;
+        [$school, $schools] = $this->reportSchool($request);
 
-        if ($examId) {
-            $schoolQuery = School::query();
-            if (!$user->isSuperAdmin()) {
-                $schoolQuery->where('id', $user->school_id);
-            }
-            $schools = $schoolQuery->get();
+        $exams = $school
+            ? Exam::where('school_id', $school->id)->orderByDesc('year')->orderBy('name')->get()
+            : collect();
+        $exam  = $request->filled('exam_id') ? $exams->firstWhere('id', $request->integer('exam_id')) : null;
 
-            $gradePoints = ['A' => 1, 'B' => 2, 'C' => 3, 'D' => 4, 'E' => 5, 'G' => 6];
+        $overall = $bySubject = $byClass = null;
 
-            foreach ($schools as $school) {
-                $results = ExamResult::where('exam_id', $examId)
-                    ->whereHas('student', fn($q) => $q->where('school_id', $school->id))
-                    ->get();
+        if ($exam) {
+            $results = ExamResult::where('exam_id', $exam->id)
+                ->whereHas('student', fn ($q) => $q->where('school_id', $school->id))
+                ->with(['subject', 'student.kafaClass'])
+                ->get();
 
-                $totalCandidates = $results->unique('student_id')->count();
+            $overall = $this->examStats($results);
 
-                if ($totalCandidates > 0) {
-                    $totalPass = $results->groupBy('student_id')->filter(function ($studentResults) {
-                        return !$studentResults->contains(fn($res) => in_array($res->grade, ['G', 'TH']));
-                    })->count();
+            $bySubject = $results->groupBy('subject_id')
+                ->map(fn ($rows) => ['name' => $rows->first()->subject->name ?? '—'] + $this->examStats($rows))
+                ->sortBy('name')->values();
 
-                    $totalPoints = 0;
-                    $totalSubjectsCounted = 0;
-                    foreach ($results as $res) {
-                        if (isset($gradePoints[$res->grade])) {
-                            $totalPoints += $gradePoints[$res->grade];
-                            $totalSubjectsCounted++;
-                        }
-                    }
-
-                    $school->pass_percentage = round(($totalPass / $totalCandidates) * 100, 1);
-                    $school->gps             = $totalSubjectsCounted > 0 ? round($totalPoints / $totalSubjectsCounted, 2) : 0;
-                    $school->total_candidates = $totalCandidates;
-                } else {
-                    $school->pass_percentage  = 0;
-                    $school->gps              = 0;
-                    $school->total_candidates = 0;
-                }
-            }
-
-            // Ranking: susun GPS menaik (GPS rendah = prestasi terbaik), sekolah tanpa calon di bawah
-            $schools = $schools->sortBy(fn($s) => $s->total_candidates > 0 ? $s->gps : PHP_FLOAT_MAX)->values();
-
-            // Jumlah keseluruhan daerah
-            $schoolsWithData  = $schools->where('total_candidates', '>', 0);
-            $totalAllCandidates = $schools->sum('total_candidates');
-            $weightedPass     = $schoolsWithData->sum(fn($s) => $s->total_candidates * $s->pass_percentage);
-            $weightedGps      = $schoolsWithData->sum(fn($s) => $s->total_candidates * $s->gps);
-
-            $districtTotals = [
-                'total_candidates' => $totalAllCandidates,
-                'pass_percentage'  => $totalAllCandidates > 0 ? round($weightedPass / $totalAllCandidates, 1) : 0,
-                'gps'              => $totalAllCandidates > 0 ? round($weightedGps / $totalAllCandidates, 2) : 0,
-            ];
+            $byClass = $results->groupBy(fn ($r) => $r->student->kafa_class_id ?? 0)
+                ->map(function ($rows) {
+                    $class = $rows->first()->student->kafaClass;
+                    return [
+                        'name'  => $class?->display_name ?? 'Tiada Kelas',
+                        'tahun' => $class->tahun ?? 99,
+                    ] + $this->examStats($rows);
+                })
+                ->sortBy([['tahun', 'asc'], ['name', 'asc']])->values();
         }
 
-        return view('reports.exams', compact('exams', 'schools', 'examId', 'districtTotals'));
+        $gradeScale = $this->examService->gradeScale();
+
+        return view('reports.exams', compact(
+            'school', 'schools', 'exams', 'exam', 'overall', 'bySubject', 'byClass', 'gradeScale'
+        ));
     }
 
+    /** Old per-school detail URL: the exam report now covers one school, so send it there. */
     public function examsSchoolDetail(Request $request, School $school)
     {
-        $user   = auth()->user();
-        $examId = $request->get('exam_id');
-
         $this->authorizeSchool($school->id);
 
-        $exam  = Exam::findOrFail($examId);
-        $exams = Exam::orderBy('year', 'desc')->get();
+        return redirect()->route('reports.exams', array_filter([
+            'school_id' => auth()->user()->isSuperAdmin() ? $school->id : null,
+            'exam_id'   => $request->get('exam_id'),
+        ]));
+    }
 
-        $results = ExamResult::where('exam_id', $examId)
-            ->whereHas('student', fn($q) => $q->where('school_id', $school->id))
-            ->with(['subject', 'student.kafaClass'])
-            ->get();
+    /**
+     * Pass rate, average mark and grade distribution for a set of results.
+     * A candidate passes only when every subject they sat has a passing grade.
+     */
+    private function examStats($results): array
+    {
+        $byStudent  = $results->groupBy('student_id');
+        $candidates = $byStudent->count();
+        $pass       = $byStudent->filter(fn ($rows) => $this->examService->isCandidatePass($rows))->count();
+        $sat        = $results->where('is_absent', false)->whereNotNull('marks');
 
-        $gradePoints = ['A' => 1, 'B' => 2, 'C' => 3, 'D' => 4, 'E' => 5, 'G' => 6];
-
-        $totalCandidates = $results->unique('student_id')->count();
-        $totalPass = $results->groupBy('student_id')->filter(
-            fn($sr) => !$sr->contains(fn($r) => in_array($r->grade, ['G', 'TH']))
-        )->count();
-
-        $pts = 0; $cnt = 0;
-        foreach ($results as $r) {
-            if (isset($gradePoints[$r->grade])) { $pts += $gradePoints[$r->grade]; $cnt++; }
+        $gradeCounts = [];
+        foreach ($this->examService->grades() as $g) {
+            $gradeCounts[$g] = $results->where('grade', $g)->count();
         }
 
-        $overallStats = [
-            'candidates'   => $totalCandidates,
-            'pass'         => $totalPass,
-            'pass_pct'     => $totalCandidates > 0 ? round(($totalPass / $totalCandidates) * 100, 1) : 0,
-            'gps'          => $cnt > 0 ? round($pts / $cnt, 2) : 0,
+        return [
+            'candidates' => $candidates,
+            'pass'       => $pass,
+            'pass_pct'   => $candidates > 0 ? round($pass / $candidates * 100, 1) : 0,
+            'avg'        => $sat->isNotEmpty() ? round($sat->avg('marks'), 1) : null,
+            'absent'     => $results->where('is_absent', true)->count(),
+            'grades'     => $gradeCounts,
         ];
-
-        // Prestasi per subjek
-        $bySubject = $results->groupBy('subject_id')->map(function ($subjectResults) use ($gradePoints) {
-            $candidates = $subjectResults->unique('student_id')->count();
-            $pass       = $subjectResults->filter(fn($r) => !in_array($r->grade, ['G', 'TH']))->count();
-            $pts = 0; $cnt = 0;
-            foreach ($subjectResults as $r) {
-                if (isset($gradePoints[$r->grade])) { $pts += $gradePoints[$r->grade]; $cnt++; }
-            }
-            return [
-                'subject'    => $subjectResults->first()->subject,
-                'candidates' => $candidates,
-                'pass'       => $pass,
-                'pass_pct'   => $candidates > 0 ? round(($pass / $candidates) * 100, 1) : 0,
-                'gps'        => $cnt > 0 ? round($pts / $cnt, 2) : 0,
-            ];
-        })->sortBy('subject.name')->values();
-
-        // Prestasi per kelas
-        $byClass = $results->groupBy(fn($r) => $r->student->kafa_class_id ?? 0)->map(function ($classResults) use ($gradePoints) {
-            $className  = $classResults->first()->student->kafaClass->name ?? 'Tiada Kelas';
-            $candidates = $classResults->unique('student_id')->count();
-            $pass       = $classResults->groupBy('student_id')->filter(
-                fn($sr) => !$sr->contains(fn($r) => in_array($r->grade, ['G', 'TH']))
-            )->count();
-            $pts = 0; $cnt = 0;
-            foreach ($classResults as $r) {
-                if (isset($gradePoints[$r->grade])) { $pts += $gradePoints[$r->grade]; $cnt++; }
-            }
-            return [
-                'class_name' => $className,
-                'candidates' => $candidates,
-                'pass'       => $pass,
-                'pass_pct'   => $candidates > 0 ? round(($pass / $candidates) * 100, 1) : 0,
-                'gps'        => $cnt > 0 ? round($pts / $cnt, 2) : 0,
-            ];
-        })->sortBy('class_name')->values();
-
-        return view('reports.exams_detail', compact('school', 'exam', 'exams', 'overallStats', 'bySubject', 'byClass', 'examId'));
     }
 
     public function rphKpi(Request $request)
     {
-        $user = auth()->user();
+        $jenis      = $request->get('jenis_laporan') === 'Mingguan' ? 'Mingguan' : 'Bulanan';
+        $bulan      = min(12, max(1, (int) $request->get('bulan', date('n'))));
+        $tahun      = (int) $request->get('tahun', date('Y'));
+        $minggu     = min(53, max(1, (int) $request->get('minggu', date('W'))));
+        $jumlahHari = max(1, (int) $request->get('jumlah_hari_persekolahan', $jenis === 'Mingguan' ? 5 : 20));
 
-        $jenis               = $request->get('jenis_laporan', 'Bulanan');
-        $bulan               = (int) $request->get('bulan', date('n'));
-        $tahun               = (int) $request->get('tahun', date('Y'));
-        $minggu              = (int) $request->get('minggu', date('W'));
-        $jumlahHari          = max(1, (int) $request->get('jumlah_hari_persekolahan', 20));
+        [$school, $schools] = $this->reportSchool($request);
 
-        $schoolQuery = School::query()
-            ->when(!$user->isSuperAdmin(), fn($q) => $q->where('id', $user->school_id))
-            ->orderBy('name');
+        $periodStart = $jenis === 'Mingguan'
+            ? Carbon::now()->setISODate($tahun, $minggu)->startOfWeek()
+            : Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $periodEnd   = $jenis === 'Mingguan' ? $periodStart->copy()->endOfWeek() : $periodStart->copy()->endOfMonth();
 
-        $schools = $schoolQuery->get();
+        $teacherRows = collect();
+        $summary     = null;
 
-        foreach ($schools as $school) {
-            // Senarai Guru KAFA dalam sekolah ini
-            $guruList = User::where('school_id', $school->id)
-                ->whereHas('roles', fn($q) => $q->where('name', 'Guru KAFA'))
+        if ($school) {
+            $rph = RphRecord::where('school_id', $school->id)
+                ->whereBetween('date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                ->selectRaw('user_id, status, COUNT(*) as total')
+                ->groupBy('user_id', 'status')
+                ->get()
+                ->groupBy('user_id');
+
+            // Guru KAFA of the school, plus anyone else who submitted RPH in the period
+            $teachers = User::where('school_id', $school->id)
+                ->where(fn ($q) => $q->whereHas('roles', fn ($r) => $r->where('name', 'Guru KAFA'))
+                    ->orWhereIn('id', $rph->keys()))
+                ->orderBy('name')
                 ->get(['id', 'name']);
 
-            $guruIds  = $guruList->pluck('id');
-            $bilGuru  = $guruList->count();
-            $targetRph = $bilGuru * $jumlahHari;
+            $classesByTeacher = KafaClass::where('school_id', $school->id)
+                ->whereIn('teacher_id', $teachers->pluck('id'))
+                ->orderBy('tahun')->orderBy('name')
+                ->get()
+                ->groupBy('teacher_id');
 
-            // RPH dihantar dalam tempoh
-            $rphBase = RphRecord::where('school_id', $school->id)
-                ->whereIn('user_id', $guruIds);
-
-            if ($jenis === 'Mingguan') {
-                $rphBase->whereYear('date', $tahun)
-                        ->whereRaw('WEEK(date, 1) = ?', [$minggu]);
-            } else {
-                $rphBase->whereYear('date', $tahun)
-                        ->whereMonth('date', $bulan);
-            }
-
-            $rphDihantar = (clone $rphBase)->count();
-            $peratus     = $targetRph > 0 ? round(($rphDihantar / $targetRph) * 100, 1) : 0;
-
-            // Pengiraan per-guru (1 query grouped)
-            $rphPerGuru = (clone $rphBase)
-                ->selectRaw('user_id, COUNT(*) as jumlah')
-                ->groupBy('user_id')
-                ->pluck('jumlah', 'user_id');
-
-            $guruDetails = $guruList->map(function ($guru) use ($jumlahHari, $rphPerGuru) {
-                $hantar  = (int) ($rphPerGuru[$guru->id] ?? 0);
-                $pct     = $jumlahHari > 0 ? round(($hantar / $jumlahHari) * 100, 1) : 0;
-                $badge   = $pct >= 85 ? 'success' : ($pct >= 50 ? 'warning' : 'danger');
+            $teacherRows = $teachers->map(function ($teacher) use ($rph, $jumlahHari, $classesByTeacher) {
+                $counts = ($rph[$teacher->id] ?? collect())->pluck('total', 'status');
+                $hantar = (int) $counts->sum();
                 return [
-                    'name'    => $guru->name,
-                    'target'  => $jumlahHari,
-                    'hantar'  => $hantar,
-                    'peratus' => $pct,
-                    'badge'   => $badge,
+                    'name'     => $teacher->name,
+                    'classes'  => ($classesByTeacher[$teacher->id] ?? collect())->map->display_name->implode(', '),
+                    'target'   => $jumlahHari,
+                    'hantar'   => $hantar,
+                    'approved' => (int) ($counts['approved'] ?? 0),
+                    'pending'  => (int) ($counts['pending'] ?? 0),
+                    'revise'   => (int) (($counts['rejected'] ?? 0) + ($counts['revision_needed'] ?? 0)),
+                    'peratus'  => round(min($hantar, $jumlahHari) / $jumlahHari * 100, 1),
                 ];
-            })->sortBy('name')->values()->all();
+            })->values();
 
-            $school->bil_guru     = $bilGuru;
-            $school->target_rph   = $targetRph;
-            $school->rph_dihantar = $rphDihantar;
-            $school->peratus_kpi  = $peratus;
-            $school->badge_kpi    = $peratus >= 85 ? 'success' : ($peratus >= 50 ? 'warning' : 'danger');
-            $school->guru_details = $guruDetails;
+            $target  = $teacherRows->sum('target');
+            $summary = [
+                'teachers' => $teacherRows->count(),
+                'target'   => $target,
+                'hantar'   => $teacherRows->sum('hantar'),
+                'approved' => $teacherRows->sum('approved'),
+                'peratus'  => $target > 0 ? round($teacherRows->sum(fn ($t) => min($t['hantar'], $t['target'])) / $target * 100, 1) : 0,
+                'achieved' => $teacherRows->where('peratus', '>=', 85)->count(),
+            ];
         }
 
         return view('reports.rph_kpi', compact(
-            'schools', 'jenis', 'bulan', 'tahun', 'minggu', 'jumlahHari'
+            'school', 'schools', 'jenis', 'bulan', 'tahun', 'minggu', 'jumlahHari',
+            'teacherRows', 'summary', 'periodStart', 'periodEnd'
         ));
     }
 

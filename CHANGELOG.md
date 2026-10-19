@@ -421,6 +421,25 @@ php artisan view:cache
 | 360 | 2026-10-19 | `resources/views/management/index.blade.php` | Dipadam — rujuk route book_orders yang sudah dibuang (commit ece589c) | ✅ Sudah Push |
 | 361 | 2026-10-19 | `resources/views/vendor/pagination/flowbite.blade.php` | Fasa 3: buang dark: (paginasi global) | ✅ Sudah Push |
 | 362 | 2026-10-19 | `resources/views/vendor/pagination/flowbite-simple.blade.php` | Fasa 3: buang dark: (paginasi global) | ✅ Sudah Push |
+| 363 | 2026-10-19 | `config/grading.php` | Baru: skala gred KAFA rasmi (A 80–100, B 60–79, C 40–59, D 0–39; lulus = bukan D/TH) — satu sumber | ⏳ Belum Push |
+| 364 | 2026-10-19 | `app/Services/ExamService.php` | Baca skala dari config: gradeScale(), grades(), isPass(), isCandidatePass(), badgeClass() | ⏳ Belum Push |
+| 365 | 2026-10-19 | `database/migrations/2026_10_19_000001_recalculate_exam_result_grades.php` | Kira semula exam_results.grade daripada markah ikut skala rasmi | ⏳ Belum Push |
+| 366 | 2026-10-19 | `app/Http/Controllers/ReportController.php` | Laporan sekolah untuk satu sekolah: kehadiran ikut kelas/bulan, peperiksaan ikut kelas & subjek, KPI RPH ikut guru; Super Admin pilih sekolah; buang ranking/GPS | ⏳ Belum Push |
+| 367 | 2026-10-19 | `resources/views/reports/attendance.blade.php` | Reka semula: kehadiran ikut kelas, trend bulanan, murid <70% | ⏳ Belum Push |
+| 368 | 2026-10-19 | `resources/views/reports/exams.blade.php` | Reka semula: ringkasan, taburan gred, prestasi ikut kelas & subjek (ganti GPS/ranking sekolah) | ⏳ Belum Push |
+| 369 | 2026-10-19 | `resources/views/reports/exams_detail.blade.php` | Dibuang — URL lama redirect ke reports.exams | ⏳ Belum Push |
+| 370 | 2026-10-19 | `resources/views/reports/rph_kpi.blade.php` | Reka semula: jadual KPI RPH ikut guru (ganti baris per sekolah + modal) | ⏳ Belum Push |
+| 371 | 2026-10-19 | `resources/views/reports/_school_picker.blade.php` | Baru: pilihan sekolah untuk Super Admin | ⏳ Belum Push |
+| 372 | 2026-10-19 | `resources/views/reports/_pick_school.blade.php` | Baru: paparan kosong 'Sila pilih sekolah' | ⏳ Belum Push |
+| 373 | 2026-10-19 | `resources/views/parent/results/detail.blade.php` | Petunjuk gred slip ibu bapa ikut ExamService (buang skala A–E lama) | ⏳ Belum Push |
+| 374 | 2026-10-19 | `resources/views/parents/student_profile.blade.php` | Gred purata ikut ExamService (buang skala A–E lama) | ⏳ Belum Push |
+| 375 | 2026-10-19 | `resources/views/exams/results/show.blade.php` | Warna gred ikut ExamService::badgeClass | ⏳ Belum Push |
+| 376 | 2026-10-19 | `resources/views/dashboard/fb/_insights.blade.php` | Warna gred ikut ExamService::badgeClass | ⏳ Belum Push |
+| 377 | 2026-10-19 | `resources/views/demo/index.blade.php` | Demo guna skala gred dari config (B dari 60, tiada E) | ⏳ Belum Push |
+| 378 | 2026-10-19 | `database/factories/ExamResultFactory.php` | Gred dikira melalui ExamService | ⏳ Belum Push |
+| 379 | 2026-10-19 | `tests/Feature/SchoolReportTest.php` | Ujian laporan sekolah (skop tenant, Super Admin, plan, slip ibu bapa) | ⏳ Belum Push |
+| 380 | 2026-10-19 | `tests/Feature/GradeRecalculationTest.php` | Ujian migrasi kira semula gred | ⏳ Belum Push |
+| 381 | 2026-10-19 | `tests/Unit/ExamServiceTest.php` | Ujian sempadan skala gred | ⏳ Belum Push |
 
 ---
 

@@ -148,11 +148,11 @@
         </div>
         @else
         @foreach($examResultGroups as $examId => $results)
-        @php $exam = $examsById[$examId] ?? null; $avg = round($results->avg('marks'), 1); $avgGrade = $avg >= 80 ? 'A' : ($avg >= 60 ? 'B' : ($avg >= 50 ? 'C' : ($avg >= 40 ? 'D' : 'E'))); $gc = match($avgGrade) { 'A' => 'bg-green-100 text-green-700', 'B' => 'bg-blue-100 text-blue-700', 'C' => 'bg-yellow-100 text-yellow-700', 'D' => 'bg-gray-100 text-gray-600', default => 'bg-red-100 text-red-700' }; @endphp
+        @php $exam = $examsById[$examId] ?? null; $avg = round($results->avg('marks'), 1); $examService = app(\App\Services\ExamService::class); $avgGrade = $examService->calculateGrade($avg); @endphp
         <div class="ek-table-wrap mb-4">
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                 <h2 class="text-sm font-semibold text-gray-700">{{ $exam?->name ?? 'Peperiksaan' }} <span class="text-gray-400 font-normal">({{ $exam?->year ?? '' }})</span></h2>
-                <span class="px-2 py-0.5 text-xs font-medium rounded-full {{ $gc }}">Purata: {{ $avg }} ({{ $avgGrade }})</span>
+                <span class="ek-badge {{ $examService->badgeClass($avgGrade) }}">Purata: {{ $avg }} ({{ $avgGrade }})</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="ek-table">
@@ -166,12 +166,11 @@
                     </thead>
                     <tbody>
                         @foreach($results as $i => $r)
-                        @php $rg = match($r->grade ?? 'E') { 'A' => 'bg-green-100 text-green-700', 'B' => 'bg-blue-100 text-blue-700', 'C' => 'bg-yellow-100 text-yellow-700', 'D' => 'bg-gray-100 text-gray-600', default => 'bg-red-100 text-red-700' }; @endphp
                         <tr>
                             <td class="px-4 py-2.5 text-gray-500">{{ $i + 1 }}</td>
                             <td class="px-4 py-2.5 text-gray-900">{{ $r->subject->name ?? '—' }}</td>
                             <td class="px-4 py-2.5 text-center font-mono font-semibold text-gray-900">{{ $r->marks ?? '—' }}</td>
-                            <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 text-xs font-bold rounded {{ $rg }}">{{ $r->grade ?? '—' }}</span></td>
+                            <td class="px-4 py-2.5 text-center"><span class="ek-badge {{ $examService->badgeClass($r->grade) }} font-bold">{{ $r->grade ?? '—' }}</span></td>
                         </tr>
                         @endforeach
                     </tbody>
