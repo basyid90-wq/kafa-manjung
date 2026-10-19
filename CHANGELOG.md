@@ -379,14 +379,14 @@ php artisan view:cache
 | 318 | 2026-10-19 | `tests/Feature/DashboardTest.php` | Hebahan Terkini di dashboard ikut sasaran (announcement_targets), sama seperti halaman Hebahan; test | ✅ Sudah Push |
 | 319 | 2026-10-19 | `resources/views/student_transfers/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 320 | 2026-10-19 | `resources/views/student_transfers/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
-| 321 | 2026-10-19 | `resources/views/schools/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 322 | 2026-10-19 | `resources/views/schools/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 323 | 2026-10-19 | `resources/views/schools/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 324 | 2026-10-19 | `resources/views/schools/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 325 | 2026-10-19 | `resources/views/subjects/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 326 | 2026-10-19 | `resources/views/subjects/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 327 | 2026-10-19 | `resources/views/subjects/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 328 | 2026-10-19 | `resources/views/subscription/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
+| 321 | 2026-10-19 | `resources/views/schools/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 322 | 2026-10-19 | `resources/views/schools/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 323 | 2026-10-19 | `resources/views/schools/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 324 | 2026-10-19 | `resources/views/schools/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 325 | 2026-10-19 | `resources/views/subjects/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 326 | 2026-10-19 | `resources/views/subjects/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 327 | 2026-10-19 | `resources/views/subjects/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 328 | 2026-10-19 | `resources/views/subscription/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 
 ---
 
