@@ -364,10 +364,10 @@ php artisan view:cache
 | 303 | 2026-10-19 | `resources/views/users/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 304 | 2026-10-19 | `resources/views/rph_approvals/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 305 | 2026-10-19 | `resources/views/rph_approvals/history.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
-| 306 | 2026-10-19 | `resources/views/reports/attendance.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 307 | 2026-10-19 | `resources/views/reports/exams.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 308 | 2026-10-19 | `resources/views/reports/exams_detail.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 309 | 2026-10-19 | `resources/views/reports/rph_kpi.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
+| 306 | 2026-10-19 | `resources/views/reports/attendance.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 307 | 2026-10-19 | `resources/views/reports/exams.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 308 | 2026-10-19 | `resources/views/reports/exams_detail.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 309 | 2026-10-19 | `resources/views/reports/rph_kpi.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 
 ---
 
