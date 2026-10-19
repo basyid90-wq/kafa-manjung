@@ -396,17 +396,17 @@ php artisan view:cache
 | 335 | 2026-10-19 | `resources/views/admin/manual-logs/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ✅ Sudah Push |
 | 336 | 2026-10-19 | `resources/views/admin/system_log.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ✅ Sudah Push |
 | 337 | 2026-10-19 | `resources/views/super-admin/chatbot-settings.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ✅ Sudah Push |
-| 338 | 2026-10-19 | `resources/views/auth/confirm-password.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 339 | 2026-10-19 | `resources/views/auth/forgot-password.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 340 | 2026-10-19 | `resources/views/auth/register.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 341 | 2026-10-19 | `resources/views/auth/reset-password.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 342 | 2026-10-19 | `resources/views/auth/verify-email.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 343 | 2026-10-19 | `resources/views/layout-fb/auth-card.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 344 | 2026-10-19 | `resources/views/legal/privacy.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 345 | 2026-10-19 | `resources/views/legal/terms.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 346 | 2026-10-19 | `resources/views/profile/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 347 | 2026-10-19 | `resources/views/profile/partials/update-password-form.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 348 | 2026-10-19 | `resources/views/profile/partials/update-profile-information-form.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
+| 338 | 2026-10-19 | `resources/views/auth/confirm-password.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 339 | 2026-10-19 | `resources/views/auth/forgot-password.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 340 | 2026-10-19 | `resources/views/auth/register.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 341 | 2026-10-19 | `resources/views/auth/reset-password.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 342 | 2026-10-19 | `resources/views/auth/verify-email.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 343 | 2026-10-19 | `resources/views/layout-fb/auth-card.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 344 | 2026-10-19 | `resources/views/legal/privacy.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 345 | 2026-10-19 | `resources/views/legal/terms.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 346 | 2026-10-19 | `resources/views/profile/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 347 | 2026-10-19 | `resources/views/profile/partials/update-password-form.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 348 | 2026-10-19 | `resources/views/profile/partials/update-profile-information-form.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 
 ---
 
