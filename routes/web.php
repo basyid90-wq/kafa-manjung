@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\DisciplinaryController;
 use App\Http\Controllers\ActivityController;

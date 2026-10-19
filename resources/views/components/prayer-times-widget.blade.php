@@ -3,7 +3,7 @@
     Guna: <x-prayer-times-widget />
     Default zone: PRK09 (Lumut/Sitiawan/Pangkor – Daerah Manjung)
 --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
+<div class="ek-table-wrap shadow-md">
     <div class="flex flex-col lg:flex-row">
 
         {{-- ── LEFT: Mosque banner ── --}}
@@ -67,14 +67,14 @@
                                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                         <select id="pt-state-select"
-                                class="text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 py-1.5 px-2"
+                                class="ek-input text-xs py-1.5 px-2"
                                 style="max-width:130px;">
                         </select>
                     </div>
 
                     {{-- Zone select --}}
                     <select id="pt-zone-select"
-                            class="text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 py-1.5 px-2"
+                            class="ek-input text-xs py-1.5 px-2"
                             style="max-width:200px;">
                     </select>
 
@@ -85,13 +85,13 @@
                              style="background:#111827; min-width:36px; padding:6px 8px;">0</div>
                         <div id="pt-h2" class="text-white font-mono font-bold text-2xl rounded-md text-center"
                              style="background:#111827; min-width:36px; padding:6px 8px; margin-left:2px;">0</div>
-                        <span class="font-bold text-gray-500 dark:text-gray-400 text-xl px-0.5" style="padding-bottom:4px;">:</span>
+                        <span class="font-bold text-gray-500 text-xl px-0.5" style="padding-bottom:4px;">:</span>
                         {{-- Minutes --}}
                         <div id="pt-m1" class="text-white font-mono font-bold text-2xl rounded-md text-center"
                              style="background:#111827; min-width:36px; padding:6px 8px;">0</div>
                         <div id="pt-m2" class="text-white font-mono font-bold text-2xl rounded-md text-center"
                              style="background:#111827; min-width:36px; padding:6px 8px; margin-left:2px;">0</div>
-                        <span class="font-bold text-gray-500 dark:text-gray-400 text-xl px-0.5" style="padding-bottom:4px;">:</span>
+                        <span class="font-bold text-gray-500 text-xl px-0.5" style="padding-bottom:4px;">:</span>
                         {{-- Seconds --}}
                         <div id="pt-s1" class="text-white font-mono font-bold text-2xl rounded-md text-center"
                              style="background:#111827; min-width:36px; padding:6px 8px;">0</div>
@@ -102,9 +102,9 @@
 
                 {{-- RIGHT: Date display --}}
                 <div class="text-right">
-                    <p id="pt-greg-date" class="text-sm font-semibold text-gray-800 dark:text-white"></p>
-                    <p id="pt-hijri-date" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">— H</p>
-                    <p id="pt-api-status" class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium h-4"></p>
+                    <p id="pt-greg-date" class="text-sm font-semibold text-gray-800"></p>
+                    <p id="pt-hijri-date" class="text-xs text-gray-500 mt-0.5">— H</p>
+                    <p id="pt-api-status" class="text-xs text-green-600 mt-1 font-medium h-4"></p>
                 </div>
             </div>
 
@@ -121,10 +121,10 @@
                 ];
                 @endphp
                 @foreach($prayers as $p)
-                <div class="prayer-time-box rounded-lg p-2.5 text-center border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 transition-colors duration-300"
+                <div class="prayer-time-box rounded-lg p-2.5 text-center border border-gray-100 bg-gray-50 transition-colors duration-300"
                      data-prayer="{{ $p['key'] }}">
-                    <p class="pt-time text-sm font-bold text-gray-900 dark:text-white" id="pt-{{ $p['key'] }}">--:--</p>
-                    <p class="pt-label text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ $p['label'] }}</p>
+                    <p class="pt-time text-sm font-bold text-gray-900" id="pt-{{ $p['key'] }}">--:--</p>
+                    <p class="pt-label text-xs text-gray-500 mt-0.5">{{ $p['label'] }}</p>
                 </div>
                 @endforeach
             </div>

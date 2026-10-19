@@ -1,11 +1,12 @@
 @extends('layout-fb.layout')
+@section('title', 'Pengurusan Pentadbiran')
 
 @section('content')
-<div class="p-4 md:p-6">
+<div>
 
     <div class="mb-6">
-        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Pengurusan Pentadbiran</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Pusat kawalan modul eKafa Online</p>
+        <h1 class="ek-page-title">Pengurusan Pentadbiran</h1>
+        <p class="ek-page-sub mt-1">Pusat kawalan modul eKafa Online</p>
     </div>
 
     @php
@@ -28,45 +29,38 @@
 
     $section = function(string $title, array $modules) use ($planByUrl, $authUser) {
         $out = '<div class="mb-8">';
-        $out .= '<p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">'.$title.'</p>';
+        $out .= '<p class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">'.$title.'</p>';
         $out .= '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">';
         foreach ($modules as $m) {
-            $c = $m['color'] ?? 'blue';
             $module = $planByUrl[$m['route']] ?? null;
             if ($module && !$authUser->canUse($module)) {
                 // Locked tile: stays visible (upsell) and leads to the subscription page
                 $planName = e(config('plans.plans.' . config("plans.modules.{$module}.plan") . '.label'));
                 $out .= '<a href="'.route('subscription.index', ['modul' => $module]).'" title="Tersedia dalam pakej '.$planName.'"
-                           class="relative flex flex-col items-center justify-center gap-3 p-4 bg-gray-50 dark:bg-gray-800/50
-                                  border border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-gray-400 transition-all">
-                    <span class="absolute right-2 inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-700" style="top:.5rem">
+                           class="relative flex flex-col items-center justify-center gap-3 p-4 bg-gray-50
+                                  border border-dashed border-gray-300 rounded-xl hover:border-gray-400 transition-all">
+                    <span class="ek-badge ek-badge-yellow absolute right-2" style="top:.5rem">
                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                         '.$planName.'
                     </span>
-                    <div class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
+                    <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
                         <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="'.$m['icon'].'"/>
                         </svg>
                     </div>
-                    <span class="text-xs font-medium text-gray-400 dark:text-gray-500 text-center leading-tight">'.$m['label'].'</span>
+                    <span class="text-xs font-medium text-gray-400 text-center leading-tight">'.$m['label'].'</span>
                 </a>';
                 continue;
             }
+            // Static classes only (Tailwind cannot see classes built from $c at runtime)
             $out .= '<a href="'.$m['route'].'"
-                       class="flex flex-col items-center justify-center gap-3 p-4 bg-white dark:bg-gray-800
-                              border border-gray-200 dark:border-gray-700 rounded-xl
-                              hover:border-'.$c.'-400 dark:hover:border-'.$c.'-500
-                              hover:bg-'.$c.'-50 dark:hover:bg-'.$c.'-900/20
-                              hover:shadow-md transition-all group">
-                <div class="w-12 h-12 rounded-full bg-'.$c.'-100 dark:bg-'.$c.'-900/30
-                            flex items-center justify-center shrink-0
-                            group-hover:bg-'.$c.'-200 dark:group-hover:bg-'.$c.'-900/50 transition-colors">
-                    <svg class="w-6 h-6 text-'.$c.'-600 dark:text-'.$c.'-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="'.$m['icon'].'"/>
+                       class="flex flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-4 text-center transition-colors hover:border-blue-300 hover:bg-blue-50/50">
+                <span class="ek-icon-tile h-10 w-10 bg-blue-50 text-blue-600">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="'.$m['icon'].'"/>
                     </svg>
-                </div>
-                <span class="text-xs font-medium text-gray-700 dark:text-gray-300 text-center leading-tight
-                             group-hover:text-'.$c.'-700 dark:group-hover:text-'.$c.'-400 transition-colors">'.$m['label'].'</span>
+                </span>
+                <span class="text-xs font-semibold leading-tight text-gray-800">'.$m['label'].'</span>
             </a>';
         }
         $out .= '</div></div>';
