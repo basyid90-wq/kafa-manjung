@@ -368,6 +368,8 @@ php artisan view:cache
 | 307 | 2026-10-19 | `resources/views/reports/exams.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 308 | 2026-10-19 | `resources/views/reports/exams_detail.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 309 | 2026-10-19 | `resources/views/reports/rph_kpi.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 310 | 2026-10-19 | `resources/views/financial/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
+| 311 | 2026-10-19 | `resources/views/financial/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
 
 ---
 
