@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Base data for every environment. Demo tenants are only seeded locally.
+     * Base data for every environment (no demo tenants — start clean).
      */
     public function run(): void
     {
@@ -17,9 +17,5 @@ class DatabaseSeeder extends Seeder
             AccountCategorySeeder::class,
             UserSeeder::class,
         ]);
-
-        if (app()->environment('local')) {
-            $this->call(DemoSeeder::class);
-        }
     }
 }

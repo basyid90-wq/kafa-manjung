@@ -273,6 +273,8 @@ php artisan view:cache
 | 212 | 2026-10-18 | `CLAUDE.md, docs/SECURITY.md` | Peraturan pembayaran dan keselamatan kunci Bayarcash | ✅ Sudah Push |
 | 213 | 2026-10-19 | `resources/views/auth/login.blade.php` | Laman utama baharu (reka bentuk Claude Design): 13 seksyen — hero dengan mock dashboard, modul, lawatan produk (5 tab), harga RM0/RM19/RM49, keselamatan, soalan lazim, log masuk, CTA; animasi & skrol; hebahan platform sebagai kad makluman; FIX graf kehadiran mingguan (bar tinggi 0) | ✅ Sudah Push |
 | 214 | 2026-10-19 | `CLAUDE.md` | Nota: laman utama ialah halaman kendiri dan wajib npm run build semasa deploy | ✅ Sudah Push |
+| 215 | 2026-10-19 | `database/seeders/DatabaseSeeder.php` | Buang panggilan DemoSeeder — seed asas sahaja (deploy bersih) | ⏳ Belum Push |
+| 216 | 2026-10-19 | `database/seeders/DemoSeeder.php` | Dipadam — data demo tidak lagi digunakan | ⏳ Belum Push |
 
 ---
 
