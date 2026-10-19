@@ -5,8 +5,8 @@
 @section('card_subtitle', ($invitation->inviter?->name ?? 'Guru Besar') . ' menjemput anda menyertai sekolah ini sebagai ' . $invitation->role . '.')
 
 @php
-    $input = 'w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent';
-    $label = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1';
+    $input = 'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent';
+    $label = 'block text-sm font-medium text-gray-700 mb-1';
 @endphp
 
 @section('card')
@@ -35,7 +35,7 @@
                 <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" class="{{ $input }}">
             </div>
         </div>
-        <label class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+        <label class="flex items-start gap-2 text-sm text-gray-600">
             <input type="checkbox" name="terms" value="1" required class="w-4 h-4 mt-0.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
             <span>Saya bersetuju dengan <a href="{{ route('legal.terms') }}" target="_blank" class="text-blue-600 hover:underline">Terma Perkhidmatan</a>
                   dan <a href="{{ route('legal.privacy') }}" target="_blank" class="text-blue-600 hover:underline">Notis Privasi</a>.</span>
@@ -43,16 +43,16 @@
         @error('terms')<p class="text-xs text-red-500">{{ $message }}</p>@enderror
 
         <button type="submit"
-                class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                class="ek-btn-primary w-full">
             Cipta Akaun & Sertai
         </button>
 
     @else
         {{-- Existing account (logged in as the invited e-mail) --}}
-        <p class="text-sm text-gray-600 dark:text-gray-300">Anda log masuk sebagai <strong class="text-gray-900 dark:text-white">{{ $existing->email }}</strong>.</p>
+        <p class="text-sm text-gray-600">Anda log masuk sebagai <strong class="text-gray-900">{{ $existing->email }}</strong>.</p>
 
         @if($merge)
-        <div class="p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-sm text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 space-y-2">
+        <div class="p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-sm text-gray-700 space-y-2">
             <p class="font-semibold">Data ruang kerja "{{ $merge['from']->name }}" akan digabungkan ke {{ $invitation->school->name }}:</p>
             <ul class="list-disc ms-5">
                 <li>{{ $merge['preview']['classes'] }} kelas</li>
@@ -63,7 +63,7 @@
         </div>
 
         @if($merge['conflicts']->isNotEmpty())
-        <div class="p-4 rounded-lg bg-red-50 text-sm text-red-800 dark:bg-gray-700 dark:text-red-400 space-y-2">
+        <div class="p-4 rounded-lg bg-red-50 text-sm text-red-800 space-y-2">
             <p class="font-semibold">Murid berikut sudah didaftarkan oleh {{ $invitation->school->name }} (MyKid sama):</p>
             <ul class="list-disc ms-5">
                 @foreach($merge['conflicts'] as $s)
@@ -76,7 +76,7 @@
         @endif
 
         <button type="submit" @if($merge && $merge['conflicts']->isNotEmpty()) disabled @endif
-                class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                class="ek-btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
             {{ $merge ? 'Terima & Gabungkan Data' : 'Terima Jemputan' }}
         </button>
     @endif
