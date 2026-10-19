@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Concerns\BelongsToSchool;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
@@ -20,6 +21,16 @@ class Student extends Model
         'chronic_disease', 'allergies', 'emergency_contact',
         'qr_code_string', 'photo',
     ];
+
+    /** Limit to students the user may see: Guru KAFA only gets students of the classes they teach. */
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if ($user->isClassScoped()) {
+            $query->whereHas('kafaClass', fn ($q) => $q->where('teacher_id', $user->id));
+        }
+
+        return $query;
+    }
 
     public function school()
     {

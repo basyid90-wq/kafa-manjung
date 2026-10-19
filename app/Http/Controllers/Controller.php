@@ -9,4 +9,10 @@ abstract class Controller
     {
         abort_unless(auth()->user()?->canAccessSchool($schoolId), 403);
     }
+
+    /** Student guard: abort 403 unless the user may access the student (Guru KAFA: own classes only). */
+    protected function authorizeStudent(\App\Models\Student $student): void
+    {
+        abort_unless(auth()->user()?->canAccessStudent($student), 403);
+    }
 }

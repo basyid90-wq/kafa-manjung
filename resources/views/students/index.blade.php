@@ -59,7 +59,9 @@
                     <select name="class_id" onchange="this.form.submit()"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <option value="">Semua Kelas</option>
+                        @unless(auth()->user()->isClassScoped())
                         <option value="none" {{ request('class_id') === 'none' ? 'selected' : '' }}>— Tiada Kelas</option>
+                        @endunless
                         @foreach($classes as $c)
                             <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->display_name }}</option>
                         @endforeach

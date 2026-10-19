@@ -31,6 +31,7 @@ class StudentController extends Controller
             if (!$user->isSuperAdmin()) {
                 $q->where('school_id', $user->school_id);
             }
+            $q->visibleTo($user);
             if (!$request->has('show_archive')) {
                 $q->whereNotIn('status', ['Berhenti', 'Pindah'])
                   ->where(fn($sq) => $sq->where('dob', '>', $archiveDob)->orWhereNull('dob'));
@@ -79,6 +80,7 @@ class StudentController extends Controller
         $classes = KafaClass::query()
             ->when(!$user->isSuperAdmin(), fn($q) => $q->where('school_id', $user->school_id))
             ->when($user->isSuperAdmin() && $filterSchool, fn($q) => $q->where('school_id', $filterSchool))
+            ->when($user->isClassScoped(), fn($q) => $q->where('teacher_id', $user->id))
             ->orderBy('tahun')->orderBy('name')->get();
 
         $importSchools = $schools;
@@ -99,7 +101,9 @@ class StudentController extends Controller
         if ($user->isSuperAdmin()) {
             $schools = School::orderBy('name')->get();
         } else {
-            $classes = KafaClass::where('school_id', $user->school_id)->get();
+            $classes = KafaClass::where('school_id', $user->school_id)
+                ->when($user->isClassScoped(), fn($q) => $q->where('teacher_id', $user->id))
+                ->get();
         }
 
         return view('students.create', compact('classes', 'schools'));
@@ -113,9 +117,16 @@ class StudentController extends Controller
             $mykidUnique->ignore($student->id);
         }
 
+        // Guru KAFA may only place students in a class they teach (otherwise the record leaves their view)
+        $user = auth()->user();
+        $classExists = Rule::exists('kafa_classes', 'id')->where('school_id', $schoolId);
+        if ($user->isClassScoped()) {
+            $classExists->where('teacher_id', $user->id);
+        }
+
         return [
             'school_id' => $requiresSchool ? 'required|exists:schools,id' : 'nullable',
-            'kafa_class_id' => ['nullable', Rule::exists('kafa_classes', 'id')->where('school_id', $schoolId),
+            'kafa_class_id' => [$user->isClassScoped() ? 'required' : 'nullable', $classExists,
                 function ($attribute, $value, $fail) use ($schoolId, $student) {
                     // Plan limit: students per class (a student already in the class may stay)
                     if (!$value || ($student && (int) $student->kafa_class_id === (int) $value)) {
@@ -194,7 +205,7 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
-        $this->authorizeSchool($student->school_id);
+        $this->authorizeStudent($student);
 
         return view('students.show', compact('student'));
     }
@@ -202,10 +213,12 @@ class StudentController extends Controller
     public function edit(Student $student)
     {
         $user = auth()->user();
-        $this->authorizeSchool($student->school_id);
+        $this->authorizeStudent($student);
 
         $schools = $user->isSuperAdmin() ? School::orderBy('name')->get() : null;
-        $classes = KafaClass::where('school_id', $student->school_id)->get();
+        $classes = KafaClass::where('school_id', $student->school_id)
+            ->when($user->isClassScoped(), fn($q) => $q->where('teacher_id', $user->id))
+            ->get();
 
         return view('students.edit', compact('student', 'classes', 'schools'));
     }
@@ -213,7 +226,7 @@ class StudentController extends Controller
     public function update(Request $request, Student $student)
     {
         $user = auth()->user();
-        $this->authorizeSchool($student->school_id);
+        $this->authorizeStudent($student);
 
         $requiresSchool = $user->isSuperAdmin();
         $schoolId = $requiresSchool ? $request->input('school_id') : $student->school_id;
@@ -242,7 +255,7 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
-        $this->authorizeSchool($student->school_id);
+        $this->authorizeStudent($student);
 
         $student->delete();
         return redirect()->route('students.index')->with('success', 'Murid berjaya dipadam.');
@@ -281,6 +294,8 @@ class StudentController extends Controller
     public function printQrCards(KafaClass $kafaClass)
     {
         $this->authorizeSchool($kafaClass->school_id);
+        $user = auth()->user();
+        abort_if($user->isClassScoped() && (int) $kafaClass->teacher_id !== (int) $user->id, 403);
 
         // Jana QR string untuk murid yang belum ada
         $kafaClass->students()->whereNull('qr_code_string')->each(function ($s) {
@@ -304,7 +319,7 @@ class StudentController extends Controller
             return back()->with('error', 'Tiada rekod dipilih.');
         }
 
-        $query = Student::whereIn('id', $studentIds);
+        $query = Student::whereIn('id', $studentIds)->visibleTo($user);
 
         if (!$user->isSuperAdmin()) {
             $query->where('school_id', $user->school_id);

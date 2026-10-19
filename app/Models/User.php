@@ -73,6 +73,23 @@ class User extends Authenticatable implements MustVerifyEmail
         return $schoolId !== null && $this->school_id !== null && (int) $schoolId === (int) $this->school_id;
     }
 
+    /** Guru KAFA (not also Guru Besar / Super Admin): student data limited to the classes they teach. */
+    public function isClassScoped(): bool
+    {
+        return $this->hasRole('Guru KAFA') && !$this->hasAnyRole(['Super Admin', 'Guru Besar']);
+    }
+
+    /** Whether the user may access a student record (school tenant + own class for Guru KAFA). */
+    public function canAccessStudent(Student $student): bool
+    {
+        if (!$this->canAccessSchool($student->school_id)) {
+            return false;
+        }
+
+        return !$this->isClassScoped()
+            || KafaClass::whereKey($student->kafa_class_id)->where('teacher_id', $this->id)->exists();
+    }
+
     /** Whether the user's workspace plan includes a module (Super Admin: always). */
     public function canUse(string $module): bool
     {

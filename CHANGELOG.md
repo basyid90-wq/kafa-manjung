@@ -293,6 +293,11 @@ php artisan view:cache
 | 232 | 2026-10-19 | `tests/Feature/DashboardTest.php` | Test dashboard: kehadiran skop sekolah/kelas, purata markah, paparan kosong, Super Admin | ✅ Sudah Push |
 | 233 | 2026-10-19 | `CLAUDE.md` | Peraturan UI: guna kelas `ek-*`, dark mode dihentikan, font Inter | ✅ Sudah Push |
 | 234 | 2026-10-19 | `resources/views/manuals/guru-besar.blade.php`, `guru-kafa.blade.php` | Bahagian Dashboard dalam manual | ✅ Sudah Push |
+| 235 | 2026-10-19 | `app/Http/Controllers/StudentController.php` | Guru KAFA: senarai, kiraan Tahun, lihat/edit/padam, padam pukal & kad QR hanya untuk murid kelas sendiri; kelas wajib dari kelas sendiri | ⏳ Belum Push |
+| 236 | 2026-10-19 | `app/Models/Student.php`, `app/Models/User.php`, `app/Http/Controllers/Controller.php` | Skop `Student::visibleTo()`, `User::isClassScoped()` / `canAccessStudent()`, guard `authorizeStudent()` | ⏳ Belum Push |
+| 237 | 2026-10-19 | `resources/views/students/index.blade.php` | Sembunyi pilihan "Tiada Kelas" untuk Guru KAFA | ⏳ Belum Push |
+| 238 | 2026-10-19 | `tests/Feature/GuruKafaStudentScopeTest.php` | Test skop murid Guru KAFA ikut kelas (baharu) | ⏳ Belum Push |
+| 239 | 2026-10-19 | `resources/views/manuals/guru-kafa.blade.php` | Nota: Guru KAFA hanya urus murid kelas sendiri | ⏳ Belum Push |
 
 ---
 

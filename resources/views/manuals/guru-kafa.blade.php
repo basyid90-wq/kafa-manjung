@@ -32,6 +32,7 @@
         <h4>2. Murid</h4>
         <div class="step"><strong>Langkah 1:</strong> Klik <em>Pengurusan Pentadbiran</em> → <em>Murid</em>.</div>
         <div class="step"><strong>Langkah 2:</strong> Senarai murid dalam kelas anda akan dipaparkan.</div>
+        <div class="note">Anda hanya boleh melihat dan mengurus murid dalam kelas yang anda ajar. Murid baharu mesti diletakkan dalam salah satu kelas anda.</div>
         <div class="step"><strong>Langkah 3:</strong> Untuk tambah murid secara pukal, klik butang <strong>"Import dari SIMPENI"</strong>.</div>
         <div class="step"><strong>Langkah 4:</strong> Muat turun templat Excel, isi maklumat murid, kemudian muat naik semula fail tersebut.</div>
         <div class="note">📋 <strong>Fungsi Import SIMPENI:</strong> Sistem menerima fail Excel yang dieksport terus dari SIMPENI. Pastikan lajur <em>No. IC</em>, <em>Nama</em>, <em>Kelas</em>, <em>IC Bapa</em>, dan <em>IC Ibu</em> diisi lengkap. Akaun Ibu Bapa akan diwujudkan secara automatik.</div>
