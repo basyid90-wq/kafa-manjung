@@ -74,14 +74,10 @@
                 <tr>
                     <td>{{ $res->exam->name }}</td>
                     <td>{{ $res->subject->name }}</td>
-                    <td>{{ $res->score }}</td>
+                    <td>{{ $res->marks }}</td>
                     <td>
                         @php
-                            $grade = 'G';
-                            if($res->score >= 80) $grade = 'A';
-                            elseif($res->score >= 60) $grade = 'B';
-                            elseif($res->score >= 40) $grade = 'C';
-                            elseif($res->score >= 30) $grade = 'D';
+                            $grade = $res->grade ?: app(\App\Services\ExamService::class)->calculateGrade($res->marks);
                         @endphp
                         {{ $grade }}
                     </td>

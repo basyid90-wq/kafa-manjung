@@ -77,14 +77,10 @@
                     <tr>
                         <td class="px-4 py-2.5 text-gray-700">{{ $res->exam->name }}</td>
                         <td class="px-4 py-2.5 text-gray-700">{{ $res->subject->name }}</td>
-                        <td class="px-4 py-2.5 text-center font-mono text-gray-900">{{ $res->score }}</td>
+                        <td class="px-4 py-2.5 text-center font-mono text-gray-900">{{ $res->marks }}</td>
                         <td class="px-4 py-2.5 text-center">
                             @php
-                                $grade = 'G';
-                                if($res->score >= 80) $grade = 'A';
-                                elseif($res->score >= 60) $grade = 'B';
-                                elseif($res->score >= 40) $grade = 'C';
-                                elseif($res->score >= 30) $grade = 'D';
+                                $grade = $res->grade ?: app(\App\Services\ExamService::class)->calculateGrade($res->marks);
                                 $gc = match($grade) { 'A' => 'bg-green-100 text-green-700', 'B' => 'bg-blue-100 text-blue-700', 'C' => 'bg-yellow-100 text-yellow-700', 'D' => 'bg-gray-100 text-gray-600', default => 'bg-red-100 text-red-700' };
                             @endphp
                             <span class="px-2 py-0.5 text-xs font-bold rounded {{ $gc }}">{{ $grade }}</span>
