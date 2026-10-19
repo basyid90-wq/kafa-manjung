@@ -1,7 +1,7 @@
 @extends('layout-fb.layout')
 
 @section('content')
-<div class="p-4 md:p-6">
+<div>
 
     <style>
         @font-face { font-family: 'Lateef'; src: url('/fonts/Lateef-Regular.ttf') format('truetype'); }
@@ -10,8 +10,8 @@
     {{-- Header --}}
     <div class="flex items-start justify-between mb-6 flex-wrap gap-3">
         <div>
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ $activity->name }}</h1>
-            <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <h1 class="ek-page-title">{{ $activity->name }}</h1>
+            <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-gray-500">
                 <span class="inline-flex items-center gap-1">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -35,14 +35,14 @@
         <div class="flex items-center gap-2 flex-wrap">
             @hasanyrole('Super Admin|Guru Besar|Guru KAFA')
             <button type="button" id="btnOpenSijil"
-                    class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 transition-colors">
+                    class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-purple-600 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                 </svg>
                 Jana Sijil Pukal
             </button>
             <a href="{{ route('activities.attendance', $activity) }}"
-               class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg hover:bg-green-100 transition-colors">
+               class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                 </svg>
@@ -50,7 +50,7 @@
             </a>
             @endhasanyrole
             <a href="{{ route('activities.index') }}"
-               class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+               class="ek-btn-secondary">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -63,24 +63,24 @@
     @if($activity->photo_path)
     <div class="mb-5">
         <img src="{{ asset('storage/' . $activity->photo_path) }}" alt="{{ $activity->name }}"
-             class="w-full max-h-64 object-cover rounded-xl border border-gray-200 dark:border-gray-700">
+             class="w-full max-h-64 object-cover rounded-xl border border-gray-200">
     </div>
     @endif
 
     {{-- Description --}}
     @if($activity->description)
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-5">
-        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ $activity->description }}</p>
+    <div class="ek-card mb-5">
+        <p class="text-sm text-gray-700 leading-relaxed">{{ $activity->description }}</p>
     </div>
     @endif
 
     {{-- Senarai Peserta --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-            <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Senarai Peserta</h2>
+    <div class="ek-table-wrap">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <h2 class="text-sm font-semibold text-gray-700">Senarai Peserta</h2>
         </div>
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        <table class="ek-table">
+            <thead>
                 <tr>
                     <th class="px-4 py-3 text-left font-medium">No</th>
                     <th class="px-4 py-3 text-left font-medium">Nama Pelajar</th>
@@ -88,24 +88,24 @@
                     <th class="px-4 py-3 text-left font-medium">No. Sijil</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
                 @forelse($attendedStudents as $i => $student)
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-                    <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ $i + 1 }}</td>
+                <tr class="transition-colors">
+                    <td class="px-4 py-3 text-gray-500">{{ $i + 1 }}</td>
                     <td class="px-4 py-3">
-                        <p class="font-medium text-gray-900 dark:text-white">{{ $student->name }}</p>
+                        <p class="font-medium text-gray-900">{{ $student->name }}</p>
                         @if($student->jawi_name)
-                        <p class="text-sm text-gray-500 dark:text-gray-400" dir="rtl" style="font-family:'Lateef',serif;font-size:1em;">{{ $student->jawi_name }}</p>
+                        <p class="text-sm text-gray-500" dir="rtl" style="font-family:'Lateef',serif;font-size:1em;">{{ $student->jawi_name }}</p>
                         @endif
                     </td>
-                    <td class="px-4 py-3 text-gray-600 dark:text-gray-300">{{ $student->kafaClass->display_name ?? '—' }}</td>
-                    <td class="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">{{ $student->certificates->first()?->reference_no ?? '—' }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $student->kafaClass->display_name ?? '—' }}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">{{ $student->certificates->first()?->reference_no ?? '—' }}</td>
                 </tr>
                 @empty
                 <tr>
                     <td colspan="4" class="px-4 py-8 text-center text-gray-400 text-sm">
                         Tiada peserta dicatat.
-                        <a href="{{ route('activities.attendance', $activity) }}" class="text-blue-600 dark:text-blue-400 font-medium ml-1">Rekod kehadiran dahulu.</a>
+                        <a href="{{ route('activities.attendance', $activity) }}" class="text-blue-600 font-medium ml-1">Rekod kehadiran dahulu.</a>
                     </td>
                 </tr>
                 @endforelse
@@ -116,11 +116,11 @@
 
 {{-- Modal Jana Sijil Pukal --}}
 <div id="modalSijil" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4">
-        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Jana Sijil Pukal</h3>
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-900 text-sm">Jana Sijil Pukal</h3>
             <button onclick="document.getElementById('modalSijil').classList.add('hidden')"
-                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    class="text-gray-400 hover:text-gray-600">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -132,18 +132,18 @@
                 <svg class="w-10 h-10 text-yellow-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Tiada templat sijil tersedia.<br>
-                    <a href="{{ route('certificates.templates.create') }}" class="text-blue-600 dark:text-blue-400 font-medium">Buat templat baharu</a>
+                <p class="text-sm text-gray-600">Tiada templat sijil tersedia.<br>
+                    <a href="{{ route('certificates.templates.create') }}" class="text-blue-600 font-medium">Buat templat baharu</a>
                 </p>
             </div>
             @else
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            <p class="text-sm text-gray-600 mb-3">
                 Sijil akan dijana bagi <strong>{{ $attendedStudents->count() }} peserta</strong> yang hadir.
             </p>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pilih Templat Sijil</label>
+                <label class="ek-label">Pilih Templat Sijil</label>
                 <select id="selectTemplate"
-                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        class="ek-input">
                     @foreach($templates as $t)
                     <option value="{{ $t->id }}">{{ $t->name }} ({{ ucfirst($t->level) }})</option>
                     @endforeach
@@ -151,9 +151,9 @@
             </div>
             @endif
         </div>
-        <div class="flex justify-end gap-2 px-5 py-4 border-t border-gray-100 dark:border-gray-700">
+        <div class="flex justify-end gap-2 px-5 py-4 border-t border-gray-100">
             <button onclick="document.getElementById('modalSijil').classList.add('hidden')"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                    class="ek-btn-secondary">
                 Batal
             </button>
             @if($templates->isNotEmpty() && $attendedStudents->isNotEmpty())
