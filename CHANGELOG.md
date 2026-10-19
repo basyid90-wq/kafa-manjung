@@ -275,10 +275,10 @@ php artisan view:cache
 | 214 | 2026-10-19 | `CLAUDE.md` | Nota: laman utama ialah halaman kendiri dan wajib npm run build semasa deploy | ✅ Sudah Push |
 | 215 | 2026-10-19 | `database/seeders/DatabaseSeeder.php` | Buang panggilan DemoSeeder — seed asas sahaja (deploy bersih) | ✅ Sudah Push |
 | 216 | 2026-10-19 | `database/seeders/DemoSeeder.php` | Dipadam — data demo tidak lagi digunakan | ✅ Sudah Push |
-| 217 | 2026-10-19 | `resources/views/demo/index.blade.php` | Demo interaktif awam (dari draf Claude Design) — Vite ganti CDN, pautan daftar & font guna helper Laravel | ⏳ Belum Push |
-| 218 | 2026-10-19 | `routes/web.php` | Route awam `GET /demo` (name: demo) | ⏳ Belum Push |
-| 219 | 2026-10-19 | `resources/views/auth/login.blade.php` | Pautan "Cuba Demo" di navbar, menu mudah alih, hero dan CTA akhir | ⏳ Belum Push |
-| 220 | 2026-10-19 | `tests/Feature/DemoPageTest.php` | Test: tetamu & pengguna log masuk boleh buka /demo, homepage memaut ke demo | ⏳ Belum Push |
+| 217 | 2026-10-19 | `resources/views/demo/index.blade.php` | Demo interaktif awam (dari draf Claude Design) — Vite ganti CDN, pautan daftar & font guna helper Laravel | ✅ Sudah Push |
+| 218 | 2026-10-19 | `routes/web.php` | Route awam `GET /demo` (name: demo) | ✅ Sudah Push |
+| 219 | 2026-10-19 | `resources/views/auth/login.blade.php` | Pautan "Cuba Demo" di navbar, menu mudah alih, hero dan CTA akhir | ✅ Sudah Push |
+| 220 | 2026-10-19 | `tests/Feature/DemoPageTest.php` | Test: tetamu & pengguna log masuk boleh buka /demo, homepage memaut ke demo | ✅ Sudah Push |
 
 ---
 
