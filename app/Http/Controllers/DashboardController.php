@@ -94,6 +94,9 @@ class DashboardController extends Controller
                 ->latest()
                 ->take(5)
                 ->get();
+            $data['stats']['pending_rph'] = \App\Models\RphRecord::where('school_id', $schoolId)->where('status', 'pending')->count();
+
+            $data += $this->schoolInsights($schoolId);
 
         } elseif ($role === 'Guru KAFA') {
             // Guru KAFA
@@ -115,8 +118,92 @@ class DashboardController extends Controller
                 ->sortBy(function($timetable) {
                     return $timetable->timeSlot->start_time;
                 });
+
+            $classIds = \App\Models\KafaClass::where('teacher_id', $user->id)->pluck('id')->all();
+            $data += $this->schoolInsights($user->school_id, $classIds);
         }
 
         return view('dashboard.index-fb', compact('data', 'role'));
+    }
+
+    /**
+     * Attendance, marks and announcement summaries for one school (optionally limited to some classes).
+     * Uses DB::table, so every query is scoped to $schoolId by hand.
+     */
+    private function schoolInsights(?int $schoolId, ?array $classIds = null): array
+    {
+        if (!$schoolId) {
+            return [];
+        }
+
+        $att = fn () => DB::table('attendances')->where('school_id', $schoolId)
+            ->when($classIds !== null, fn ($q) => $q->whereIn('kafa_class_id', $classIds));
+
+        // Today's attendance
+        $today = $att()->whereDate('date', today())
+            ->selectRaw("SUM(status = 'Hadir') h, SUM(status = 'Lewat') l, SUM(status = 'Tidak Hadir') t, COUNT(*) n")
+            ->first();
+        $todayN = (int) ($today->n ?? 0);
+
+        // Last 7 school days (Mon–Fri), oldest first
+        $days = collect();
+        for ($d = today(); $days->count() < 7; $d = $d->copy()->subDay()) {
+            if (!$d->isWeekend()) $days->prepend($d->copy());
+        }
+        $byDate = $att()->whereBetween('date', [$days->first()->toDateString(), $days->last()->toDateString()])
+            ->selectRaw("DATE(date) d, SUM(status IN ('Hadir','Lewat')) p, COUNT(*) n")
+            ->groupBy('d')->get()->keyBy('d');
+        $week7 = $days->map(function ($d) use ($byDate) {
+            $row = $byDate->get($d->toDateString());
+            return [
+                'label'   => $d->locale('ms')->isoFormat('ddd'),
+                'date'    => $d->format('d/m'),
+                'pct'     => $row && $row->n ? (int) round($row->p / $row->n * 100) : null,
+                'isToday' => $d->isToday(),
+            ];
+        })->values();
+        $recorded = $week7->whereNotNull('pct');
+
+        // Average marks per subject for the latest exam that has results
+        $examQuery = DB::table('exams')->where('exams.school_id', $schoolId)
+            ->whereExists(fn ($q) => $q->from('exam_results')->whereColumn('exam_results.exam_id', 'exams.id'));
+        $exam = $examQuery->orderByDesc('year')->orderByDesc('id')->first();
+        $subjectAvg = collect();
+        if ($exam) {
+            $subjectAvg = DB::table('exam_results')
+                ->join('subjects', 'subjects.id', '=', 'exam_results.subject_id')
+                ->join('students', 'students.id', '=', 'exam_results.student_id')
+                ->where('exam_results.exam_id', $exam->id)
+                ->where('students.school_id', $schoolId)
+                ->when($classIds !== null, fn ($q) => $q->whereIn('students.kafa_class_id', $classIds))
+                ->groupBy('subjects.id', 'subjects.name')
+                ->orderBy('subjects.id')
+                ->selectRaw('subjects.name, ROUND(AVG(exam_results.marks)) avg')
+                ->get();
+        }
+
+        $announcements = DB::table('announcements')->whereNull('deleted_at')
+            ->where(fn ($q) => $q->where('school_id', $schoolId)->orWhere('is_global', true))
+            ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+            ->latest()->take(3)->get(['id', 'title', 'content', 'category', 'created_at']);
+
+        $students = DB::table('students')->where('school_id', $schoolId)
+            ->when($classIds !== null, fn ($q) => $q->whereIn('kafa_class_id', $classIds))
+            ->selectRaw("SUM(gender = 'L') l, SUM(gender = 'P') p")->first();
+
+        return [
+            'today' => [
+                'recorded' => $todayN,
+                'present'  => (int) $today->h + (int) $today->l,
+                'absent'   => (int) $today->t,
+                'pct'      => $todayN ? (int) round(((int) $today->h + (int) $today->l) / $todayN * 100) : null,
+            ],
+            'week7'         => $week7,
+            'week7_avg'     => $recorded->isNotEmpty() ? (int) round($recorded->avg('pct')) : null,
+            'exam'          => $exam,
+            'subject_avg'   => $subjectAvg,
+            'announcements' => $announcements,
+            'gender'        => ['l' => (int) ($students->l ?? 0), 'p' => (int) ($students->p ?? 0)],
+        ];
     }
 }

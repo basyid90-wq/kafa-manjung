@@ -1,325 +1,267 @@
 <!DOCTYPE html>
-<html lang="ms" class="h-full dark">
+<html lang="ms" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') | eKafa Online</title>
     <link rel="shortcut icon" href="{{ asset('template/perak.png') }}">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @font-face { font-family: 'LateefLocal'; src: url('{{ asset('fonts/Lateef-Regular.ttf') }}') format('truetype'); font-display: swap; }
+        .jawi { font-family: 'LateefLocal', 'Lateef', serif; line-height: 1.8; }
+        .ek-scroll { scrollbar-width: thin; }
+    </style>
     @stack('styles')
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 h-full" x-data="{ sidebarOpen: false }">
+@php
+    $authUser   = auth()->user();
+    $userRole       = $authUser->getRoleNames()->first();
+    $userSchool     = $authUser->school;
+    $initials   = collect(preg_split('/\s+/', trim($authUser->name)))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
+    $roleBadge  = match ($userRole) {
+        'Guru Besar' => 'ek-badge-blue',
+        'Guru KAFA'  => 'bg-indigo-100 text-indigo-700',
+        'Ibu Bapa'   => 'bg-teal-100 text-teal-700',
+        default      => 'ek-badge-gray',
+    };
+@endphp
+<body class="h-full bg-gray-50 text-gray-900 antialiased" x-data="{ sidebarOpen: false }">
 
-    {{-- ── Top Navbar ── --}}
-    <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-        <div class="px-3 py-3 lg:px-5 lg:pl-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    {{-- Mobile sidebar toggle --}}
-                    <button @click="sidebarOpen = !sidebarOpen"
-                            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"/></svg>
-                    </button>
-                    {{-- Logo --}}
-                    <a href="{{ route('dashboard') }}" class="flex ms-2 md:me-24 items-center gap-2">
-                        <span class="w-8 h-8 rounded-lg bg-blue-600 text-white text-xs font-bold flex items-center justify-center">eK</span>
-                        <span class="self-center text-sm font-semibold whitespace-nowrap dark:text-white leading-tight">
-                            eKafa Online<br><span class="text-xs font-normal text-gray-500 dark:text-gray-300">Pengurusan KAFA</span>
-                        </span>
-                    </a>
-                </div>
-                {{-- Right side --}}
-                <div class="flex items-center gap-1">
+    {{-- ── Sidebar (drawer on mobile) ── --}}
+    <div x-show="sidebarOpen" x-cloak x-transition.opacity @click="sidebarOpen = false"
+         class="fixed inset-0 z-40 bg-gray-900/50 lg:hidden" aria-hidden="true"></div>
 
-                    @php
-                        $unreadCount       = auth()->user()->unreadNotifications()->count();
-                        $recentNotifs      = auth()->user()->unreadNotifications()->latest()->take(5)->get();
-                    @endphp
-
-                    {{-- ── Bell Notification ── --}}
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.outside="open = false"
-                                class="relative p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none"
-                                title="Pemberitahuan">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                            </svg>
-                            @if($unreadCount > 0)
-                            <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
-                                {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                            </span>
-                            @endif
-                        </button>
-
-                        {{-- Notification Dropdown --}}
-                        <div x-show="open" x-transition
-                             class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 z-50"
-                             style="display:none;">
-
-                            {{-- Header --}}
-                            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                                <h6 class="text-sm font-semibold text-gray-900 dark:text-white">Pemberitahuan</h6>
-                                @if($unreadCount > 0)
-                                <form method="POST" action="{{ route('notifications.markRead') }}">
-                                    @csrf
-                                    <button type="submit" class="text-xs text-blue-600 hover:underline dark:text-blue-400">
-                                        Tandakan semua dibaca
-                                    </button>
-                                </form>
-                                @endif
-                            </div>
-
-                            {{-- List --}}
-                            <div class="max-h-72 overflow-y-auto divide-y divide-gray-50 dark:divide-gray-700">
-                                @forelse($recentNotifs as $notif)
-                                <a href="{{ route('notifications.read', $notif->id) }}"
-                                   class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-xs font-medium text-gray-900 dark:text-white leading-snug line-clamp-2">
-                                            {{ $notif->data['title'] ?? $notif->data['message'] ?? 'Pemberitahuan baharu' }}
-                                        </p>
-                                        <p class="text-[11px] text-gray-400 mt-0.5">{{ $notif->created_at->diffForHumans() }}</p>
-                                    </div>
-                                    <span class="flex-shrink-0 w-2 h-2 mt-1 rounded-full bg-blue-500"></span>
-                                </a>
-                                @empty
-                                <div class="px-4 py-6 text-center">
-                                    <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                                    </svg>
-                                    <p class="text-xs text-gray-400 dark:text-gray-500">Tiada pemberitahuan baharu</p>
-                                </div>
-                                @endforelse
-                            </div>
-
-                            {{-- Footer --}}
-                            <div class="px-4 py-2 border-t border-gray-100 dark:border-gray-700">
-                                <a href="{{ route('announcements.index') }}"
-                                   class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                                    Lihat semua →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- ── Dark Mode Toggle ── --}}
-                    <button id="theme-toggle" type="button" title="Tukar Tema"
-                            class="p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none">
-                        {{-- Sun icon (shown in dark mode) --}}
-                        <svg id="icon-sun" class="hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
-                        </svg>
-                        {{-- Moon icon (shown in light mode) --}}
-                        <svg id="icon-moon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                        </svg>
-                    </button>
-
-                    {{-- ── Profile Avatar Dropdown ── --}}
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.outside="open = false"
-                                class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
-                                title="Profil">
-                            {{-- Avatar circle with initials --}}
-                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold uppercase flex-shrink-0">
-                                {{ substr(auth()->user()->name, 0, 1) }}
-                            </div>
-                            <div class="hidden sm:block text-left leading-tight">
-                                <p class="text-xs font-semibold text-gray-800 dark:text-white max-w-[100px] truncate">{{ auth()->user()->name }}</p>
-                                <p class="text-[10px] text-gray-400">{{ auth()->user()->roleLabel() }}</p>
-                            </div>
-                            <svg class="w-3 h-3 text-gray-400 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-
-                        {{-- Profile Dropdown --}}
-                        <div x-show="open" x-transition
-                             class="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 z-50"
-                             style="display:none;">
-
-                            {{-- User info header --}}
-                            <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
-                                <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
-                            </div>
-
-                            {{-- Menu items --}}
-                            <div class="py-1">
-                                <a href="{{ route('profile.edit') }}"
-                                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                    </svg>
-                                    Edit Profil
-                                </a>
-                            </div>
-
-                            {{-- Logout --}}
-                            <div class="py-1 border-t border-gray-100 dark:border-gray-700">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                            class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                        </svg>
-                                        Log Keluar
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    {{-- ── Sidebar ── --}}
     <aside id="sidebar"
            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-           class="fixed top-0 left-0 z-40 w-64 h-screen pt-16 transition-transform bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-        <div class="h-full px-3 pb-4 overflow-y-auto">
-            <ul class="space-y-1 pt-4 font-medium">
+           class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col border-r border-gray-200 bg-white transition-transform duration-300 lg:z-30 lg:translate-x-0"
+           aria-label="Menu sisi">
+        <div class="flex items-center gap-2.5 border-b border-gray-100 px-5 py-4">
+            <a href="{{ route('dashboard') }}" class="flex min-w-0 items-center gap-2.5">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-sm font-extrabold text-white shadow-md shadow-blue-600/30">eK</span>
+                <span class="min-w-0 leading-tight">
+                    <span class="block text-[15px] font-bold tracking-tight text-gray-900">eKafa <span class="text-blue-600">Online</span></span>
+                    <span class="flex items-center gap-1.5 text-[11px] text-gray-500">Pengurusan KAFA <span class="jawi text-[13px]" dir="rtl" lang="ms-Arab">ڤڠوروسن کفا</span></span>
+                </span>
+            </a>
+            <button type="button" class="ek-btn-icon ml-auto lg:hidden" @click="sidebarOpen = false" aria-label="Tutup menu">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
 
-                @php $role = auth()->user()->getRoleNames()->first(); @endphp
+        <nav class="ek-scroll flex-1 overflow-y-auto px-3 py-4">
 
-                {{-- ── Menu Utama ── --}}
-                @unless(auth()->user()->hasRole('Ibu Bapa'))
-                <li>
-                    <p class="px-2 pt-2 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Menu Utama</p>
-                </li>
-                <li>
-                    <a href="{{ route('dashboard') }}"
-                       class="flex items-center p-2 rounded-lg group transition-colors
-                           {{ request()->routeIs('dashboard') ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
-                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                        <span class="ms-3 text-sm">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('pengurusan.index') }}"
-                       class="flex items-center p-2 rounded-lg group transition-colors
-                           {{ request()->routeIs('pengurusan.index') ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
-                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                        <span class="ms-3 text-sm">Pengurusan Pentadbiran</span>
-                    </a>
-                </li>
-                @if(auth()->user()->school)
-                <li>
-                    <a href="{{ route('subscription.index') }}"
-                       class="flex items-center p-2 rounded-lg group transition-colors
-                           {{ request()->routeIs('subscription.index') ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
-                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                        <span class="ms-3 text-sm">Langganan</span>
-                        <span class="ms-auto px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">{{ auth()->user()->school->planLabel() }}</span>
-                    </a>
-                </li>
+            {{-- ── Menu Utama ── --}}
+            @unless($authUser->hasRole('Ibu Bapa'))
+            <div class="mb-5">
+                <p class="ek-nav-heading">Menu Utama</p>
+                <a href="{{ route('dashboard') }}" class="ek-nav-link {{ request()->routeIs('dashboard') ? 'is-active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <span class="min-w-0 flex-1 truncate">Dashboard</span>
+                </a>
+                <a href="{{ route('pengurusan.index') }}" class="ek-nav-link {{ request()->routeIs('pengurusan.index') ? 'is-active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                    <span class="min-w-0 flex-1 truncate">Pengurusan Pentadbiran</span>
+                </a>
+                @if($userSchool)
+                <a href="{{ route('subscription.index') }}" class="ek-nav-link {{ request()->routeIs('subscription.index') ? 'is-active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                    <span class="min-w-0 flex-1 truncate">Langganan</span>
+                </a>
                 @endif
-                @endunless
+            </div>
+            @endunless
 
-                {{-- ── Ibu Bapa Portal ── --}}
-                @hasrole('Ibu Bapa')
-                <li>
-                    <p class="px-2 pt-2 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Portal Ibu Bapa</p>
-                </li>
+            {{-- ── Ibu Bapa Portal ── --}}
+            @hasrole('Ibu Bapa')
+            <div class="mb-5">
+                <p class="ek-nav-heading">Portal Ibu Bapa</p>
                 @foreach([
                     ['route'=>'parent.dashboard','label'=>'Laman Utama','icon'=>'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
                     ['route'=>'parent.results.index','label'=>'Keputusan Peperiksaan','icon'=>'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
                     ['route'=>'attendances.index','label'=>'Rekod Kehadiran','icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                 ] as $item)
-                <li>
-                    <a href="{{ route($item['route']) }}"
-                       class="flex items-center p-2 rounded-lg group transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
-                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/></svg>
-                        <span class="ms-3 text-sm">{{ $item['label'] }}</span>
-                    </a>
-                </li>
+                <a href="{{ route($item['route']) }}" class="ek-nav-link {{ request()->routeIs($item['route']) ? 'is-active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
+                    <span class="min-w-0 flex-1 truncate">{{ $item['label'] }}</span>
+                </a>
                 @endforeach
-                @endhasrole
+            </div>
+            @endhasrole
 
-                {{-- ── Super Admin: Pemantauan ── --}}
-                @role('Super Admin')
-                <li>
-                    <p class="px-2 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Pemantauan</p>
-                </li>
+            {{-- ── Super Admin: Pemantauan ── --}}
+            @role('Super Admin')
+            <div class="mb-5">
+                <p class="ek-nav-heading">Pemantauan</p>
                 @foreach([
                     ['route'=>'chatbot.settings','label'=>'Tetapan Chatbot AI','icon'=>'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'],
                     ['route'=>'admin.manual.logs','label'=>'Log Panduan Pengguna','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
                     ['route'=>'feedback.index','label'=>'Aduan Masalah','icon'=>'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'],
                     ['route'=>'admin.system_log','label'=>'Log Sistem','icon'=>'M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                 ] as $item)
-                <li>
-                    <a href="{{ route($item['route']) }}"
-                       class="flex items-center p-2 rounded-lg group transition-colors
-                           {{ request()->routeIs($item['route']) ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
-                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/></svg>
-                        <span class="ms-3 text-sm">{{ $item['label'] }}</span>
-                    </a>
-                </li>
+                <a href="{{ route($item['route']) }}" class="ek-nav-link {{ request()->routeIs($item['route']) ? 'is-active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
+                    <span class="min-w-0 flex-1 truncate">{{ $item['label'] }}</span>
+                </a>
                 @endforeach
-                @endrole
+            </div>
+            @endrole
 
-                {{-- ── Non-SA: Panduan ── --}}
-                @unless(auth()->user()->hasRole('Super Admin'))
-                <li>
-                    <p class="px-2 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Panduan</p>
-                </li>
-                <li>
-                    <a href="{{ route('feedback.create') }}"
-                       class="flex items-center p-2 rounded-lg group transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
-                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        <span class="ms-3 text-sm">Laporkan Masalah</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="javascript:void(0);" onclick="openPdfBlob(this, '{{ route('manual.download') }}')"
-                       class="flex items-center p-2 rounded-lg group transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
-                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                        <span class="ms-3 text-sm">Panduan Pengguna</span>
-                    </a>
-                </li>
-                @endunless
+            {{-- ── Non-SA: Panduan ── --}}
+            @unless($authUser->hasRole('Super Admin'))
+            <div class="mb-5">
+                <p class="ek-nav-heading">Panduan</p>
+                <a href="{{ route('feedback.create') }}" class="ek-nav-link {{ request()->routeIs('feedback.create') ? 'is-active' : '' }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span class="min-w-0 flex-1 truncate">Laporkan Masalah</span>
+                </a>
+                <a href="javascript:void(0);" onclick="openPdfBlob(this, '{{ route('manual.download') }}')" class="ek-nav-link">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <span class="min-w-0 flex-1 truncate">Panduan Pengguna</span>
+                </a>
+            </div>
+            @endunless
+        </nav>
 
-            </ul>
+        {{-- ── Current plan card ── --}}
+        @if($userSchool && !$authUser->hasRole('Ibu Bapa'))
+        @php
+            $planKey   = $userSchool->effectivePlan();
+            $planPrice = config("plans.plans.$planKey.price", 0);
+            $topPlan   = collect(config('plans.types.'.($userSchool->type ?? 'sekolah').'.plans', []))->last();
+        @endphp
+        <div class="border-t border-gray-100 p-4">
+            <div class="rounded-xl bg-gradient-to-br from-blue-50 to-teal-50 p-4 ring-1 ring-blue-100">
+                <p class="text-xs text-gray-600">Pelan semasa</p>
+                <p class="text-sm font-bold text-gray-900">{{ $userSchool->planLabel() }} <span class="font-medium text-gray-600">· RM{{ $planPrice }}{{ $planPrice ? '/bulan' : '' }}</span></p>
+                @if($topPlan && $planKey !== $topPlan && $userSchool->owner_id == $authUser->id)
+                <a href="{{ route('subscription.index') }}" class="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700">Naik Taraf</a>
+                @endif
+            </div>
         </div>
+        @endif
     </aside>
 
-    {{-- ── Backdrop (mobile) ── --}}
-    <div x-show="sidebarOpen" @click="sidebarOpen = false"
-         class="fixed inset-0 z-30 bg-gray-900/50 lg:hidden"></div>
+    {{-- ── Main column ── --}}
+    <div class="min-h-full lg:pl-64">
+        <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-gray-200 bg-white/90 px-4 backdrop-blur sm:px-6 lg:px-8">
+            <button type="button" @click="sidebarOpen = true" class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 lg:hidden" aria-label="Buka menu">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+            </button>
+            <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-semibold text-gray-900 sm:text-base">@yield('title', 'Dashboard')</p>
+                @if($userSchool)
+                <p class="hidden truncate text-xs text-gray-500 sm:block">{{ $userSchool->name }}</p>
+                @endif
+            </div>
 
-    {{-- ── Main Content ── --}}
-    <div class="lg:ml-64 pt-16 min-h-screen">
-        <main class="p-4 md:p-6">
+            <span class="ek-badge {{ $roleBadge }} hidden font-semibold sm:inline-flex">{{ $authUser->roleLabel() }}</span>
+
+            @php
+                $unreadCount  = $authUser->unreadNotifications()->count();
+                $recentNotifs = $authUser->unreadNotifications()->latest()->take(5)->get();
+            @endphp
+
+            {{-- ── Bell Notification ── --}}
+            <div class="relative" x-data="{ open: false }">
+                <button @click="open = !open" @click.outside="open = false" class="relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700" title="Pemberitahuan">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    @if($unreadCount > 0)
+                    <span class="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold leading-none text-white">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
+                    @endif
+                </button>
+
+                <div x-show="open" x-cloak x-transition class="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-gray-200 bg-white shadow-lg">
+                    <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+                        <h6 class="text-sm font-semibold text-gray-900">Pemberitahuan</h6>
+                        @if($unreadCount > 0)
+                        <form method="POST" action="{{ route('notifications.markRead') }}">
+                            @csrf
+                            <button type="submit" class="text-xs text-blue-600 hover:underline">Tandakan semua dibaca</button>
+                        </form>
+                        @endif
+                    </div>
+                    <div class="max-h-72 divide-y divide-gray-50 overflow-y-auto">
+                        @forelse($recentNotifs as $notif)
+                        <a href="{{ route('notifications.read', $notif->id) }}" class="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-gray-50">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </span>
+                            <span class="min-w-0 flex-1">
+                                <span class="line-clamp-2 block text-xs font-medium leading-snug text-gray-900">{{ $notif->data['title'] ?? $notif->data['message'] ?? 'Pemberitahuan baharu' }}</span>
+                                <span class="mt-0.5 block text-[11px] text-gray-500">{{ $notif->created_at->diffForHumans() }}</span>
+                            </span>
+                            <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-blue-500"></span>
+                        </a>
+                        @empty
+                        <div class="px-4 py-6 text-center">
+                            <svg class="mx-auto mb-2 h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                            <p class="text-xs text-gray-500">Tiada pemberitahuan baharu</p>
+                        </div>
+                        @endforelse
+                    </div>
+                    <div class="border-t border-gray-100 px-4 py-2">
+                        <a href="{{ route('announcements.index') }}" class="text-xs font-medium text-blue-600 hover:underline">Lihat semua →</a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── Profile dropdown ── --}}
+            <div class="relative" x-data="{ open: false }">
+                <button @click="open = !open" @click.outside="open = false" class="flex items-center gap-2.5 rounded-lg p-1 hover:bg-gray-100" title="Profil">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white" aria-hidden="true">{{ $initials }}</span>
+                    <span class="hidden text-left leading-tight md:block">
+                        <span class="block max-w-[160px] truncate text-sm font-semibold text-gray-900">{{ $authUser->name }}</span>
+                        <span class="block text-xs text-gray-500">{{ $authUser->roleLabel() }}</span>
+                    </span>
+                    <svg class="hidden h-3 w-3 text-gray-400 md:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                <div x-show="open" x-cloak x-transition class="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-gray-200 bg-white shadow-lg">
+                    <div class="border-b border-gray-100 px-4 py-3">
+                        <p class="truncate text-sm font-semibold text-gray-900">{{ $authUser->name }}</p>
+                        <p class="truncate text-xs text-gray-500">{{ $authUser->email }}</p>
+                    </div>
+                    <div class="py-1">
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            Edit Profil
+                        </a>
+                    </div>
+                    <div class="border-t border-gray-100 py-1">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                Log Keluar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="px-4 py-6 sm:px-6 lg:px-8">
 
             {{-- Flash messages --}}
             @if(session('success'))
-            <div id="alert-success" class="flex items-center p-4 mb-4 text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-                <svg class="shrink-0 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/></svg>
-                <span class="ms-3 text-sm font-medium">{{ session('success') }}</span>
-                <button type="button" onclick="document.getElementById('alert-success').remove()" class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-green-400">
-                    <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+            <div id="alert-success" class="mb-4 flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-green-800" role="alert">
+                <svg class="h-5 w-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/></svg>
+                <span class="text-sm font-medium">{{ session('success') }}</span>
+                <button type="button" onclick="document.getElementById('alert-success').remove()" class="ek-btn-icon ml-auto text-green-600 hover:bg-green-100" aria-label="Tutup">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
                 </button>
             </div>
             @endif
             @if(session('error'))
-            <div id="alert-error" class="flex items-center p-4 mb-4 text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                <svg class="shrink-0 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/></svg>
-                <span class="ms-3 text-sm font-medium">{{ session('error') }}</span>
-                <button type="button" onclick="document.getElementById('alert-error').remove()" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400">
-                    <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+            <div id="alert-error" class="mb-4 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800" role="alert">
+                <svg class="h-5 w-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm1 14.5H9v-2h2v2Zm0-4H9V5h2v6Z"/></svg>
+                <span class="text-sm font-medium">{{ session('error') }}</span>
+                <button type="button" onclick="document.getElementById('alert-error').remove()" class="ek-btn-icon ml-auto text-red-600 hover:bg-red-100" aria-label="Tutup">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
                 </button>
             </div>
             @endif
@@ -547,45 +489,6 @@
             wrapper.insertBefore(icon, el);
 
             el.style.paddingLeft = '2.25rem';
-        });
-    });
-    </script>
-
-    {{-- ── Dark Mode Toggle ── --}}
-    <script>
-    (function() {
-        var html  = document.documentElement;
-        var saved = localStorage.getItem('theme');
-        if (saved === 'light') html.classList.remove('dark');
-        else html.classList.add('dark');
-    })();
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var btn     = document.getElementById('theme-toggle');
-        var sun     = document.getElementById('icon-sun');
-        var moon    = document.getElementById('icon-moon');
-        var html    = document.documentElement;
-
-        function applyTheme(dark) {
-            if (dark) {
-                html.classList.add('dark');
-                sun.classList.remove('hidden');
-                moon.classList.add('hidden');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                html.classList.remove('dark');
-                sun.classList.add('hidden');
-                moon.classList.remove('hidden');
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // Init icon on load — default dark
-        var saved = localStorage.getItem('theme');
-        applyTheme(saved !== 'light');
-
-        btn.addEventListener('click', function() {
-            applyTheme(!html.classList.contains('dark'));
         });
     });
     </script>

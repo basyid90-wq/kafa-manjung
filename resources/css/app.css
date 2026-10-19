@@ -1,3 +1,60 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+|--------------------------------------------------------------------------
+| eKafa standard components (design from the Claude Design demo)
+|--------------------------------------------------------------------------
+| Use these instead of repeating long utility strings. Prefix "ek-" keeps
+| them apart from Bootstrap names (btn/card/table) that are banned here.
+| Requires `npm run build` after any change.
+*/
+@layer base {
+    [x-cloak] { display: none !important; }
+}
+
+@layer components {
+    /* Buttons */
+    .ek-btn-primary   { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-60; }
+    .ek-btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2; }
+    .ek-btn-danger    { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2; }
+    .ek-btn-icon      { @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700; }
+    .ek-link          { @apply text-sm font-semibold text-blue-700 hover:text-blue-800; }
+
+    /* Forms */
+    .ek-label { @apply mb-1.5 block text-sm font-medium text-gray-700; }
+    .ek-input { @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500; }
+    .ek-help  { @apply mt-1 text-xs text-gray-500; }
+    .ek-error { @apply mt-1 text-xs text-red-600; }
+
+    /* Surfaces */
+    .ek-card        { @apply rounded-xl border border-gray-200 bg-white p-5; }
+    .ek-card-title  { @apply font-semibold text-gray-900; }
+    .ek-card-sub    { @apply text-xs text-gray-500; }
+    .ek-page-title  { @apply text-2xl font-bold tracking-tight text-gray-900; }
+    .ek-page-sub    { @apply text-sm text-gray-500; }
+    .ek-icon-tile   { @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg; }
+
+    /* Tables: wrap in .ek-table-wrap > .overflow-x-auto > table.ek-table */
+    .ek-table-wrap { @apply overflow-hidden rounded-xl border border-gray-200 bg-white; }
+    .ek-table      { @apply w-full text-left text-sm text-gray-600; }
+    .ek-table thead th { @apply bg-gray-50 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500; }
+    .ek-table tbody tr { @apply border-t border-gray-100 transition-colors hover:bg-gray-50/70; }
+    .ek-table tbody td { @apply px-5 py-3; }
+
+    /* Badges */
+    .ek-badge        { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium; }
+    .ek-badge-green  { @apply bg-green-100 text-green-700; }
+    .ek-badge-yellow { @apply bg-amber-100 text-amber-800; }
+    .ek-badge-red    { @apply bg-red-100 text-red-700; }
+    .ek-badge-blue   { @apply bg-blue-100 text-blue-700; }
+    .ek-badge-gray   { @apply bg-gray-100 text-gray-700; }
+
+    /* Sidebar navigation */
+    .ek-nav-heading { @apply mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500; }
+    .ek-nav-link    { @apply mb-0.5 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100; }
+    .ek-nav-link svg { @apply h-5 w-5 shrink-0 text-gray-500; }
+    .ek-nav-link.is-active { @apply bg-blue-50 text-blue-700; }
+    .ek-nav-link.is-active svg { @apply text-blue-600; }
+}

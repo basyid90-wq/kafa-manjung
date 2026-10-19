@@ -1,61 +1,51 @@
 {{-- ── Super Admin Dashboard ── --}}
 @php
-$cards = [
-    ['title'=>'Jumlah Sekolah',   'count'=>$data['stats']['schools'],      'icon'=>'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', 'bg'=>'bg-blue-100 dark:bg-blue-900/30',   'color'=>'text-blue-600 dark:text-blue-400'],
-    ['title'=>'Jumlah Pengguna',  'count'=>$data['stats']['total_users'],   'icon'=>'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'bg'=>'bg-purple-100 dark:bg-purple-900/30', 'color'=>'text-purple-600 dark:text-purple-400', 'note'=>'semua role'],
-    ['title'=>'Jumlah Murid',     'count'=>$data['stats']['students'],      'icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', 'bg'=>'bg-green-100 dark:bg-green-900/30',  'color'=>'text-green-600 dark:text-green-400'],
-    ['title'=>'Pengguna Baharu',  'count'=>$data['stats']['new_users_yr'],  'icon'=>'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z', 'bg'=>'bg-yellow-100 dark:bg-yellow-900/30', 'color'=>'text-yellow-600 dark:text-yellow-400', 'note'=>'tahun '.now()->year],
+$icons = [
+    'school' => 'M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z',
+    'users'  => 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z',
+    'student'=> 'M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342',
+    'new'    => 'M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z',
 ];
+$ok  = 'ek-badge ek-badge-green';
+$bad = 'ek-badge ek-badge-red';
 @endphp
 
-{{-- Stat Cards --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-    @foreach($cards as $card)
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex items-center gap-4">
-        <div class="p-3 {{ $card['bg'] }} rounded-lg shrink-0">
-            <svg class="w-6 h-6 {{ $card['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/>
-            </svg>
-        </div>
-        <div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($card['count']) }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $card['title'] }}</p>
-            @isset($card['note'])<p class="text-xs text-gray-400">{{ $card['note'] }}</p>@endisset
-        </div>
-    </div>
-    @endforeach
+<div class="grid grid-cols-2 gap-4 xl:grid-cols-4">
+    @include('dashboard.fb._stat', ['label' => 'Jumlah Sekolah',  'value' => number_format($data['stats']['schools']),      'icon' => $icons['school'],  'tone' => 'blue',   'note' => 'Semua ruang kerja'])
+    @include('dashboard.fb._stat', ['label' => 'Jumlah Pengguna', 'value' => number_format($data['stats']['total_users']),  'icon' => $icons['users'],   'tone' => 'indigo', 'note' => 'Semua peranan'])
+    @include('dashboard.fb._stat', ['label' => 'Jumlah Murid',    'value' => number_format($data['stats']['students']),     'icon' => $icons['student'], 'tone' => 'teal',   'note' => 'Semua sekolah'])
+    @include('dashboard.fb._stat', ['label' => 'Pengguna Baharu', 'value' => number_format($data['stats']['new_users_yr']), 'icon' => $icons['new'],     'tone' => 'amber',  'note' => 'Tahun '.now()->year])
 </div>
 
-{{-- Aduan + Sistem --}}
-<div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+<div class="mt-6 grid gap-6 xl:grid-cols-5">
 
-    {{-- Panel Aduan --}}
-    <div class="lg:col-span-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-white">Aduan Masalah Terkini</h2>
-            <a href="{{ route('feedback.index') }}" class="text-sm text-blue-600 hover:underline dark:text-blue-400">Lihat Semua →</a>
+    {{-- Recent feedback --}}
+    <div class="ek-card xl:col-span-3">
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="ek-card-title">Aduan Masalah Terkini</h2>
+            <a href="{{ route('feedback.index') }}" class="text-xs font-semibold text-blue-700 hover:text-blue-800">Lihat semua</a>
         </div>
-        <div class="flex gap-2 mb-4">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">{{ $data['feedback_counts']['baru'] }} Baru</span>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">{{ $data['feedback_counts']['dalam_semakan'] }} Dalam Semakan</span>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">{{ $data['feedback_counts']['selesai'] }} Selesai</span>
+        <div class="mb-4 flex flex-wrap gap-2">
+            <span class="ek-badge ek-badge-red">{{ $data['feedback_counts']['baru'] }} Baru</span>
+            <span class="ek-badge ek-badge-yellow">{{ $data['feedback_counts']['dalam_semakan'] }} Dalam Semakan</span>
+            <span class="ek-badge ek-badge-green">{{ $data['feedback_counts']['selesai'] }} Selesai</span>
         </div>
         @if($data['recent_feedback']->isEmpty())
-            <p class="text-sm text-gray-500 dark:text-gray-400"><span class="text-green-500">✓</span> Tiada aduan buat masa ini.</p>
+            <p class="text-sm text-gray-500"><span class="text-green-600">✓</span> Tiada aduan buat masa ini.</p>
         @else
-        <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+        <ul class="divide-y divide-gray-100">
             @foreach($data['recent_feedback'] as $fb)
-            <li class="py-3 flex items-start justify-between gap-3">
+            <li class="flex items-start justify-between gap-3 py-3">
                 <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $fb->status_class }}">{{ $fb->status_label }}</span>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">{{ $fb->module }}</span>
+                    <div class="mb-1 flex items-center gap-2">
+                        <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium {{ $fb->status_class }}">{{ $fb->status_label }}</span>
+                        <span class="ek-badge ek-badge-gray">{{ $fb->module }}</span>
                     </div>
-                    <p class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ Str::limit($fb->description, 80) }}</p>
-                    <p class="text-xs text-gray-400 mt-0.5">{{ $fb->user->name ?? '-' }} · {{ $fb->created_at->diffForHumans() }}</p>
+                    <p class="truncate text-sm text-gray-700">{{ Str::limit($fb->description, 80) }}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">{{ $fb->user->name ?? '-' }} · {{ $fb->created_at->diffForHumans() }}</p>
                 </div>
-                <a href="{{ route('feedback.show', $fb->id) }}" class="text-blue-500 hover:text-blue-700 shrink-0">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <a href="{{ route('feedback.show', $fb->id) }}" class="ek-btn-icon text-blue-600 hover:bg-blue-50" title="Lihat">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
                 </a>
             </li>
             @endforeach
@@ -63,44 +53,36 @@ $cards = [
         @endif
     </div>
 
-    {{-- Panel Kesihatan Sistem --}}
-    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-white">Kesihatan Sistem</h2>
-            <a href="{{ route('admin.system_log') }}" class="text-sm text-blue-600 hover:underline dark:text-blue-400">Log Penuh →</a>
+    {{-- System health --}}
+    <div class="ek-card xl:col-span-2">
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="ek-card-title">Kesihatan Sistem</h2>
+            <a href="{{ route('admin.system_log') }}" class="text-xs font-semibold text-blue-700 hover:text-blue-800">Log penuh</a>
         </div>
-        <ul class="space-y-0 divide-y divide-gray-100 dark:divide-gray-700">
+        <ul class="divide-y divide-gray-100">
             <li class="flex items-center justify-between py-2.5">
-                <span class="text-sm text-gray-600 dark:text-gray-300">Pangkalan Data</span>
-                @if($data['db_ok'])
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Online</span>
-                @else
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">Ralat</span>
-                @endif
+                <span class="text-sm text-gray-600">Pangkalan Data</span>
+                <span class="{{ $data['db_ok'] ? $ok : $bad }}">{{ $data['db_ok'] ? 'Online' : 'Ralat' }}</span>
             </li>
             <li class="flex items-center justify-between py-2.5">
-                <span class="text-sm text-gray-600 dark:text-gray-300">Storan Fail</span>
-                @if($data['storage_ok'])
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Boleh Tulis</span>
-                @else
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">Tidak Boleh</span>
-                @endif
+                <span class="text-sm text-gray-600">Storan Fail</span>
+                <span class="{{ $data['storage_ok'] ? $ok : $bad }}">{{ $data['storage_ok'] ? 'Boleh Tulis' : 'Tidak Boleh' }}</span>
             </li>
             <li class="flex items-center justify-between py-2.5">
-                <span class="text-sm text-gray-600 dark:text-gray-300">Ralat Terakhir</span>
+                <span class="text-sm text-gray-600">Ralat Terakhir</span>
                 @if($data['last_error_time'])
-                    <span class="text-xs text-red-500 font-mono">{{ $data['last_error_time'] }}</span>
+                    <span class="font-mono text-xs text-red-600">{{ $data['last_error_time'] }}</span>
                 @else
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Tiada Ralat</span>
+                    <span class="{{ $ok }}">Tiada Ralat</span>
                 @endif
             </li>
             <li class="flex items-center justify-between py-2.5">
-                <span class="text-sm text-gray-600 dark:text-gray-300">PHP</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">{{ PHP_VERSION }}</span>
+                <span class="text-sm text-gray-600">PHP</span>
+                <span class="ek-badge ek-badge-gray">{{ PHP_VERSION }}</span>
             </li>
             <li class="flex items-center justify-between py-2.5">
-                <span class="text-sm text-gray-600 dark:text-gray-300">Laravel</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">{{ app()->version() }}</span>
+                <span class="text-sm text-gray-600">Laravel</span>
+                <span class="ek-badge ek-badge-gray">{{ app()->version() }}</span>
             </li>
         </ul>
     </div>

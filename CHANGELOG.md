@@ -279,6 +279,20 @@ php artisan view:cache
 | 218 | 2026-10-19 | `routes/web.php` | Route awam `GET /demo` (name: demo) | ✅ Sudah Push |
 | 219 | 2026-10-19 | `resources/views/auth/login.blade.php` | Pautan "Cuba Demo" di navbar, menu mudah alih, hero dan CTA akhir | ✅ Sudah Push |
 | 220 | 2026-10-19 | `tests/Feature/DemoPageTest.php` | Test: tetamu & pengguna log masuk boleh buka /demo, homepage memaut ke demo | ✅ Sudah Push |
+| 221 | 2026-10-19 | `resources/css/app.css` | Kelas standard `ek-*` (butang, borang, kad, jadual, badge, menu sisi) ikut reka bentuk demo | ⏳ Belum Push |
+| 222 | 2026-10-19 | `tailwind.config.js` | Font Inter; nota dark mode dihentikan | ⏳ Belum Push |
+| 223 | 2026-10-19 | `resources/views/layout-fb/layout.blade.php` | Rangka baharu ikut demo: sidebar dengan logo & kad pelan, header sticky; buang dark mode | ⏳ Belum Push |
+| 224 | 2026-10-19 | `resources/views/layout-fb/auth.blade.php` | Font Inter, buang kelas dark | ⏳ Belum Push |
+| 225 | 2026-10-19 | `app/Http/Controllers/DashboardController.php` | Data dashboard: kehadiran hari ini, 7 hari, purata markah ikut subjek, hebahan (skop sekolah/kelas) | ⏳ Belum Push |
+| 226 | 2026-10-19 | `resources/views/dashboard/index-fb.blade.php` | Pengepala dashboard baharu + butang Tanda Kehadiran | ⏳ Belum Push |
+| 227 | 2026-10-19 | `resources/views/dashboard/fb/gurubesar.blade.php` | Dashboard Guru Besar ikut gaya demo | ⏳ Belum Push |
+| 228 | 2026-10-19 | `resources/views/dashboard/fb/guru.blade.php` | Dashboard Guru KAFA ikut gaya demo (data kelas sendiri) | ⏳ Belum Push |
+| 229 | 2026-10-19 | `resources/views/dashboard/fb/superadmin.blade.php` | Dashboard Super Admin guna kelas `ek-*` | ⏳ Belum Push |
+| 230 | 2026-10-19 | `resources/views/dashboard/fb/_stat.blade.php` | Komponen kad statistik (baharu) | ⏳ Belum Push |
+| 231 | 2026-10-19 | `resources/views/dashboard/fb/_insights.blade.php` | Graf kehadiran, purata markah, hebahan, tindakan pantas (baharu) | ⏳ Belum Push |
+| 232 | 2026-10-19 | `tests/Feature/DashboardTest.php` | Test dashboard: kehadiran skop sekolah/kelas, purata markah, paparan kosong, Super Admin | ⏳ Belum Push |
+| 233 | 2026-10-19 | `CLAUDE.md` | Peraturan UI: guna kelas `ek-*`, dark mode dihentikan, font Inter | ⏳ Belum Push |
+| 234 | 2026-10-19 | `resources/views/manuals/guru-besar.blade.php`, `guru-kafa.blade.php` | Bahagian Dashboard dalam manual | ⏳ Belum Push |
 
 ---
 

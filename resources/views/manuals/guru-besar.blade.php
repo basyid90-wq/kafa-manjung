@@ -13,6 +13,14 @@
         <div class="step"><strong>Langkah 1:</strong> Log masuk menggunakan <strong>Emel</strong> dan <strong>Kata Laluan</strong> anda.</div>
         <p>Guru Besar mempunyai akses penuh ke atas semua data sekolah yang ditetapkan. Semua data dihadkan kepada sekolah anda sahaja secara automatik.</p>
 
+        <h3>Dashboard</h3>
+        <p>Selepas log masuk, Dashboard memaparkan gambaran sekolah anda:</p>
+        <div class="step"><strong>Kad statistik:</strong> jumlah murid (lelaki/perempuan), kehadiran hari ini, bilangan kelas dan guru KAFA serta RPH yang menunggu semakan.</div>
+        <div class="step"><strong>Kehadiran 7 hari persekolahan terakhir:</strong> peratus murid hadir setiap hari (termasuk lewat). Hari tanpa rekod ditanda "—".</div>
+        <div class="step"><strong>Purata markah ikut subjek:</strong> diambil daripada peperiksaan terkini yang sudah ada markah.</div>
+        <div class="step"><strong>Hebahan terkini</strong> dan <strong>Tindakan Pantas</strong> (Tanda Kehadiran, Isi Markah, Semak RPH, Jemput Guru). Ikon mangga bermaksud modul tersebut memerlukan pelan lebih tinggi.</div>
+        <div class="note">Kad <em>Pelan semasa</em> di bawah menu sisi menunjukkan pelan langganan sekolah anda.</div>
+
         <h3 style="margin-top:28px; color:#3a5bc7; border-bottom:2px solid #3a5bc7; padding-bottom:6px;">KATEGORI 1: DATA ASAS</h3>
 
         <h4>1. Pengguna</h4>

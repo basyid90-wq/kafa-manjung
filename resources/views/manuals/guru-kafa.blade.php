@@ -15,6 +15,12 @@
         <div class="step"><strong>Langkah 3:</strong> Klik butang <strong>"Masuk Sekarang"</strong>.</div>
         <div class="note">Jika lupa kata laluan, hubungi Guru Besar atau Pentadbir sekolah anda untuk set semula.</div>
 
+        <h3>Dashboard</h3>
+        <p>Dashboard memaparkan data bagi kelas yang anda ajar sahaja:</p>
+        <div class="step"><strong>Kad statistik:</strong> murid anda, kehadiran hari ini, kelas yang diajar dan bilangan hebahan.</div>
+        <div class="step"><strong>Jadual Pengajaran Hari Ini:</strong> klik ikon <strong>+</strong> untuk terus membina RPH bagi slot tersebut.</div>
+        <div class="step"><strong>Kehadiran 7 hari persekolahan terakhir</strong>, <strong>purata markah ikut subjek</strong> dan <strong>Tindakan Pantas</strong> (Tanda Kehadiran, Isi Markah, Tulis RPH, Senarai Murid).</div>
+
         <h3 style="margin-top:28px; color:#3a5bc7; border-bottom:2px solid #3a5bc7; padding-bottom:6px;">KATEGORI 1: DATA ASAS</h3>
 
         <h4>1. Kelas</h4>

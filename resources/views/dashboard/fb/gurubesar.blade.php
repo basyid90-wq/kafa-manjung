@@ -1,30 +1,42 @@
 {{-- ── Guru Besar Dashboard ── --}}
+@php
+    $isPersonal = auth()->user()->school?->isPersonal();
+    $today      = $data['today'] ?? null;
+    $icons = [
+        'users'  => 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z',
+        'check'  => 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+        'school' => 'M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z',
+        'teacher'=> 'M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z',
+        'doc'    => 'M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z',
+        'clip'   => 'M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75',
+    ];
+@endphp
+
+{{-- Onboarding checklist (hidden once every step is done) --}}
 @if(!empty($data['onboarding']))
 @php $doneCount = collect($data['onboarding'])->where('done', true)->count(); @endphp
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-blue-200 dark:border-blue-800 p-5 mb-6">
-    <div class="flex items-center justify-between mb-3">
-        <div>
-            <h2 class="text-base font-semibold text-gray-900 dark:text-white">Mulakan dengan eKafa Online</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $doneCount }} daripada {{ count($data['onboarding']) }} langkah selesai</p>
-        </div>
+<div class="ek-card mb-6 border-blue-200">
+    <div class="mb-3">
+        <h2 class="ek-card-title">Mulakan dengan eKafa Online</h2>
+        <p class="ek-page-sub">{{ $doneCount }} daripada {{ count($data['onboarding']) }} langkah selesai</p>
     </div>
-    <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mb-4">
+    <div class="mb-4 h-2 w-full rounded-full bg-gray-100">
         <div class="h-2 rounded-full bg-blue-600" style="width: {{ round($doneCount / count($data['onboarding']) * 100) }}%"></div>
     </div>
-    <ul class="space-y-2">
+    <ul class="space-y-1">
         @foreach($data['onboarding'] as $step)
         <li>
-            <a href="{{ $step['url'] }}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <a href="{{ $step['url'] }}" class="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50">
                 @if($step['done'])
-                <span class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
+                    <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 </span>
                 <span class="text-sm text-gray-400 line-through">{{ $step['label'] }}</span>
                 @else
-                <span class="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 shrink-0"></span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $step['label'] }}</span>
+                <span class="h-6 w-6 shrink-0 rounded-full border-2 border-gray-300"></span>
+                <span class="text-sm font-medium text-gray-900">{{ $step['label'] }}</span>
                 @if(!empty($step['plan']))
-                <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-700">{{ $step['plan'] }}</span>
+                <span class="ek-badge ek-badge-yellow">{{ $step['plan'] }}</span>
                 @endif
                 @endif
             </a>
@@ -33,55 +45,69 @@
     </ul>
 </div>
 @endif
-@php
-$cards = array_values(array_filter([
-    auth()->user()->school?->isPersonal() ? null : ['title'=>'Guru KAFA',    'count'=>$data['stats']['guru_kafa'], 'bg'=>'bg-blue-100 dark:bg-blue-900/30',  'color'=>'text-blue-600 dark:text-blue-400',  'icon'=>'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
-    ['title'=>'Jumlah Kelas', 'count'=>$data['stats']['classes'],   'bg'=>'bg-purple-100 dark:bg-purple-900/30','color'=>'text-purple-600 dark:text-purple-400','icon'=>'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'],
-    ['title'=>'Jumlah Murid', 'count'=>$data['stats']['students'],  'bg'=>'bg-green-100 dark:bg-green-900/30', 'color'=>'text-green-600 dark:text-green-400', 'icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'],
-]));
-@endphp
 
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    @foreach($cards as $card)
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex items-center gap-4">
-        <div class="p-3 {{ $card['bg'] }} rounded-lg shrink-0">
-            <svg class="w-6 h-6 {{ $card['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/>
-            </svg>
-        </div>
-        <div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $card['count'] }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $card['title'] }}</p>
-        </div>
-    </div>
-    @endforeach
+{{-- Stat cards --}}
+<div class="grid grid-cols-2 gap-4 xl:grid-cols-4">
+    @include('dashboard.fb._stat', ['label' => 'Jumlah Murid', 'value' => $data['stats']['students'], 'icon' => $icons['users'], 'tone' => 'blue',
+        'note' => ($data['gender']['l'] ?? 0).' lelaki · '.($data['gender']['p'] ?? 0).' perempuan'])
+    @include('dashboard.fb._stat', ['label' => 'Kehadiran Hari Ini', 'icon' => $icons['check'], 'tone' => 'highlight',
+        'value' => is_null($today['pct'] ?? null) ? '—' : $today['pct'].'%',
+        'note'  => !empty($today['recorded']) ? $today['present'].' / '.$today['recorded'].' hadir · '.$today['absent'].' tidak hadir' : 'Belum direkod hari ini'])
+    @include('dashboard.fb._stat', ['label' => 'Kelas', 'value' => $data['stats']['classes'], 'icon' => $icons['school'], 'tone' => 'teal', 'note' => 'Kelas aktif sesi ini'])
+    @if($isPersonal)
+    @include('dashboard.fb._stat', ['label' => 'RPH Menunggu', 'value' => $data['stats']['pending_rph'] ?? 0, 'icon' => $icons['doc'], 'tone' => 'indigo', 'note' => 'Rancangan pengajaran harian'])
+    @else
+    @include('dashboard.fb._stat', ['label' => 'Guru KAFA', 'value' => $data['stats']['guru_kafa'], 'icon' => $icons['teacher'], 'tone' => 'indigo',
+        'note' => ($data['stats']['pending_rph'] ?? 0).' RPH menunggu semakan'])
+    @endif
 </div>
 
+@include('dashboard.fb._insights', ['quickActions' => array_values(array_filter([
+    ['module' => 'kehadiran',     'label' => 'Tanda Kehadiran', 'url' => route('attendances.index'),   'icon' => $icons['check']],
+    ['module' => 'peperiksaan',   'label' => 'Isi Markah',      'url' => route('exams.results.index'), 'icon' => $icons['clip']],
+    $isPersonal
+        ? ['module' => 'rph',           'label' => 'Tulis RPH',  'url' => route('rph.create'),          'icon' => $icons['doc']]
+        : ['module' => 'kelulusan_rph', 'label' => 'Semak RPH',  'url' => route('rph_approvals.index'), 'icon' => $icons['doc']],
+    $isPersonal
+        ? ['module' => 'murid',    'label' => 'Senarai Murid', 'url' => route('students.index'), 'icon' => $icons['users']]
+        : ['module' => 'pengguna', 'label' => 'Jemput Guru',   'url' => route('users.index'),    'icon' => $icons['teacher']],
+]))])
+
+{{-- Pending RPH --}}
 @if(auth()->user()->canUse('kelulusan_rph'))
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-    <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 class="text-base font-semibold text-gray-900 dark:text-white">Permohonan RPH Terkini</h2>
+<div class="ek-table-wrap mt-6">
+    <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+        <h2 class="ek-card-title">RPH Menunggu Semakan</h2>
+        <a href="{{ route('rph_approvals.index') }}" class="text-xs font-semibold text-blue-700 hover:text-blue-800">Lihat semua</a>
     </div>
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table class="ek-table">
+            <thead>
                 <tr>
-                    <th class="px-5 py-3">Nama Guru</th>
-                    <th class="px-5 py-3">Tarikh</th>
-                    <th class="px-5 py-3">Status</th>
-                    <th class="px-5 py-3">Tindakan</th>
+                    <th>No</th>
+                    <th>Nama Guru</th>
+                    <th>Kelas</th>
+                    <th>Tarikh</th>
+                    <th>Status</th>
+                    <th>Tindakan</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
                 @forelse($data['pending_rphs'] as $rph)
-                <tr class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <td class="px-5 py-3 font-medium text-gray-900 dark:text-white">{{ $rph->user->name }}</td>
-                    <td class="px-5 py-3">{{ \Carbon\Carbon::parse($rph->date)->format('d/m/Y') }} <span class="text-xs text-gray-400">Minggu {{ $rph->week }}</span></td>
-                    <td class="px-5 py-3"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Pending</span></td>
-                    <td class="px-5 py-3"><a href="{{ route('rph_approvals.index') }}" class="text-blue-600 hover:underline dark:text-blue-400">Semak →</a></td>
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td class="font-medium text-gray-900">{{ $rph->user->name }}</td>
+                    <td>{{ $rph->kafaClass->display_name ?? $rph->kafaClass->name ?? '—' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($rph->date)->format('d/m/Y') }} <span class="text-xs text-gray-400">Minggu {{ $rph->week }}</span></td>
+                    <td><span class="ek-badge ek-badge-yellow">Menunggu</span></td>
+                    <td>
+                        <a href="{{ route('rph_approvals.index') }}" class="ek-btn-icon text-blue-600 hover:bg-blue-50" title="Semak">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                        </a>
+                    </td>
                 </tr>
                 @empty
-                <tr><td colspan="4" class="px-5 py-8 text-center text-gray-400">Tiada RPH menunggu semakan.</td></tr>
+                <tr><td colspan="6" class="py-8 text-center text-gray-400">Tiada RPH menunggu semakan.</td></tr>
                 @endforelse
             </tbody>
         </table>

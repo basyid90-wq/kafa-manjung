@@ -166,45 +166,39 @@ Removed in the SaaS pivot (do NOT reintroduce): Pentadbir, Penyelia KAFA, Pembek
 - **Landing page (`/`, `/login`):** `resources/views/auth/login.blade.php` is a standalone marketing page (own `<head>`, generated from the Claude Design draft `scratch/ekafa-landing.html`). It uses many Tailwind classes not used elsewhere → `npm run build` is REQUIRED on every deploy. Keep the login form field names (`login_type`, `login_id`, `password`, `remember`).
 - **PDF templates:** Standalone `.blade.php` — no layout, inline CSS only
 
-### Standard Tailwind Components
+### Standard Components (`ek-*` classes — USE THESE)
 
-**Input:**
-```html
-class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-```
+Design source: the Claude Design demo (`/demo`, `resources/views/demo/index.blade.php`). Light theme only — **dark mode is retired**: do NOT add `dark:` classes (leftovers in old views are inert and get removed module by module). Font: Inter.
 
-**Primary button:**
-```html
-class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-```
+The standard classes live in `resources/css/app.css` (`@layer components`, prefix `ek-`). Use them instead of long utility strings; extend that file (not per view) when a new shared pattern is needed. Any change there needs `npm run build`.
 
-**Secondary/back button:**
-```html
-class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-```
+| Purpose | Class |
+|---|---|
+| Buttons | `ek-btn-primary`, `ek-btn-secondary`, `ek-btn-danger`, `ek-btn-icon` (icon-only, e.g. Tindakan column) |
+| Form | `ek-label`, `ek-input` (input/select/textarea), `ek-help`, `ek-error` |
+| Card / headings | `ek-card`, `ek-card-title`, `ek-card-sub`, `ek-page-title`, `ek-page-sub`, `ek-icon-tile` |
+| Table | `ek-table-wrap` > `div.overflow-x-auto` > `table.ek-table` (styles thead/tbody cells) |
+| Badge | `ek-badge` + `ek-badge-green` / `-yellow` / `-red` / `-blue` / `-gray` |
+| Sidebar | `ek-nav-heading`, `ek-nav-link` (+ `is-active`) — layout only |
 
-**Card:**
 ```html
-class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
-```
-
-**Table wrapper:**
-```html
-<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+<div class="ek-table-wrap">
     <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+        <table class="ek-table">
+            <thead><tr><th>No</th><th>Nama</th><th>Tindakan</th></tr></thead>
+            <tbody><tr><td>1</td><td>...</td><td><a class="ek-btn-icon" title="Edit">...svg...</a></td></tr></tbody>
+        </table>
+    </div>
+</div>
+<span class="ek-badge ek-badge-green">Aktif</span>
 ```
 
-**Badge (green/yellow/red/gray):**
-```html
-class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-```
+Page header pattern: `<p class="ek-page-sub">…</p><h1 class="ek-page-title">…</h1>`. The layout header already shows the `@section('title')` and school name.
 
 ### Custom Modals (NO Bootstrap)
 ```html
 <div id="myModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg mx-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4">
         ...
         <button onclick="document.getElementById('myModal').classList.add('hidden')">Tutup</button>
     </div>
