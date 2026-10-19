@@ -22,6 +22,9 @@ Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('home')
 Route::view('/terma', 'legal.terms')->name('legal.terms');
 Route::view('/privasi', 'legal.privacy')->name('legal.privacy');
 
+// Demo interaktif awam — data contoh dalam JS sahaja, tiada akses DB
+Route::view('/demo', 'demo.index')->name('demo');
+
 // Jemputan guru — pautan awam dari e-mel (penerima mungkin belum ada akaun)
 Route::get('/jemputan/{token}', [\App\Http\Controllers\InvitationController::class, 'show'])->name('invitations.show');
 Route::post('/jemputan/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])->middleware('throttle:10,1')->name('invitations.accept');

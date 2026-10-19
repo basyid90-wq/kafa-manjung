@@ -148,6 +148,7 @@
             <a href="#modul" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900">Modul</a>
             <a href="#harga" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900">Harga</a>
             <a href="#soalan" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900">Soalan Lazim</a>
+            <a href="{{ route('demo') }}" class="rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-50">Cuba Demo</a>
         </div>
 
         <div class="hidden items-center gap-2 md:flex">
@@ -171,6 +172,7 @@
             <a href="#modul" x-on:click="menu = false" class="rounded-lg px-3 py-2.5 text-base font-medium text-gray-700 hover:bg-gray-50">Modul</a>
             <a href="#harga" x-on:click="menu = false" class="rounded-lg px-3 py-2.5 text-base font-medium text-gray-700 hover:bg-gray-50">Harga</a>
             <a href="#soalan" x-on:click="menu = false" class="rounded-lg px-3 py-2.5 text-base font-medium text-gray-700 hover:bg-gray-50">Soalan Lazim</a>
+            <a href="{{ route('demo') }}" class="rounded-lg px-3 py-2.5 text-base font-semibold text-blue-700 hover:bg-blue-50">Cuba Demo</a>
         </div>
         <div class="mt-4 grid grid-cols-2 gap-2">
             <a href="#log-masuk" x-on:click="menu = false" class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">Log Masuk</a>
@@ -212,6 +214,11 @@
                     Saya Guru Individu
                 </a>
             </div>
+            <a href="{{ route('demo') }}" class="anim-up mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800" style="--d:280ms">
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#i-eye"/></svg>
+                Cuba demo dahulu — tanpa daftar
+                <svg class="h-4 w-4" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
             <p class="anim-up mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600" style="--d:320ms">
                 <span class="inline-flex items-center gap-1.5"><svg class="h-4 w-4 text-teal-600" aria-hidden="true"><use href="#i-check"/></svg>Percuma selamanya untuk 3 kelas</span>
                 <span class="hidden text-gray-300 sm:inline" aria-hidden="true">·</span>
@@ -1136,6 +1143,9 @@
             <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
                 <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-base font-semibold text-blue-700 shadow-lg transition-transform hover:-translate-y-0.5">
                     Daftar Percuma <svg class="h-4 w-4" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+                </a>
+                <a href="{{ route('demo') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 px-7 py-3.5 text-base font-semibold text-white backdrop-blur transition-colors hover:bg-white/20">
+                    <svg class="h-5 w-5" aria-hidden="true"><use href="#i-eye"/></svg> Cuba Demo
                 </a>
                 <a href="https://wa.me/60194920559" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 px-7 py-3.5 text-base font-semibold text-white backdrop-blur transition-colors hover:bg-white/20">
                     <svg class="h-5 w-5" aria-hidden="true"><use href="#i-chat"/></svg> Hubungi Kami di WhatsApp
