@@ -157,8 +157,8 @@ document.addEventListener('DOMContentLoaded', function() {
         var el = document.getElementById(window.location.hash.substring(1));
         if (el) {
             el.scrollIntoView({ block: 'center' });
-            el.classList.add('bg-blue-50', '');
-            setTimeout(function() { el.classList.remove('bg-blue-50', ''); }, 2000);
+            el.classList.add('bg-blue-50');
+            setTimeout(function() { el.classList.remove('bg-blue-50'); }, 2000);
         }
     }
 });

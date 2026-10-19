@@ -321,6 +321,7 @@ php artisan view:cache
 | 260 | 2026-10-19 | `resources/views/exams/results/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ✅ Sudah Push |
 | 261 | 2026-10-19 | `resources/views/exams/results/enter.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ✅ Sudah Push |
 | 262 | 2026-10-19 | `resources/views/exams/results/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ✅ Sudah Push |
+| 263 | 2026-10-19 | `resources/views/exams/results/enter.blade.php` | Betulkan classList.add('') (ralat JS sorotan baris) selepas restyle | ⏳ Belum Push |
 
 ---
 
