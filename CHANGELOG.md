@@ -414,9 +414,9 @@ php artisan view:cache
 | 353 | 2026-10-19 | `resources/views/attendances/index.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ✅ Sudah Push |
 | 354 | 2026-10-19 | `resources/views/rph/show.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ✅ Sudah Push |
 | 355 | 2026-10-19 | `resources/views/admin/system_log.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ✅ Sudah Push |
-| 356 | 2026-10-19 | `resources/views/pengurusan/index.blade.php` | Fasa 3: gaya demo (jubin statik), buang dark:; buang kod mati management (rujuk route book_orders yang sudah dibuang) | ⏳ Belum Push |
-| 357 | 2026-10-19 | `resources/views/components/prayer-times-widget.blade.php` | Fasa 3: gaya demo (jubin statik), buang dark:; buang kod mati management (rujuk route book_orders yang sudah dibuang) | ⏳ Belum Push |
-| 358 | 2026-10-19 | `routes/web.php` | Fasa 3: gaya demo (jubin statik), buang dark:; buang kod mati management (rujuk route book_orders yang sudah dibuang) | ⏳ Belum Push |
+| 356 | 2026-10-19 | `resources/views/pengurusan/index.blade.php` | Fasa 3: gaya demo (jubin statik), buang dark:; buang kod mati management (rujuk route book_orders yang sudah dibuang) | ✅ Sudah Push |
+| 357 | 2026-10-19 | `resources/views/components/prayer-times-widget.blade.php` | Fasa 3: gaya demo (jubin statik), buang dark:; buang kod mati management (rujuk route book_orders yang sudah dibuang) | ✅ Sudah Push |
+| 358 | 2026-10-19 | `routes/web.php` | Fasa 3: gaya demo (jubin statik), buang dark:; buang kod mati management (rujuk route book_orders yang sudah dibuang) | ✅ Sudah Push |
 
 ---
 
