@@ -370,6 +370,11 @@ php artisan view:cache
 | 309 | 2026-10-19 | `resources/views/reports/rph_kpi.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 310 | 2026-10-19 | `resources/views/financial/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 311 | 2026-10-19 | `resources/views/financial/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 312 | 2026-10-19 | `resources/views/announcements/create-homepage.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
+| 313 | 2026-10-19 | `resources/views/announcements/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
+| 314 | 2026-10-19 | `resources/views/announcements/edit-homepage.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
+| 315 | 2026-10-19 | `resources/views/announcements/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
+| 316 | 2026-10-19 | `resources/views/announcements/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
 
 ---
 
