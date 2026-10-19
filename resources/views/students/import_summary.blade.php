@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    @if($summary['failed_class']> 0)
+    @if($summary['failed_class'] > 0)
     <div class="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 mb-5 text-sm text-yellow-700">
         <div class="flex items-center gap-2">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

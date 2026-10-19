@@ -67,7 +67,7 @@
         </div>
 
         @php
-            $hasFinalRecords = isset($existingRecords) && $existingRecords->where('status', 'final')->count()> 0;
+            $hasFinalRecords = isset($existingRecords) && $existingRecords->where('status', 'final')->count() > 0;
             $isGuruKafa = auth()->user()->hasRole('Guru KAFA');
         @endphp
 
@@ -189,11 +189,11 @@
                     <div class="flex flex-wrap gap-1 items-center">
                         @if($existing->midyear_exam_id)
                             <span class="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 border border-gray-200 rounded">PT: {{ $midTotal }}</span>
-                            <span class="px-1.5 py-0.5 text-xs rounded {{ $midCount>= $expectedSlots ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">{{ $midCount }}/{{ $expectedSlots }}</span>
+                            <span class="px-1.5 py-0.5 text-xs rounded {{ $midCount >= $expectedSlots ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">{{ $midCount }}/{{ $expectedSlots }}</span>
                         @endif
                         @if($existing->endyear_exam_id)
                             <span class="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 border border-gray-200 rounded">AT: {{ $endTotal }}</span>
-                            <span class="px-1.5 py-0.5 text-xs rounded {{ $endCount>= $expectedSlots ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">{{ $endCount }}/{{ $expectedSlots }}</span>
+                            <span class="px-1.5 py-0.5 text-xs rounded {{ $endCount >= $expectedSlots ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">{{ $endCount }}/{{ $expectedSlots }}</span>
                         @endif
                         <span class="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">Jumlah: {{ $midTotal + $endTotal }}</span>
                     </div>

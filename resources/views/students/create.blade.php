@@ -364,11 +364,11 @@
     function calculateMyKidData() {
         if (!mykidInput) return;
         let mykid = mykidInput.value.replace(/[^0-9]/g, '');
-        if (mykid.length>= 6) {
+        if (mykid.length >= 6) {
             let yearStr = mykid.substring(0, 2);
             let month   = mykid.substring(2, 4);
             let day     = mykid.substring(4, 6);
-            let year    = (parseInt(yearStr)> 50) ? 1900 + parseInt(yearStr) : 2000 + parseInt(yearStr);
+            let year    = (parseInt(yearStr) > 50) ? 1900 + parseInt(yearStr) : 2000 + parseInt(yearStr);
             if (dobInput) dobInput.value = year + '-' + month + '-' + day;
             let today = new Date();
             let age = today.getFullYear() - year;

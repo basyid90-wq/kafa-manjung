@@ -148,7 +148,7 @@
                 </table>
             </div>
 
-            @if($c->students->count()> 0)
+            @if($c->students->count() > 0)
             <div class="px-5 py-4 border-t border-gray-200 flex justify-end">
                 <button type="submit"
                         class="ek-btn-primary">

@@ -26,5 +26,5 @@
               rows="{{ $jRows }}"
               dir="rtl"
               @if($req) data-required-p1="1" @endif
->{{ $jVal }}</textarea>
+    >{{ $jVal }}</textarea>
 </div>

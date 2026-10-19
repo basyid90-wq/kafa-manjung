@@ -343,6 +343,13 @@ php artisan view:cache
 | 282 | 2026-10-19 | `resources/views/activities/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 283 | 2026-10-19 | `resources/views/certificates/templates/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 284 | 2026-10-19 | `resources/views/certificates/templates/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 285 | 2026-10-19 | `resources/views/achievements/create.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ⏳ Belum Push |
+| 286 | 2026-10-19 | `resources/views/achievements/index.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ⏳ Belum Push |
+| 287 | 2026-10-19 | `resources/views/attendances/index.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ⏳ Belum Push |
+| 288 | 2026-10-19 | `resources/views/rph/_field_pair.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ⏳ Belum Push |
+| 289 | 2026-10-19 | `resources/views/students/create.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ⏳ Belum Push |
+| 290 | 2026-10-19 | `resources/views/students/edit.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ⏳ Belum Push |
+| 291 | 2026-10-19 | `resources/views/students/import_summary.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ⏳ Belum Push |
 
 ---
 

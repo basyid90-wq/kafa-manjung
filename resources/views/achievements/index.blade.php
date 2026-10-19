@@ -47,8 +47,8 @@
                 <tbody>
                     @foreach($completionStats as $cls)
                     @php
-                        $pct = $cls->students_count> 0 ? round(($cls->recorded_count / $cls->students_count) * 100) : 0;
-                        $allFinal = $cls->recorded_count> 0 && $cls->final_count === $cls->recorded_count;
+                        $pct = $cls->students_count > 0 ? round(($cls->recorded_count / $cls->students_count) * 100) : 0;
+                        $allFinal = $cls->recorded_count > 0 && $cls->final_count === $cls->recorded_count;
                     @endphp
                     <tr>
                         <td class="py-2 pr-4 font-semibold text-gray-800">{{ $cls->display_name }}</td>
@@ -62,13 +62,13 @@
                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-700">Semua Final</span>
                             @else
                                 <div class="w-16 h-1.5 bg-gray-200 rounded-full mx-auto overflow-hidden">
-                                    <div class="h-full {{ $pct>= 80 ? 'bg-green-500' : 'bg-yellow-500' }} rounded-full" style="width:{{ $pct }}%"></div>
+                                    <div class="h-full {{ $pct >= 80 ? 'bg-green-500' : 'bg-yellow-500' }} rounded-full" style="width:{{ $pct }}%"></div>
                                 </div>
                                 <span class="text-[10px] text-gray-400">{{ $pct }}%</span>
                             @endif
                         </td>
                         <td class="py-2 px-3 text-center">
-                            @if($cls->recorded_count> 0 && !$allFinal)
+                            @if($cls->recorded_count > 0 && !$allFinal)
                             <form method="POST" action="{{ route('achievements.bulk_finalize') }}" class="inline">
                                 @csrf
                                 <input type="hidden" name="kafa_class_id" value="{{ $cls->id }}">
