@@ -322,13 +322,13 @@ php artisan view:cache
 | 261 | 2026-10-19 | `resources/views/exams/results/enter.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ✅ Sudah Push |
 | 262 | 2026-10-19 | `resources/views/exams/results/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ✅ Sudah Push |
 | 263 | 2026-10-19 | `resources/views/exams/results/enter.blade.php` | Betulkan classList.add('') (ralat JS sorotan baris) selepas restyle | ✅ Sudah Push |
-| 264 | 2026-10-19 | `resources/views/rph/_field_pair.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 265 | 2026-10-19 | `resources/views/rph/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 266 | 2026-10-19 | `resources/views/rph/create_gabungan.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 267 | 2026-10-19 | `resources/views/rph/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 268 | 2026-10-19 | `resources/views/rph/edit_gabungan.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 269 | 2026-10-19 | `resources/views/rph/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 270 | 2026-10-19 | `resources/views/rph/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
+| 264 | 2026-10-19 | `resources/views/rph/_field_pair.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 265 | 2026-10-19 | `resources/views/rph/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 266 | 2026-10-19 | `resources/views/rph/create_gabungan.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 267 | 2026-10-19 | `resources/views/rph/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 268 | 2026-10-19 | `resources/views/rph/edit_gabungan.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 269 | 2026-10-19 | `resources/views/rph/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 270 | 2026-10-19 | `resources/views/rph/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 
 ---
 
