@@ -6,8 +6,8 @@
 @section('card_subtitle', 'Mula guna eKafa Online dengan pakej Percuma. Naik taraf bila-bila masa.')
 
 @php
-    $input = 'w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent';
-    $label = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1';
+    $input = 'w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent';
+    $label = 'block text-sm font-medium text-gray-700 mb-1';
 @endphp
 
 @section('card')
@@ -24,7 +24,7 @@
         <div class="grid grid-cols-2 gap-2">
             <label class="cursor-pointer">
                 <input type="radio" name="account_type" value="sekolah" class="peer sr-only" x-model="type">
-                <span class="flex flex-col items-center justify-center px-3 py-3 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300
+                <span class="flex flex-col items-center justify-center px-3 py-3 text-sm font-medium border border-gray-300 rounded-lg text-gray-700
                              peer-checked:bg-blue-600 peer-checked:border-blue-600 peer-checked:text-white transition-colors">
                     Sekolah
                     <span class="text-xs font-normal opacity-80">Guru Besar + guru</span>
@@ -32,7 +32,7 @@
             </label>
             <label class="cursor-pointer">
                 <input type="radio" name="account_type" value="personal" class="peer sr-only" x-model="type">
-                <span class="flex flex-col items-center justify-center px-3 py-3 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300
+                <span class="flex flex-col items-center justify-center px-3 py-3 text-sm font-medium border border-gray-300 rounded-lg text-gray-700
                              peer-checked:bg-blue-600 peer-checked:border-blue-600 peer-checked:text-white transition-colors">
                     Guru (Personal)
                     <span class="text-xs font-normal opacity-80">Kelas saya sahaja</span>
@@ -83,7 +83,7 @@
         </div>
     </div>
 
-    <label class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+    <label class="flex items-start gap-2 text-sm text-gray-600">
         <input type="checkbox" name="terms" value="1" required {{ old('terms') ? 'checked' : '' }}
                class="w-4 h-4 mt-0.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
         <span>Saya bersetuju dengan <a href="{{ route('legal.terms') }}" target="_blank" class="text-blue-600 hover:underline">Terma Perkhidmatan</a>
@@ -92,11 +92,11 @@
     @error('terms')<p class="text-xs text-red-500">{{ $message }}</p>@enderror
 
     <button type="submit"
-            class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+            class="ek-btn-primary w-full">
         Daftar Akaun
     </button>
 
-    <p class="text-sm text-center text-gray-500 dark:text-gray-400">
+    <p class="text-sm text-center text-gray-500">
         Sudah ada akaun? <a href="{{ route('login') }}#log-masuk" class="text-blue-600 hover:underline font-medium">Log masuk</a>
     </p>
 </form>
