@@ -14,6 +14,10 @@
     $isParentOnly = $authUser->hasRole('Ibu Bapa') && !$authUser->hasAnyRole(['Super Admin', 'Guru Besar', 'Guru KAFA']);
     $menuGroups   = $isParentOnly ? [] : \App\Support\SidebarMenu::for($authUser);
     $activeLabel  = collect($menuGroups)->pluck('items')->flatten(1)->firstWhere('active', true)['label'] ?? 'eKafa Online';
+    if ($isParentOnly) {
+        $activeLabel = request()->routeIs('parent.results.*') ? 'Keputusan Peperiksaan'
+            : (request()->routeIs('attendances.*') ? 'Rekod Kehadiran' : 'Portal Ibu Bapa');
+    }
 @endphp
 <head>
     <meta charset="utf-8">

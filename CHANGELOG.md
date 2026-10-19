@@ -387,6 +387,12 @@ php artisan view:cache
 | 326 | 2026-10-19 | `resources/views/subjects/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 327 | 2026-10-19 | `resources/views/subjects/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 328 | 2026-10-19 | `resources/views/subscription/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 329 | 2026-10-19 | `resources/views/parent/results/detail.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ⏳ Belum Push |
+| 330 | 2026-10-19 | `resources/views/parent/results/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ⏳ Belum Push |
+| 331 | 2026-10-19 | `resources/views/parent/results/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ⏳ Belum Push |
+| 332 | 2026-10-19 | `resources/views/parents/dashboard.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ⏳ Belum Push |
+| 333 | 2026-10-19 | `resources/views/parents/student_profile.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ⏳ Belum Push |
+| 334 | 2026-10-19 | `resources/views/layout-fb/layout.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ⏳ Belum Push |
 
 ---
 
