@@ -393,9 +393,9 @@ php artisan view:cache
 | 332 | 2026-10-19 | `resources/views/parents/dashboard.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ✅ Sudah Push |
 | 333 | 2026-10-19 | `resources/views/parents/student_profile.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ✅ Sudah Push |
 | 334 | 2026-10-19 | `resources/views/layout-fb/layout.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; layout: tajuk header ikut menu ibu bapa | ✅ Sudah Push |
-| 335 | 2026-10-19 | `resources/views/admin/manual-logs/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ⏳ Belum Push |
-| 336 | 2026-10-19 | `resources/views/admin/system_log.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ⏳ Belum Push |
-| 337 | 2026-10-19 | `resources/views/super-admin/chatbot-settings.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ⏳ Belum Push |
+| 335 | 2026-10-19 | `resources/views/admin/manual-logs/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ✅ Sudah Push |
+| 336 | 2026-10-19 | `resources/views/admin/system_log.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ✅ Sudah Push |
+| 337 | 2026-10-19 | `resources/views/super-admin/chatbot-settings.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, confirm() → data-confirm | ✅ Sudah Push |
 
 ---
 
