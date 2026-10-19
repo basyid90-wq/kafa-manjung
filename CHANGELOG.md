@@ -341,6 +341,8 @@ php artisan view:cache
 | 280 | 2026-10-19 | `resources/views/activities/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 281 | 2026-10-19 | `resources/views/activities/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 282 | 2026-10-19 | `resources/views/activities/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 283 | 2026-10-19 | `resources/views/certificates/templates/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
+| 284 | 2026-10-19 | `resources/views/certificates/templates/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
 
 ---
 
