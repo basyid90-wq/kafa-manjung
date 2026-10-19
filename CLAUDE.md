@@ -170,7 +170,7 @@ Removed in the SaaS pivot (do NOT reintroduce): Pentadbir, Penyelia KAFA, Pembek
 
 Design source: the Claude Design demo (`/demo`, `resources/views/demo/index.blade.php`). Light theme only — **dark mode is retired**: do NOT add `dark:` classes (leftovers in old views are inert and get removed module by module). Font: Inter.
 
-The standard classes live in `resources/css/app.css` (`@layer components`, prefix `ek-`). Use them instead of long utility strings; extend that file (not per view) when a new shared pattern is needed. Any change there needs `npm run build`.
+The standard classes live in `resources/css/app.css` (`@layer components`, prefix `ek-`). Use them instead of long utility strings; extend that file (not per view) when a new shared pattern is needed. Any change there needs `npm run build`. Tailwind tree-shakes `@layer components`: an `ek-*` class used in a view for the first time only exists after the next `npm run build`, so always rebuild before checking a restyled page.
 
 | Purpose | Class |
 |---|---|
