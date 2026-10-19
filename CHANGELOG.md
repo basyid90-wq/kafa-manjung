@@ -362,6 +362,8 @@ php artisan view:cache
 | 301 | 2026-10-19 | `resources/views/users/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 302 | 2026-10-19 | `resources/views/users/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 303 | 2026-10-19 | `resources/views/users/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 304 | 2026-10-19 | `resources/views/rph_approvals/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
+| 305 | 2026-10-19 | `resources/views/rph_approvals/history.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
 
 ---
 
