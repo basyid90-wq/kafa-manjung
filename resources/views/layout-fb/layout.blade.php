@@ -279,12 +279,38 @@
         });
         @endif
 
+        function ekEscape(s) {
+            return String(s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+        }
+
+        // Global: data-confirm="message" on a form (submit) or a submit button (click)
+        document.addEventListener('submit', function(e) {
+            var form = e.target;
+            var msg  = form.dataset.confirm || (e.submitter && e.submitter.dataset.confirm);
+            if (!msg || form.dataset.confirmed) return;
+            e.preventDefault();
+            Swal.fire({
+                title: 'Pengesahan',
+                text: msg,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Teruskan',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (!result.isConfirmed) return;
+                form.dataset.confirmed = '1';
+                form.requestSubmit(e.submitter || undefined);
+            });
+        });
+
         // Global: data-delete-form confirmation
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('[data-delete-form]').forEach(function(form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    var itemName = form.getAttribute('data-name') || 'rekod ini';
+                    var itemName = ekEscape(form.getAttribute('data-name') || 'rekod ini');
                     Swal.fire({
                         title: 'Pengesahan',
                         html: 'Adakah anda pasti mahu memadam <strong>' + itemName + '</strong>?<br><small style="color:#999;">Tindakan ini tidak boleh dikembalikan.</small>',

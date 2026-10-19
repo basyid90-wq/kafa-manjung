@@ -281,6 +281,7 @@ The following are already provided by `layout-fb/layout.blade.php` — do NOT re
 |---------|-----------|
 | SweetAlert2 | `session('success')` / `session('error')` auto-popup |
 | Delete confirmation | `<form data-delete-form data-name="nama item">` |
+| Other confirmations | `data-confirm="Mesej?"` on a `<form>` or its submit `<button>` (SweetAlert2). Never use `confirm()` |
 | PDF viewer | `openPdfBlob(this, url)` — returns JSON `{data: base64, filename}` |
 | PDF base64 render | `renderPdfBase64(base64string)` |
 | PDF close | `closePdfViewer()` |
