@@ -96,7 +96,7 @@ class DashboardController extends Controller
                 ->get();
             $data['stats']['pending_rph'] = \App\Models\RphRecord::where('school_id', $schoolId)->where('status', 'pending')->count();
 
-            $data += $this->schoolInsights($schoolId);
+            $data += $this->schoolInsights($user, $schoolId);
 
         } elseif ($role === 'Guru KAFA') {
             // Guru KAFA
@@ -120,7 +120,7 @@ class DashboardController extends Controller
                 });
 
             $classIds = \App\Models\KafaClass::where('teacher_id', $user->id)->pluck('id')->all();
-            $data += $this->schoolInsights($user->school_id, $classIds);
+            $data += $this->schoolInsights($user, $user->school_id, $classIds);
         }
 
         return view('dashboard.index-fb', compact('data', 'role'));
@@ -130,7 +130,7 @@ class DashboardController extends Controller
      * Attendance, marks and announcement summaries for one school (optionally limited to some classes).
      * Uses DB::table, so every query is scoped to $schoolId by hand.
      */
-    private function schoolInsights(?int $schoolId, ?array $classIds = null): array
+    private function schoolInsights(\App\Models\User $user, ?int $schoolId, ?array $classIds = null): array
     {
         if (!$schoolId) {
             return [];
@@ -182,8 +182,9 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        $announcements = DB::table('announcements')->whereNull('deleted_at')
-            ->where(fn ($q) => $q->where('school_id', $schoolId)->orWhere('is_global', true))
+        // Same targeting rule as the Hebahan page: only announcements addressed to this user
+        $announcements = Announcement::forUser($user)
+            ->where('is_homepage', false)
             ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
             ->latest()->take(3)->get(['id', 'title', 'content', 'category', 'created_at']);
 

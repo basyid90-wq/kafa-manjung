@@ -92,6 +92,21 @@ class DashboardTest extends TestCase
             ->assertSee('2 / 2 hadir · 0 tidak hadir');
     }
 
+    public function test_dashboard_only_lists_announcements_targeted_at_the_user(): void
+    {
+        $guru = User::factory()->create(['school_id' => $this->school->id]);
+        $guru->assignRole('Guru KAFA');
+
+        $forTeachers = \App\Models\Announcement::create(['title' => 'Mesyuarat Guru', 'content' => 'Untuk guru', 'user_id' => $this->guruBesar->id, 'school_id' => $this->school->id, 'target_scope' => 'school']);
+        $forTeachers->targetedUsers()->attach($guru->id);
+        \App\Models\Announcement::create(['title' => 'Notis Ibu Bapa Sahaja', 'content' => 'Untuk ibu bapa', 'user_id' => $this->guruBesar->id, 'school_id' => $this->school->id, 'target_scope' => 'school']);
+
+        $this->actingAs($guru)->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Mesyuarat Guru')
+            ->assertDontSee('Notis Ibu Bapa Sahaja');
+    }
+
     public function test_empty_school_dashboard_renders(): void
     {
         $this->actingAs($this->guruBesar)->get('/dashboard')
