@@ -419,8 +419,8 @@ php artisan view:cache
 | 358 | 2026-10-19 | `routes/web.php` | Fasa 3: gaya demo (jubin statik), buang dark:; buang kod mati management (rujuk route book_orders yang sudah dibuang) | ✅ Sudah Push |
 | 359 | 2026-10-19 | `app/Http/Controllers/ManagementController.php` | Dipadam — kod mati (tiada route; termasuk dalam commit ece589c) | ✅ Sudah Push |
 | 360 | 2026-10-19 | `resources/views/management/index.blade.php` | Dipadam — rujuk route book_orders yang sudah dibuang (commit ece589c) | ✅ Sudah Push |
-| 361 | 2026-10-19 | `resources/views/vendor/pagination/flowbite.blade.php` | Fasa 3: buang dark: (paginasi global) | ⏳ Belum Push |
-| 362 | 2026-10-19 | `resources/views/vendor/pagination/flowbite-simple.blade.php` | Fasa 3: buang dark: (paginasi global) | ⏳ Belum Push |
+| 361 | 2026-10-19 | `resources/views/vendor/pagination/flowbite.blade.php` | Fasa 3: buang dark: (paginasi global) | ✅ Sudah Push |
+| 362 | 2026-10-19 | `resources/views/vendor/pagination/flowbite-simple.blade.php` | Fasa 3: buang dark: (paginasi global) | ✅ Sudah Push |
 
 ---
 
