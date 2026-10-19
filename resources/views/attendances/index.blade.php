@@ -7,29 +7,29 @@
 @endphp
 
 @section('content')
-<div class="p-4 md:p-6">
+<div>
 
     {{-- ── Header with date filter ── --}}
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Kehadiran Murid</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <h1 class="ek-page-title">Kehadiran Murid</h1>
+            <p class="ek-page-sub mt-1">
                 {{ \Carbon\Carbon::parse($date)->translatedFormat('l, d F Y') }}
             </p>
         </div>
         <form action="{{ route('attendances.index') }}" method="GET" class="flex items-center gap-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Tarikh:</label>
+            <label class="text-sm font-medium text-gray-700">Tarikh:</label>
             <input type="date" name="date" value="{{ $date }}" onchange="this.form.submit()"
-                   class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                   class="ek-input">
         </form>
     </div>
 
     @forelse($classes as $c)
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+    <div class="ek-table-wrap mb-6">
 
         {{-- Class Header --}}
-        <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-white">
+        <div class="px-5 py-4 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-base font-semibold text-gray-900">
                 Kelas: {{ $c->display_name }}
             </h2>
             <div class="flex flex-wrap items-center gap-2">
@@ -42,7 +42,7 @@
                     Semua Hadir
                 </button>
                 <a href="{{ route('kiosk.index') }}" target="_blank"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -50,7 +50,7 @@
                     Kiosk Imbasan
                 </a>
                 <a href="{{ route('students.qr_cards', $c) }}" target="_blank"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 3.5V16M4 16.5V20m0 0h4M4 20v-4"/>
                     </svg>
@@ -62,7 +62,7 @@
                         data-class-id="{{ $c->id }}"
                         data-class-name="{{ $c->display_name }}"
                         onclick="openKedatanganModal(this)"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors">
+                        class="ek-btn-primary py-1.5 text-xs">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
@@ -78,8 +78,8 @@
             <input type="hidden" name="date" value="{{ $date }}">
 
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <table class="ek-table">
+                    <thead>
                         <tr>
                             <th class="px-5 py-3 w-12">No</th>
                             <th class="px-5 py-3">No. MyKid</th>
@@ -90,16 +90,16 @@
                             @endhasanyrole
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <tbody>
                         @forelse($c->students as $i => $student)
                         @php
                             $attendance = $student->attendances->first();
                             $status = $attendance ? $attendance->status : null;
                         @endphp
-                        <tr id="row-{{ $student->id }}" class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
+                        <tr id="row-{{ $student->id }}">
                             <td class="px-5 py-2.5 text-gray-400 text-xs">{{ $i + 1 }}</td>
-                            <td class="px-5 py-2.5 font-mono text-xs text-gray-600 dark:text-gray-400">{{ $student->mykid }}</td>
-                            <td class="px-5 py-2.5 font-medium text-gray-900 dark:text-white text-sm">{{ $student->name }}</td>
+                            <td class="px-5 py-2.5 font-mono text-xs text-gray-600">{{ $student->mykid }}</td>
+                            <td class="px-5 py-2.5 font-medium text-gray-900 text-sm">{{ $student->name }}</td>
                             <td class="px-5 py-2.5">
                                 <div class="flex flex-wrap gap-1.5">
                                     @foreach([
@@ -116,8 +116,8 @@
                                                class="peer sr-only">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border transition-colors
                                             peer-checked:bg-{{ $color }}-600 peer-checked:text-white peer-checked:border-{{ $color }}-600
-                                            bg-white dark:bg-gray-800 text-{{ $color }}-700 dark:text-{{ $color }}-400 border-{{ $color }}-300 dark:border-{{ $color }}-700
-                                            hover:bg-{{ $color }}-50 dark:hover:bg-{{ $color }}-900/20">
+                                            bg-white text-{{ $color }}-700{{ $color }}-400 border-{{ $color }}-300{{ $color }}-700
+                                            hover:bg-{{ $color }}-50{{ $color }}-900/20">
                                             {{ $label }}
                                         </span>
                                     </label>
@@ -130,7 +130,7 @@
                                         data-student-id="{{ $student->id }}"
                                         data-student-name="{{ $student->name }}"
                                         onclick="openCutiModal(this)"
-                                        class="p-1.5 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                        class="p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                                         title="Daftar Cuti Berjadual">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -148,10 +148,10 @@
                 </table>
             </div>
 
-            @if($c->students->count() > 0)
-            <div class="px-5 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+            @if($c->students->count()> 0)
+            <div class="px-5 py-4 border-t border-gray-200 flex justify-end">
                 <button type="submit"
-                        class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        class="ek-btn-primary">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                     </svg>
@@ -163,7 +163,7 @@
     </div>
 
     @empty
-    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-5 text-sm text-yellow-700 dark:text-yellow-400">
+    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-5 text-sm text-yellow-700">
         Anda belum ditugaskan sebagai Guru Kelas bagi mana-mana kelas.
     </div>
     @endforelse
@@ -243,42 +243,42 @@
 {{-- ── Modal: Cuti Berjadual ── --}}
 <div id="cutiModal" tabindex="-1" aria-hidden="true"
      class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Daftar Cuti Berjadual</h3>
+            <h3 class="text-base font-semibold text-gray-900">Daftar Cuti Berjadual</h3>
             <button onclick="document.getElementById('cutiModal').classList.add('hidden')"
-                    class="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                    class="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
-        <p id="cutiStudentName" class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4"></p>
+        <p id="cutiStudentName" class="text-sm font-semibold text-blue-600 mb-4"></p>
         <form id="cutiForm" action="{{ route('attendances.bulk_leave') }}" method="POST" class="space-y-4">
             @csrf
             <input type="hidden" id="cutiStudentId" name="student_id">
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="ek-label">
                         Tarikh Mula <span class="text-red-500">*</span>
                     </label>
                     <input type="date" name="start_date" id="cutiStart" required
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                           class="ek-input">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="ek-label">
                         Tarikh Tamat <span class="text-red-500">*</span>
                     </label>
                     <input type="date" name="end_date" id="cutiEnd" required
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                           class="ek-input">
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                <label class="ek-label">
                     Status <span class="text-red-500">*</span>
                 </label>
                 <select name="status" required
-                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        class="ek-input">
                     <option value="Tidak Hadir">Tidak Hadir</option>
                     <option value="Cuti Sakit">Cuti Sakit</option>
                 </select>
@@ -287,11 +287,11 @@
         </form>
         <div class="flex justify-end gap-2 mt-5">
             <button onclick="document.getElementById('cutiModal').classList.add('hidden')"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">
+                    class="ek-btn-secondary">
                 Batal
             </button>
             <button type="submit" form="cutiForm"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    class="ek-btn-primary">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                 </svg>

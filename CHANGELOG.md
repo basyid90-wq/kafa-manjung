@@ -310,6 +310,7 @@ php artisan view:cache
 | 249 | 2026-10-19 | `resources/views/students/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ✅ Sudah Push |
 | 250 | 2026-10-19 | `resources/views/students/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ✅ Sudah Push |
 | 251 | 2026-10-19 | `resources/views/students/import_summary.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ✅ Sudah Push |
+| 252 | 2026-10-19 | `resources/views/attendances/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
 
 ---
 
