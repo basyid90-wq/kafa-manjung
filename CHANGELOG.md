@@ -407,10 +407,10 @@ php artisan view:cache
 | 346 | 2026-10-19 | `resources/views/profile/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 347 | 2026-10-19 | `resources/views/profile/partials/update-password-form.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 348 | 2026-10-19 | `resources/views/profile/partials/update-profile-information-form.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
-| 349 | 2026-10-19 | `resources/views/feedback/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ⏳ Belum Push |
-| 350 | 2026-10-19 | `resources/views/feedback/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ⏳ Belum Push |
-| 351 | 2026-10-19 | `resources/views/feedback/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ⏳ Belum Push |
-| 352 | 2026-10-19 | `tests/Feature/FeedbackPageTest.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ⏳ Belum Push |
+| 349 | 2026-10-19 | `resources/views/feedback/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ✅ Sudah Push |
+| 350 | 2026-10-19 | `resources/views/feedback/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ✅ Sudah Push |
+| 351 | 2026-10-19 | `resources/views/feedback/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ✅ Sudah Push |
+| 352 | 2026-10-19 | `tests/Feature/FeedbackPageTest.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ✅ Sudah Push |
 
 ---
 
