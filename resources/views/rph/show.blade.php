@@ -99,7 +99,7 @@
             @endphp
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                 bg-{{ $statusColor }}-100 text-{{ $statusColor }}-700
-{{ $statusColor }}-900/30{{ $statusColor }}-400">
+">
                 {{ $statusLabel }}
             </span>
         </div>

@@ -116,8 +116,8 @@
                                                class="peer sr-only">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border transition-colors
                                             peer-checked:bg-{{ $color }}-600 peer-checked:text-white peer-checked:border-{{ $color }}-600
-                                            bg-white text-{{ $color }}-700{{ $color }}-400 border-{{ $color }}-300{{ $color }}-700
-                                            hover:bg-{{ $color }}-50{{ $color }}-900/20">
+                                            bg-white text-{{ $color }}-700 border-{{ $color }}-300
+                                            hover:bg-{{ $color }}-50">
                                             {{ $label }}
                                         </span>
                                     </label>

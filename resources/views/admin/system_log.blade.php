@@ -60,7 +60,7 @@
             <div class="flex items-start justify-between gap-3 mb-2">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                     bg-{{ $levelColor }}-100 text-{{ $levelColor }}-700
-{{ $levelColor }}-900/30{{ $levelColor }}-400">
+">
                     {{ strtoupper($entry['level']) }}
                 </span>
                 <span class="text-xs text-gray-400 shrink-0">{{ $entry['datetime'] }}</span>
