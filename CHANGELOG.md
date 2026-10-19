@@ -305,6 +305,11 @@ php artisan view:cache
 | 244 | 2026-10-19 | `resources/views/kafa_classes/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 245 | 2026-10-19 | `resources/views/kafa_classes/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 246 | 2026-10-19 | `CLAUDE.md` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 247 | 2026-10-19 | `resources/views/students/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ⏳ Belum Push |
+| 248 | 2026-10-19 | `resources/views/students/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ⏳ Belum Push |
+| 249 | 2026-10-19 | `resources/views/students/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ⏳ Belum Push |
+| 250 | 2026-10-19 | `resources/views/students/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ⏳ Belum Push |
+| 251 | 2026-10-19 | `resources/views/students/import_summary.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ⏳ Belum Push |
 
 ---
 

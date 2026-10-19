@@ -1,30 +1,30 @@
 @extends('layout-fb.layout')
 
 @section('content')
-<div class="p-4 md:p-6">
+<div>
 
     <div class="mb-6">
-        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Ringkasan Import SIMPENI</h1>
+        <h1 class="ek-page-title">Ringkasan Import SIMPENI</h1>
     </div>
 
     {{-- Stats --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 text-center">
-            <p class="text-3xl font-bold text-blue-700 dark:text-blue-400">{{ $summary['total'] }}</p>
-            <p class="text-sm text-blue-600 dark:text-blue-400 mt-1">Rekod Dibaca</p>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+            <p class="text-3xl font-bold text-blue-700">{{ $summary['total'] }}</p>
+            <p class="text-sm text-blue-600 mt-1">Rekod Dibaca</p>
         </div>
-        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 text-center">
-            <p class="text-3xl font-bold text-green-700 dark:text-green-400">{{ $summary['success'] }}</p>
-            <p class="text-sm text-green-600 dark:text-green-400 mt-1">Berjaya Disusun</p>
+        <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+            <p class="text-3xl font-bold text-green-700">{{ $summary['success'] }}</p>
+            <p class="text-sm text-green-600 mt-1">Berjaya Disusun</p>
         </div>
-        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 text-center">
-            <p class="text-3xl font-bold text-red-700 dark:text-red-400">{{ $summary['failed_class'] }}</p>
-            <p class="text-sm text-red-600 dark:text-red-400 mt-1">Tiada Kelas</p>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <p class="text-3xl font-bold text-red-700">{{ $summary['failed_class'] }}</p>
+            <p class="text-sm text-red-600 mt-1">Tiada Kelas</p>
         </div>
     </div>
 
-    @if($summary['failed_class'] > 0)
-    <div class="flex items-center justify-between bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl px-4 py-3 mb-5 text-sm text-yellow-700 dark:text-yellow-400">
+    @if($summary['failed_class']> 0)
+    <div class="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 mb-5 text-sm text-yellow-700">
         <div class="flex items-center gap-2">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
@@ -39,13 +39,13 @@
     @endif
 
     {{-- Table --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-            <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Senarai Murid Diimport</h2>
+    <div class="ek-table-wrap">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <h2 class="text-sm font-semibold text-gray-700">Senarai Murid Diimport</h2>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400 uppercase">
+            <table class="ek-table">
+                <thead>
                     <tr>
                         <th class="px-4 py-3 text-left">No</th>
                         <th class="px-4 py-3 text-left">Nama Murid</th>
@@ -54,17 +54,17 @@
                         <th class="px-4 py-3 text-left">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody>
                     @foreach($summary['details'] as $i => $row)
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                        <td class="px-4 py-2.5 text-gray-500 dark:text-gray-400">{{ $i + 1 }}</td>
-                        <td class="px-4 py-2.5 font-medium text-gray-900 dark:text-white">{{ $row['name'] }}</td>
-                        <td class="px-4 py-2.5 text-xs font-mono text-gray-500 dark:text-gray-400">{{ $row['mykid'] }}</td>
+                    <tr>
+                        <td class="px-4 py-2.5 text-gray-500">{{ $i + 1 }}</td>
+                        <td class="px-4 py-2.5 font-medium text-gray-900">{{ $row['name'] }}</td>
+                        <td class="px-4 py-2.5 text-xs font-mono text-gray-500">{{ $row['mykid'] }}</td>
                         <td class="px-4 py-2.5">
                             @if($row['class'])
-                                <span class="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full">{{ $row['class'] }}</span>
+                                <span class="ek-badge ek-badge-green">{{ $row['class'] }}</span>
                             @else
-                                <span class="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-full">TIADA PADANAN</span>
+                                <span class="ek-badge ek-badge-red">TIADA PADANAN</span>
                             @endif
                         </td>
                         <td class="px-4 py-2.5">
@@ -87,7 +87,7 @@
 
     <div class="flex justify-end mt-5">
         <a href="{{ route('students.index') }}"
-           class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+           class="ek-btn-primary">
             Kembali ke Senarai Murid
         </a>
     </div>
