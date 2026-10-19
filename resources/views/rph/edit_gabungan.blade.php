@@ -32,12 +32,12 @@ $periods = $rph->periods->keyBy('period_no');
 @endphp
 
 @section('content')
-<div class="p-4 md:p-6">
+<div>
 
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Sunting RPH Kelas Cantum</h1>
+        <h1 class="ek-page-title">Sunting RPH Kelas Cantum</h1>
         <a href="{{ route('rph.index') }}"
-           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+           class="ek-btn-secondary">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
@@ -46,7 +46,7 @@ $periods = $rph->periods->keyBy('period_no');
     </div>
 
     @if(session('error'))
-    <div class="flex items-start gap-3 p-4 mb-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-r-xl text-sm text-red-800 dark:text-red-300">
+    <div class="flex items-start gap-3 p-4 mb-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl text-sm text-red-800">
         {{ session('error') }}
     </div>
     @endif
@@ -59,7 +59,7 @@ $periods = $rph->periods->keyBy('period_no');
     </style>
 
     {{-- Kelas Cantum info --}}
-    <div class="flex items-center gap-3 p-3 mb-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl text-sm text-blue-800 dark:text-blue-300">
+    <div class="flex items-center gap-3 p-3 mb-5 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800">
         <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
@@ -88,17 +88,17 @@ $periods = $rph->periods->keyBy('period_no');
 
         {{-- Maklumat Asas --}}
         <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm font-semibold px-4 py-2 rounded-lg mb-3">Maklumat Asas</div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-5">
+        <div class="ek-card mb-5">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tarikh <span class="text-red-500">*</span></label>
+                    <label class="ek-label">Tarikh <span class="text-red-500">*</span></label>
                     <input type="date" name="date" value="{{ $rph->date }}" required
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                           class="ek-input">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hari <span class="text-red-500">*</span></label>
+                    <label class="ek-label">Hari <span class="text-red-500">*</span></label>
                     <select name="hari" required
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            class="ek-input">
                         <option value="">-- Pilih --</option>
                         @foreach(['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'] as $d)
                         <option value="{{ $d }}" @selected($rph->hari === $d)>{{ $d }}</option>
@@ -106,14 +106,14 @@ $periods = $rph->periods->keyBy('period_no');
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Minggu <span class="text-red-500">*</span></label>
+                    <label class="ek-label">Minggu <span class="text-red-500">*</span></label>
                     <input name="week" type="number" min="1" max="52" value="{{ $rph->week }}" required
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                           class="ek-input">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kelas (rekod)</label>
+                    <label class="ek-label">Kelas (rekod)</label>
                     <select name="kafa_class_id"
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            class="ek-input">
                         @foreach($classes as $c)
                         <option value="{{ $c->id }}" @selected($rph->kafa_class_id == $c->id)>{{ $c->display_name }}</option>
                         @endforeach
@@ -127,17 +127,17 @@ $periods = $rph->periods->keyBy('period_no');
 
         @for($s = 1; $s <= 3; $s++)
         @php $period = $periods->get($s); @endphp
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
+        <div class="ek-table-wrap mb-4">
             <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm font-semibold px-4 py-2">SESI {{ $s }}</div>
             <div class="p-4">
 
                 {{-- Mata Pelajaran + Masa --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                     <div>
-                        <label class="jawi-label text-gray-600 dark:text-gray-400">مات ڤلاجرن</label>
+                        <label class="jawi-label text-gray-600">مات ڤلاجرن</label>
                         <span class="text-xs text-gray-500 block mb-1">Mata Pelajaran <span class="text-red-500">*</span></span>
                         <input type="text" id="s{{ $s }}_mp_rumi"
-                               class="rph-rumi-box w-full px-2 py-1 text-xs border border-dashed border-gray-300 rounded bg-gray-50 dark:bg-gray-700 mb-1"
+                               class="rph-rumi-box w-full px-2 py-1 text-xs border border-dashed border-gray-300 rounded bg-gray-50 mb-1"
                                placeholder="Taip Rumi...">
                         <div class="text-center mb-1">
                             <button type="button" onclick="tukarKeJawi('s{{ $s }}_mp_rumi','s{{ $s }}_mp_jawi')"
@@ -145,21 +145,21 @@ $periods = $rph->periods->keyBy('period_no');
                         </div>
                         <input type="text" id="s{{ $s }}_mp_jawi"
                                name="periods[{{ $s }}][mata_pelajaran_jawi]"
-                               class="jawi-input w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+                               class="jawi-input w-full px-2 py-1 border border-gray-300 rounded bg-white"
                                dir="rtl" required
                                value="{{ $period?->mata_pelajaran_jawi ?? '' }}">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Masa <span class="text-red-500">*</span></label>
+                        <label class="ek-label">Masa <span class="text-red-500">*</span></label>
                         <input type="text" name="periods[{{ $s }}][masa]" required
                                value="{{ $period?->masa ?? '' }}" placeholder="8:00 - 9:00 PG"
-                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                               class="ek-input">
                     </div>
                 </div>
 
                 {{-- Per-year table --}}
                 <div class="overflow-x-auto mb-4">
-                    <table class="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                    <table class="ek-table border border-gray-200 rounded-lg overflow-hidden">
                         <thead>
                             <tr>
                                 <th class="px-3 py-2 text-left text-xs font-semibold bg-gray-100 text-gray-600 w-24">Perkara</th>
@@ -168,7 +168,7 @@ $periods = $rph->periods->keyBy('period_no');
                                 @endforeach
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody>
                             @foreach($FIELD_ROWS as $f)
                             <tr>
                                 <td class="px-3 py-2 align-top bg-gray-50 text-xs">
@@ -179,7 +179,7 @@ $periods = $rph->periods->keyBy('period_no');
                                 @php $val = $period ? ($period->{$f['key']}[$y] ?? '') : ''; @endphp
                                 <td class="px-2 py-2 align-top">
                                     <textarea id="s{{ $s }}_y{{ $y }}_{{ $f['key'] }}_rumi"
-                                              class="rph-rumi-box w-full px-2 py-1 text-xs border border-dashed border-gray-300 rounded bg-gray-50 dark:bg-gray-700 mb-1"
+                                              class="rph-rumi-box w-full px-2 py-1 text-xs border border-dashed border-gray-300 rounded bg-gray-50 mb-1"
                                               rows="2" placeholder="Taip Rumi..."></textarea>
                                     <div class="text-center mb-1">
                                         <button type="button"
@@ -188,7 +188,7 @@ $periods = $rph->periods->keyBy('period_no');
                                     </div>
                                     <textarea id="s{{ $s }}_y{{ $y }}_{{ $f['key'] }}_jawi"
                                               name="periods[{{ $s }}][{{ $f['key'] }}][{{ $y }}]"
-                                              class="jawi-input w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+                                              class="jawi-input w-full px-2 py-1 border border-gray-300 rounded bg-white"
                                               rows="3" dir="rtl" required>{{ $val }}</textarea>
                                 </td>
                                 @endforeach
@@ -199,8 +199,8 @@ $periods = $rph->periods->keyBy('period_no');
                 </div>
 
                 {{-- Kemahiran --}}
-                <div class="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg mb-3">
-                    <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <div class="p-3 bg-gray-50 rounded-lg mb-3">
+                    <p class="text-xs font-semibold text-gray-700 mb-2">
                         <span class="jawi-label inline" style="font-size:1em;">كماهيرن</span> Kemahiran:
                     </p>
                     <div>
@@ -215,8 +215,8 @@ $periods = $rph->periods->keyBy('period_no');
                 </div>
 
                 {{-- Strategi PdP --}}
-                <div class="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg mb-3">
-                    <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <div class="p-3 bg-gray-50 rounded-lg mb-3">
+                    <p class="text-xs font-semibold text-gray-700 mb-2">
                         <span class="jawi-label inline" style="font-size:1em;">ستراتڬي ڤدڤ</span> Strategi PdP:
                     </p>
                     <div>
@@ -231,34 +231,34 @@ $periods = $rph->periods->keyBy('period_no');
                 </div>
 
                 {{-- Impak Pembelajaran --}}
-                <div class="p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
-                    <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <div class="p-3 border border-gray-200 rounded-lg">
+                    <p class="text-xs font-semibold text-gray-700 mb-2">
                         <span class="jawi-label inline" style="font-size:1em;">ايمڤك ڤمبلاجرن</span> Impak Pembelajaran:
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div>
-                            <label class="text-xs font-medium text-gray-600 dark:text-gray-400">Murid berjaya (____/____):</label>
+                            <label class="text-xs font-medium text-gray-600">Murid berjaya (____/____):</label>
                             <input type="text" name="periods[{{ $s }}][impak][berjaya]"
                                    value="{{ $period?->impak['berjaya'] ?? '' }}" placeholder="cth: 20/25"
-                                   class="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 mt-1">
+                                   class="w-full px-2 py-1 text-xs border border-gray-300 rounded bg-white mt-1">
                         </div>
                         <div>
-                            <label class="text-xs font-medium text-gray-600 dark:text-gray-400">Murid belum berjaya (____/____):</label>
+                            <label class="text-xs font-medium text-gray-600">Murid belum berjaya (____/____):</label>
                             <input type="text" name="periods[{{ $s }}][impak][belum]"
                                    value="{{ $period?->impak['belum'] ?? '' }}" placeholder="cth: 5/25"
-                                   class="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 mt-1">
+                                   class="w-full px-2 py-1 text-xs border border-gray-300 rounded bg-white mt-1">
                         </div>
                         <div>
-                            <label class="text-xs font-medium text-gray-600 dark:text-gray-400">Aktiviti P&amp;P ditangguhkan kerana:</label>
+                            <label class="text-xs font-medium text-gray-600">Aktiviti P&amp;P ditangguhkan kerana:</label>
                             <input type="text" name="periods[{{ $s }}][impak][sebab_ditangguh]"
                                    value="{{ $period?->impak['sebab_ditangguh'] ?? '' }}" placeholder="(kosong jika tidak ditangguh)"
-                                   class="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 mt-1">
+                                   class="w-full px-2 py-1 text-xs border border-gray-300 rounded bg-white mt-1">
                         </div>
                         <div>
-                            <label class="text-xs font-medium text-gray-600 dark:text-gray-400">Aktiviti P&amp;P diteruskan pada:</label>
+                            <label class="text-xs font-medium text-gray-600">Aktiviti P&amp;P diteruskan pada:</label>
                             <input type="text" name="periods[{{ $s }}][impak][tarikh_teruskan]"
                                    value="{{ $period?->impak['tarikh_teruskan'] ?? '' }}" placeholder="(kosong jika tidak ditangguh)"
-                                   class="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 mt-1">
+                                   class="w-full px-2 py-1 text-xs border border-gray-300 rounded bg-white mt-1">
                         </div>
                     </div>
                 </div>
@@ -269,11 +269,11 @@ $periods = $rph->periods->keyBy('period_no');
 
         <div class="flex justify-between items-center mt-5">
             <a href="{{ route('rph.index') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+               class="ek-btn-secondary">
                 Batal
             </a>
             <button type="submit"
-                    class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    class="ek-btn-primary">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                 </svg>

@@ -1,14 +1,14 @@
 @extends('layout-fb.layout')
 
 @section('content')
-<div class="p-4 md:p-6">
+<div>
 
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Cipta RPH Kelas Cantum</h1>
+            <h1 class="ek-page-title">Cipta RPH Kelas Cantum</h1>
         </div>
         <a href="{{ route('rph.index') }}"
-           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+           class="ek-btn-secondary">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
@@ -17,12 +17,12 @@
     </div>
 
     {{-- Tab Switcher --}}
-    <div class="flex gap-1 mb-5 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+    <div class="flex gap-1 mb-5 bg-gray-100 rounded-xl p-1">
         <a href="{{ route('rph.create') }}"
-           class="flex-1 px-4 py-2 text-xs font-medium text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 rounded-lg transition-colors">
+           class="flex-1 px-4 py-2 text-xs font-medium text-center text-gray-500 hover:text-gray-700 rounded-lg transition-colors">
             Kelas Biasa
         </a>
-        <span class="flex-1 px-4 py-2 text-xs font-medium text-center bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm rounded-lg cursor-default">
+        <span class="flex-1 px-4 py-2 text-xs font-medium text-center bg-white text-blue-600 shadow-sm rounded-lg cursor-default">
             Kelas Cantum
         </span>
     </div>
@@ -43,7 +43,7 @@
         <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm font-semibold px-4 py-2 rounded-lg mb-3">
             1. Pilih Kumpulan Tahun (Kelas Cantum)
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-5">
+        <div class="ek-card mb-5">
             <div class="flex flex-wrap gap-2 mb-3">
                 <button type="button" onclick="selectYears([1,2,3])"
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
@@ -54,22 +54,22 @@
                     Tahun 4, 5 &amp; 6
                 </button>
                 <button type="button" onclick="toggleCustom()"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition-colors">
+                        class="ek-btn-secondary py-1.5">
                     Pilih Sendiri
                 </button>
             </div>
-            <div id="custom-years" class="hidden p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 mb-3">
-                <p class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2">Pilih Tahun (Min 2, Maks 3):</p>
+            <div id="custom-years" class="hidden p-3 border border-gray-200 rounded-lg bg-gray-50 mb-3">
+                <p class="text-xs font-semibold text-gray-600 mb-2">Pilih Tahun (Min 2, Maks 3):</p>
                 <div class="flex flex-wrap gap-2">
                     @for($i = 1; $i <= 6; $i++)
-                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
                         <input type="checkbox" class="year-checkbox" value="{{ $i }}" id="yr{{ $i }}" class="rounded">
                         Tahun {{ $i }}
                     </label>
                     @endfor
                 </div>
             </div>
-            <div id="selected-years-display" class="hidden p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-300">
+            <div id="selected-years-display" class="hidden p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
                 <strong>Tahun Dipilih:</strong> <span id="selected-years-text"></span>
                 <div id="combined-years-inputs"></div>
             </div>
@@ -79,17 +79,17 @@
         <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm font-semibold px-4 py-2 rounded-lg mb-3">
             2. Maklumat Asas
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-5">
+        <div class="ek-card mb-5">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tarikh <span class="text-red-500">*</span></label>
+                    <label class="ek-label">Tarikh <span class="text-red-500">*</span></label>
                     <input type="date" name="date" id="rph-date" value="{{ date('Y-m-d') }}" required
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                           class="ek-input">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hari <span class="text-red-500">*</span></label>
+                    <label class="ek-label">Hari <span class="text-red-500">*</span></label>
                     <select name="hari" id="rph-hari" required
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            class="ek-input">
                         <option value="">-- Pilih --</option>
                         @foreach(['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'] as $d)
                         <option value="{{ $d }}">{{ $d }}</option>
@@ -97,14 +97,14 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Minggu <span class="text-red-500">*</span></label>
+                    <label class="ek-label">Minggu <span class="text-red-500">*</span></label>
                     <input name="week" type="number" min="1" max="52" required placeholder="1–52"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                           class="ek-input">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kelas (rekod) <span class="text-red-500">*</span></label>
+                    <label class="ek-label">Kelas (rekod) <span class="text-red-500">*</span></label>
                     <select name="kafa_class_id" required
-                            class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            class="ek-input">
                         <option value="">-- Pilih Kelas --</option>
                         @foreach($classes as $c)
                         <option value="{{ $c->id }}">{{ $c->display_name }}</option>
@@ -120,7 +120,7 @@
         </div>
 
         <div id="sessions-container">
-            <div class="flex items-start gap-3 p-4 mb-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 rounded-r-xl text-sm text-yellow-800 dark:text-yellow-300">
+            <div class="flex items-start gap-3 p-4 mb-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-xl text-sm text-yellow-800">
                 <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
@@ -130,11 +130,11 @@
 
         <div class="hidden flex justify-between items-center mt-5" id="btn-row">
             <a href="{{ route('rph.index') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+               class="ek-btn-secondary">
                 Batal
             </a>
             <button type="submit"
-                    class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    class="ek-btn-primary">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                 </svg>
@@ -226,7 +226,7 @@ function buildSessionCard(s) {
             <input type="checkbox" name="periods[${s}][strategi_pdc][]" value="${v}" class="rounded"> ${l}
         </label>`).join('');
     return `
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
+    <div class="ek-table-wrap mb-4">
         <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm font-semibold px-4 py-2">SESI ${s}</div>
         <div class="p-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
@@ -242,22 +242,22 @@ function buildSessionCard(s) {
                            class="jawi-input w-full px-2 py-1 border border-gray-300 rounded" dir="rtl" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Masa <span class="text-red-500">*</span></label>
+                    <label class="ek-label">Masa <span class="text-red-500">*</span></label>
                     <input type="text" name="periods[${s}][masa]" required placeholder="Cth: 8:00 - 9:00 PG"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                           class="ek-input">
                 </div>
             </div>
             <div class="overflow-x-auto mb-4">
-                <table class="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                <table class="ek-table border border-gray-200 rounded-lg overflow-hidden">
                     <thead><tr><th class="px-3 py-2 text-left text-xs font-semibold bg-gray-100 text-gray-600 w-24">Perkara</th>${yearHeaders}</tr></thead>
-                    <tbody class="divide-y divide-gray-100">${fieldRows}</tbody>
+                    <tbody>${fieldRows}</tbody>
                 </table>
             </div>
-            <div class="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg mb-3">
+            <div class="p-3 bg-gray-50 rounded-lg mb-3">
                 <p class="text-xs font-semibold text-gray-700 mb-2"><span class="jawi-label inline" style="font-size:1em;">كماهيرن</span> Kemahiran:</p>
                 <div>${kemBadges}</div>
             </div>
-            <div class="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg mb-3">
+            <div class="p-3 bg-gray-50 rounded-lg mb-3">
                 <p class="text-xs font-semibold text-gray-700 mb-2"><span class="jawi-label inline" style="font-size:1em;">ستراتڬي ڤدڤ</span> Strategi PdP:</p>
                 <div>${stratBadges}</div>
             </div>
