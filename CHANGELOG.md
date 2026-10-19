@@ -350,6 +350,8 @@ php artisan view:cache
 | 289 | 2026-10-19 | `resources/views/students/create.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ✅ Sudah Push |
 | 290 | 2026-10-19 | `resources/views/students/edit.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ✅ Sudah Push |
 | 291 | 2026-10-19 | `resources/views/students/import_summary.blade.php` | Pulihkan ruang sebelum '>' yang terbuang oleh skrip restyle (teks/ungkapan, bukan class) | ✅ Sudah Push |
+| 292 | 2026-10-19 | `resources/views/reports/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
+| 293 | 2026-10-19 | `resources/views/reports/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
 
 ---
 
