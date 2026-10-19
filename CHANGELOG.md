@@ -334,6 +334,8 @@ php artisan view:cache
 | 273 | 2026-10-19 | `resources/views/achievements/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; confirm() → data-confirm; layout: pengendali data-confirm global + escape data-name | ✅ Sudah Push |
 | 274 | 2026-10-19 | `resources/views/layout-fb/layout.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; confirm() → data-confirm; layout: pengendali data-confirm global + escape data-name | ✅ Sudah Push |
 | 275 | 2026-10-19 | `CLAUDE.md` | Fasa 3: gaya demo (kelas ek-*), buang dark:; confirm() → data-confirm; layout: pengendali data-confirm global + escape data-name | ✅ Sudah Push |
+| 276 | 2026-10-19 | `resources/views/disciplinary/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
+| 277 | 2026-10-19 | `resources/views/disciplinary/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
 
 ---
 
