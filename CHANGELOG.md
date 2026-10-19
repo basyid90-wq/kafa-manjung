@@ -411,9 +411,9 @@ php artisan view:cache
 | 350 | 2026-10-19 | `resources/views/feedback/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ✅ Sudah Push |
 | 351 | 2026-10-19 | `resources/views/feedback/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ✅ Sudah Push |
 | 352 | 2026-10-19 | `tests/Feature/FeedbackPageTest.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:; test borang aduan | ✅ Sudah Push |
-| 353 | 2026-10-19 | `resources/views/attendances/index.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ⏳ Belum Push |
-| 354 | 2026-10-19 | `resources/views/rph/show.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ⏳ Belum Push |
-| 355 | 2026-10-19 | `resources/views/admin/system_log.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ⏳ Belum Push |
+| 353 | 2026-10-19 | `resources/views/attendances/index.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ✅ Sudah Push |
+| 354 | 2026-10-19 | `resources/views/rph/show.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ✅ Sudah Push |
+| 355 | 2026-10-19 | `resources/views/admin/system_log.blade.php` | Betulkan class dinamik yang rosak oleh skrip restyle (dark:...{{ $x }}...) | ✅ Sudah Push |
 
 ---
 
