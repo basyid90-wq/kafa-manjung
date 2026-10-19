@@ -336,11 +336,11 @@ php artisan view:cache
 | 275 | 2026-10-19 | `CLAUDE.md` | Fasa 3: gaya demo (kelas ek-*), buang dark:; confirm() → data-confirm; layout: pengendali data-confirm global + escape data-name | ✅ Sudah Push |
 | 276 | 2026-10-19 | `resources/views/disciplinary/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 | 277 | 2026-10-19 | `resources/views/disciplinary/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
-| 278 | 2026-10-19 | `resources/views/activities/attendance.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 279 | 2026-10-19 | `resources/views/activities/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 280 | 2026-10-19 | `resources/views/activities/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 281 | 2026-10-19 | `resources/views/activities/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
-| 282 | 2026-10-19 | `resources/views/activities/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ⏳ Belum Push |
+| 278 | 2026-10-19 | `resources/views/activities/attendance.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 279 | 2026-10-19 | `resources/views/activities/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 280 | 2026-10-19 | `resources/views/activities/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 281 | 2026-10-19 | `resources/views/activities/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
+| 282 | 2026-10-19 | `resources/views/activities/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
 
 ---
 
