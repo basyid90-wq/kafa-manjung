@@ -375,8 +375,8 @@ php artisan view:cache
 | 314 | 2026-10-19 | `resources/views/announcements/edit-homepage.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 315 | 2026-10-19 | `resources/views/announcements/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 | 316 | 2026-10-19 | `resources/views/announcements/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
-| 317 | 2026-10-19 | `app/Http/Controllers/DashboardController.php` | Hebahan Terkini di dashboard ikut sasaran (announcement_targets), sama seperti halaman Hebahan; test | ⏳ Belum Push |
-| 318 | 2026-10-19 | `tests/Feature/DashboardTest.php` | Hebahan Terkini di dashboard ikut sasaran (announcement_targets), sama seperti halaman Hebahan; test | ⏳ Belum Push |
+| 317 | 2026-10-19 | `app/Http/Controllers/DashboardController.php` | Hebahan Terkini di dashboard ikut sasaran (announcement_targets), sama seperti halaman Hebahan; test | ✅ Sudah Push |
+| 318 | 2026-10-19 | `tests/Feature/DashboardTest.php` | Hebahan Terkini di dashboard ikut sasaran (announcement_targets), sama seperti halaman Hebahan; test | ✅ Sudah Push |
 
 ---
 
