@@ -301,10 +301,10 @@ php artisan view:cache
 | 240 | 2026-10-19 | `app/Support/SidebarMenu.php` | Menu sisi modul ikut demo (Modul Asas/Personal/Sekolah, Tetapan, Pemantauan) — tapis ikut middleware role:, kunci ikut plan: (baharu) | ✅ Sudah Push |
 | 241 | 2026-10-19 | `resources/views/layout-fb/layout.blade.php` | Guna SidebarMenu dengan lencana kunci; tajuk header/tab ikut menu aktif bila view tiada title | ✅ Sudah Push |
 | 242 | 2026-10-19 | `tests/Feature/SidebarMenuTest.php` | Test menu: kunci pelan Percuma, sembunyi modul Sekolah bagi Personal, item pemilik tersembunyi bagi Guru KAFA (baharu) | ✅ Sudah Push |
-| 243 | 2026-10-19 | `resources/views/kafa_classes/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 244 | 2026-10-19 | `resources/views/kafa_classes/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 245 | 2026-10-19 | `resources/views/kafa_classes/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
-| 246 | 2026-10-19 | `CLAUDE.md` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ⏳ Belum Push |
+| 243 | 2026-10-19 | `resources/views/kafa_classes/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 244 | 2026-10-19 | `resources/views/kafa_classes/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 245 | 2026-10-19 | `resources/views/kafa_classes/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
+| 246 | 2026-10-19 | `CLAUDE.md` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form | ✅ Sudah Push |
 
 ---
 
