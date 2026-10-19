@@ -316,6 +316,11 @@ php artisan view:cache
 | 255 | 2026-10-19 | `resources/views/timetable/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ✅ Sudah Push |
 | 256 | 2026-10-19 | `resources/views/time_slots/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ✅ Sudah Push |
 | 257 | 2026-10-19 | `resources/css/app.css` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ✅ Sudah Push |
+| 258 | 2026-10-19 | `resources/views/exams/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ⏳ Belum Push |
+| 259 | 2026-10-19 | `resources/views/exams/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ⏳ Belum Push |
+| 260 | 2026-10-19 | `resources/views/exams/results/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ⏳ Belum Push |
+| 261 | 2026-10-19 | `resources/views/exams/results/enter.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ⏳ Belum Push |
+| 262 | 2026-10-19 | `resources/views/exams/results/show.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam/kunci guna SweetAlert | ⏳ Belum Push |
 
 ---
 
