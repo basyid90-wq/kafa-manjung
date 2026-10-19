@@ -2,18 +2,18 @@
 @section('title', 'Tetapan Chatbot AI')
 
 @section('content')
-<div class="p-4 md:p-6">
+<div>
 
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">🤖 Tetapan Chatbot AI</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Urus provider AI, API Key dan mod akses data.</p>
+            <h1 class="ek-page-title">🤖 Tetapan Chatbot AI</h1>
+            <p class="ek-page-sub mt-1">Urus provider AI, API Key dan mod akses data.</p>
         </div>
     </div>
 
     {{-- ── Bot Profile ── --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
-        <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">🤖 Profil Chatbot</h2>
+    <div class="ek-card mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4">🤖 Profil Chatbot</h2>
         <form method="POST" action="{{ route('chatbot.bot-profile') }}" enctype="multipart/form-data">
             @csrf
             <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
@@ -49,13 +49,13 @@
 
                 {{-- Name + submit --}}
                 <div style="flex:1;min-width:200px;">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Chatbot</label>
+                    <label class="ek-label">Nama Chatbot</label>
                     <input type="text" name="bot_name" value="{{ $settings->bot_name ?? 'Pembantu KAFA AI' }}"
                            maxlength="50" required
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                           class="ek-input">
                     <p class="text-xs text-gray-400 mt-1">Nama ini akan dipaparkan dalam widget chatbot.</p>
                     <button type="submit"
-                            class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors mt-3">
+                            class="ek-btn-primary mt-3">
                         Simpan Profil
                     </button>
                 </div>
@@ -64,10 +64,10 @@
     </div>
 
     {{-- ── Global: Data Access Toggle ── --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-6">
+    <div class="ek-card mb-6">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
             <div>
-                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                <h2 class="text-sm font-semibold text-gray-700 mb-0.5">
                     🔒 Mod Akses Data Penuh (PDPA)
                 </h2>
                 <p class="text-xs text-gray-400 max-w-lg">
@@ -116,7 +116,7 @@
             $hasSafeWarning = $isActive && !$provider->is_safe && $settings->data_access_enabled;
         @endphp
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl border {{ $isActive ? 'border-blue-400 dark:border-blue-500' : 'border-gray-200 dark:border-gray-700' }} overflow-hidden"
+        <div class="bg-white rounded-xl border {{ $isActive ? 'border-blue-400' : 'border-gray-200' }} overflow-hidden"
              style="{{ $isActive ? 'box-shadow:0 0 0 3px rgba(59,130,246,0.15);' : '' }}">
 
             {{-- Card Header --}}
@@ -213,7 +213,7 @@
                     </form>
                     @else
                     <form method="POST" action="{{ route('chatbot.provider.deactivate', $provider) }}" style="flex:1;"
-                          onsubmit="return confirm('Matikan {{ addslashes($provider->name) }}? Chatbot tidak akan berfungsi sehingga provider lain diaktifkan.')">
+                          data-confirm="Matikan {{ $provider->name }}? Chatbot tidak akan berfungsi sehingga provider lain diaktifkan.">
                         @csrf
                         <button type="submit"
                                 style="width:100%;padding:8px;font-size:0.8rem;font-weight:600;border:none;cursor:pointer;
@@ -240,16 +240,16 @@
     </div>
 
     {{-- ── Cara Tukar Provider ── --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-blue-100 dark:border-blue-900/40 p-4 mt-6"
+    <div class="bg-white rounded-xl border border-blue-100 p-4 mt-6"
          style="background:linear-gradient(135deg,rgba(239,246,255,0.8),rgba(238,242,255,0.8));">
-        <div class="dark:hidden">
+        <div class="">
             <p style="font-size:0.82rem;color:#1e40af;margin:0;">
                 💡 <strong>Cara tukar provider (termasuk yang percuma):</strong>
                 Daftar di laman web provider → salin API Key → tampal di sini → klik <strong>Simpan</strong> → klik <strong>Aktifkan</strong>.
                 Provider lama auto dimatikan. <strong>Semua provider — termasuk Groq &amp; Gemini — memerlukan API Key</strong> walaupun ia percuma.
             </p>
         </div>
-        <div class="hidden dark:block">
+        <div class="hidden">
             <p style="font-size:0.82rem;color:#93c5fd;margin:0;">
                 💡 <strong>Cara tukar provider (termasuk yang percuma):</strong>
                 Daftar di laman web provider → salin API Key → tampal di sini → klik <strong>Simpan</strong> → klik <strong>Aktifkan</strong>.
@@ -282,8 +282,8 @@
         .guide-table a:hover { text-decoration:underline; }
     </style>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mt-4">
-        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">📋 Panduan Provider</h3>
+    <div class="ek-card mt-4">
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">📋 Panduan Provider</h3>
         <div style="overflow-x:auto;">
             <table class="guide-table">
                 <thead>
