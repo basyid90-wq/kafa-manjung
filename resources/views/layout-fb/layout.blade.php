@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html lang="ms" class="h-full">
+@php
+    $authUser     = auth()->user();
+    $userRole     = $authUser->getRoleNames()->first();
+    $userSchool   = $authUser->school;
+    $initials     = collect(preg_split('/\s+/', trim($authUser->name)))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
+    $roleBadge    = match ($userRole) {
+        'Guru Besar' => 'ek-badge-blue',
+        'Guru KAFA'  => 'bg-indigo-100 text-indigo-700',
+        'Ibu Bapa'   => 'bg-teal-100 text-teal-700',
+        default      => 'ek-badge-gray',
+    };
+    $isParentOnly = $authUser->hasRole('Ibu Bapa') && !$authUser->hasAnyRole(['Super Admin', 'Guru Besar', 'Guru KAFA']);
+    $menuGroups   = $isParentOnly ? [] : \App\Support\SidebarMenu::for($authUser);
+    $activeLabel  = collect($menuGroups)->pluck('items')->flatten(1)->firstWhere('active', true)['label'] ?? 'eKafa Online';
+@endphp
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') | eKafa Online</title>
+    <title>@hasSection('title')@yield('title')@else{{ $activeLabel }}@endif | eKafa Online</title>
     <link rel="shortcut icon" href="{{ asset('template/perak.png') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet">
@@ -17,18 +32,6 @@
     </style>
     @stack('styles')
 </head>
-@php
-    $authUser   = auth()->user();
-    $userRole       = $authUser->getRoleNames()->first();
-    $userSchool     = $authUser->school;
-    $initials   = collect(preg_split('/\s+/', trim($authUser->name)))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
-    $roleBadge  = match ($userRole) {
-        'Guru Besar' => 'ek-badge-blue',
-        'Guru KAFA'  => 'bg-indigo-100 text-indigo-700',
-        'Ibu Bapa'   => 'bg-teal-100 text-teal-700',
-        default      => 'ek-badge-gray',
-    };
-@endphp
 <body class="h-full bg-gray-50 text-gray-900 antialiased" x-data="{ sidebarOpen: false }">
 
     {{-- ── Sidebar (drawer on mobile) ── --}}
@@ -54,26 +57,24 @@
 
         <nav class="ek-scroll flex-1 overflow-y-auto px-3 py-4">
 
-            {{-- ── Menu Utama ── --}}
-            @unless($authUser->hasRole('Ibu Bapa'))
+            {{-- ── Module menu (App\Support\SidebarMenu: role + plan aware) ── --}}
+            @foreach($menuGroups as $group)
             <div class="mb-5">
-                <p class="ek-nav-heading">Menu Utama</p>
-                <a href="{{ route('dashboard') }}" class="ek-nav-link {{ request()->routeIs('dashboard') ? 'is-active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                    <span class="min-w-0 flex-1 truncate">Dashboard</span>
+                <p class="ek-nav-heading">{{ $group['title'] }}</p>
+                @foreach($group['items'] as $item)
+                <a href="{{ $item['url'] }}" class="ek-nav-link {{ $item['active'] ? 'is-active' : '' }} {{ $item['locked'] ? 'text-gray-500 hover:bg-gray-50' : '' }}"
+                   @if($item['locked']) title="Tersedia dalam pelan {{ $item['planLabel'] }}" @endif>
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
+                    <span class="min-w-0 flex-1 truncate">{{ $item['label'] }}</span>
+                    @if($item['locked'])
+                    <span class="inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold {{ $item['plan'] === 'sekolah' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700' }}">
+                        <svg class="!h-3 !w-3 !text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>{{ $item['planLabel'] }}
+                    </span>
+                    @endif
                 </a>
-                <a href="{{ route('pengurusan.index') }}" class="ek-nav-link {{ request()->routeIs('pengurusan.index') ? 'is-active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                    <span class="min-w-0 flex-1 truncate">Pengurusan Pentadbiran</span>
-                </a>
-                @if($userSchool)
-                <a href="{{ route('subscription.index') }}" class="ek-nav-link {{ request()->routeIs('subscription.index') ? 'is-active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                    <span class="min-w-0 flex-1 truncate">Langganan</span>
-                </a>
-                @endif
+                @endforeach
             </div>
-            @endunless
+            @endforeach
 
             {{-- ── Ibu Bapa Portal ── --}}
             @hasrole('Ibu Bapa')
@@ -91,24 +92,6 @@
                 @endforeach
             </div>
             @endhasrole
-
-            {{-- ── Super Admin: Pemantauan ── --}}
-            @role('Super Admin')
-            <div class="mb-5">
-                <p class="ek-nav-heading">Pemantauan</p>
-                @foreach([
-                    ['route'=>'chatbot.settings','label'=>'Tetapan Chatbot AI','icon'=>'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'],
-                    ['route'=>'admin.manual.logs','label'=>'Log Panduan Pengguna','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
-                    ['route'=>'feedback.index','label'=>'Aduan Masalah','icon'=>'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'],
-                    ['route'=>'admin.system_log','label'=>'Log Sistem','icon'=>'M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
-                ] as $item)
-                <a href="{{ route($item['route']) }}" class="ek-nav-link {{ request()->routeIs($item['route']) ? 'is-active' : '' }}">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
-                    <span class="min-w-0 flex-1 truncate">{{ $item['label'] }}</span>
-                </a>
-                @endforeach
-            </div>
-            @endrole
 
             {{-- ── Non-SA: Panduan ── --}}
             @unless($authUser->hasRole('Super Admin'))
@@ -152,7 +135,7 @@
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
             </button>
             <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-semibold text-gray-900 sm:text-base">@yield('title', 'Dashboard')</p>
+                <p class="truncate text-sm font-semibold text-gray-900 sm:text-base">@hasSection('title')@yield('title')@else{{ $activeLabel }}@endif</p>
                 @if($userSchool)
                 <p class="hidden truncate text-xs text-gray-500 sm:block">{{ $userSchool->name }}</p>
                 @endif

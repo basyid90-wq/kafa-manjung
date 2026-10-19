@@ -298,6 +298,9 @@ php artisan view:cache
 | 237 | 2026-10-19 | `resources/views/students/index.blade.php` | Sembunyi pilihan "Tiada Kelas" untuk Guru KAFA | ✅ Sudah Push |
 | 238 | 2026-10-19 | `tests/Feature/GuruKafaStudentScopeTest.php` | Test skop murid Guru KAFA ikut kelas (baharu) | ✅ Sudah Push |
 | 239 | 2026-10-19 | `resources/views/manuals/guru-kafa.blade.php` | Nota: Guru KAFA hanya urus murid kelas sendiri | ✅ Sudah Push |
+| 240 | 2026-10-19 | `app/Support/SidebarMenu.php` | Menu sisi modul ikut demo (Modul Asas/Personal/Sekolah, Tetapan, Pemantauan) — tapis ikut middleware role:, kunci ikut plan: (baharu) | ⏳ Belum Push |
+| 241 | 2026-10-19 | `resources/views/layout-fb/layout.blade.php` | Guna SidebarMenu dengan lencana kunci; tajuk header/tab ikut menu aktif bila view tiada title | ⏳ Belum Push |
+| 242 | 2026-10-19 | `tests/Feature/SidebarMenuTest.php` | Test menu: kunci pelan Percuma, sembunyi modul Sekolah bagi Personal, item pemilik tersembunyi bagi Guru KAFA (baharu) | ⏳ Belum Push |
 
 ---
 
