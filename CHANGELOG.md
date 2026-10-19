@@ -311,11 +311,11 @@ php artisan view:cache
 | 250 | 2026-10-19 | `resources/views/students/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ✅ Sudah Push |
 | 251 | 2026-10-19 | `resources/views/students/import_summary.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, pengesahan padam guna SweetAlert | ✅ Sudah Push |
 | 252 | 2026-10-19 | `resources/views/attendances/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark: | ✅ Sudah Push |
-| 253 | 2026-10-19 | `resources/views/timetable/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ⏳ Belum Push |
-| 254 | 2026-10-19 | `resources/views/timetable/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ⏳ Belum Push |
-| 255 | 2026-10-19 | `resources/views/timetable/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ⏳ Belum Push |
-| 256 | 2026-10-19 | `resources/views/time_slots/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ⏳ Belum Push |
-| 257 | 2026-10-19 | `resources/css/app.css` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ⏳ Belum Push |
+| 253 | 2026-10-19 | `resources/views/timetable/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ✅ Sudah Push |
+| 254 | 2026-10-19 | `resources/views/timetable/create.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ✅ Sudah Push |
+| 255 | 2026-10-19 | `resources/views/timetable/edit.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ✅ Sudah Push |
+| 256 | 2026-10-19 | `resources/views/time_slots/index.blade.php` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ✅ Sudah Push |
+| 257 | 2026-10-19 | `resources/css/app.css` | Fasa 3: gaya demo (kelas ek-*), buang dark:, padam guna data-delete-form; butang ek-btn tidak berbalut | ✅ Sudah Push |
 
 ---
 
